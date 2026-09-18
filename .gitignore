@@ -56,13 +56,14 @@ docs/
 # (.github/workflows/sync-airtable.yml runs these; they must be in the repo)
 #
 # `scripts/*` not `scripts/`: excluding the directory itself stops git descending into it, and a
-# negation cannot re-include a file whose parent directory is excluded. With `scripts/` the three
+# negation cannot re-include a file whose parent directory is excluded. With `scripts/` the
 # rules below were inert — those files are in the repo only because they were committed before
 # the rule existed, and any newly added workflow script would silently never be committed.
+#
+# Re-included by pattern, not one line per file: a per-file list has the same failure mode a
+# rung down, because the next `sync_*` script is committed only if someone remembers to add a
+# line here. A local-only `sync_*` script would now be picked up — but that shows up in
+# `git status`, which is the loud failure, not the silent one.
 scripts/*
+!scripts/sync_*
 !scripts/ensure_survey_indexes.cjs
-!scripts/sync_all_from_airtable.js
-!scripts/sync_countries_from_airtable.cjs
-!scripts/sync_districts_from_airtable.cjs
-!scripts/sync_surveys_from_airtable.js
-!scripts/sync_users_from_airtable.js

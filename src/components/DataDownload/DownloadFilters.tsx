@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   IconSearch,
@@ -15,6 +15,7 @@ import {
   IconFileDescription
 } from '@tabler/icons-react';
 import { DownloadFilters as FiltersType } from '../../types/download';
+import { taxonLabel, taxonInput, toTaxonCode } from '../../utils/taxon';
 import { useFetchDownloadMetadata } from '../../api/api';
 import { AuthUser } from '../Auth/AuthContext';
 
@@ -49,7 +50,7 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
     isAdmin ? filters.country : undefined,
     filters.survey_id?.[0]
   );
-  const { countries, districts, surveys } = metadata;
+  const { countries, districts, surveys, taxa } = metadata;
 
   const selectedSurveyId = filters.survey_id?.[0] || '';
   const hasSurveySelected = selectedSurveyId !== '';
@@ -57,7 +58,24 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
   // Regular users are scoped to their assigned surveys (country is derived per-survey
   // server-side); admins must pick a country first.
   const hasAccess = isAdmin ? !!filters.country : surveys.length > 0;
-  const isPreviewDisabled = isLoading || loadingMetadata || !hasAccess;
+
+  // ~950 options, and every keystroke in any field re-renders this component. Built once per
+  // metadata load instead: identical element references let React skip the whole subtree.
+  const taxonOptions = useMemo(
+    () => taxa.map((tx) => <option key={tx.code} value={taxonLabel(tx)} />),
+    [taxa]
+  );
+
+  const taxonCode = toTaxonCode(filters.catch_taxon || '');
+  const selectedTaxon = taxa.find((tx) => tx.code === taxonCode);
+
+  // The hint invites typing a species name, but anything that isn't a 3-letter code is rejected
+  // by the PeSKAS filter validator with an English-only message. Catch it here instead, in the
+  // user's language. Only when we actually have a list to check against — if the species list
+  // failed to load, a user who knows the code must still be able to use it.
+  const taxonInvalid = taxonCode !== '' && taxa.length > 0 && !selectedTaxon;
+
+  const isPreviewDisabled = isLoading || loadingMetadata || !hasAccess || taxonInvalid;
 
   // Every caller passes a `<select>`/`<input>` value, so a plain string covers all fields.
   const handleChange = (field: keyof FiltersType, value: string) => {
@@ -152,15 +170,31 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
         </label>
         <input
           type="text"
-          className="form-control"
+          className={`form-control${taxonInvalid ? ' is-invalid' : ''}`}
+          list="catch-taxon-options"
           placeholder={t('filters.catchTaxonPlaceholder')}
           value={filters.catch_taxon || ''}
-          onChange={(e) => handleChange('catch_taxon', e.target.value)}
+          onChange={(e) => handleChange('catch_taxon', taxonInput(e.target.value))}
         />
-        <small
-          className="form-hint"
-          dangerouslySetInnerHTML={{ __html: t('filters.catchTaxonHint') }}
-        />
+        <datalist id="catch-taxon-options">{taxonOptions}</datalist>
+        {taxonInvalid ? (
+          <div className="invalid-feedback d-block">{t('filters.catchTaxonInvalid')}</div>
+        ) : selectedTaxon ? (
+          <small className="form-hint text-secondary">
+            <strong>{selectedTaxon.code}</strong> — {selectedTaxon.english_name}
+            {selectedTaxon.scientific_name && (
+              <em className="ms-1">({selectedTaxon.scientific_name})</em>
+            )}
+            {selectedTaxon.family && (
+              <span className="badge bg-blue-lt ms-2">{selectedTaxon.family}</span>
+            )}
+          </small>
+        ) : (
+          <small
+            className="form-hint"
+            dangerouslySetInnerHTML={{ __html: t('filters.catchTaxonHint') }}
+          />
+        )}
       </div>
 
       {/* Survey + District cascade (only once the user has access) */}

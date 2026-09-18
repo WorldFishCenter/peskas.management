@@ -7,8 +7,9 @@
  * Dependency Order:
  * 1. Countries - No dependencies
  * 2. Districts (GAUL codes) - No dependencies
- * 3. Surveys (forms) - No dependencies
- * 4. Users - Depends on districts + surveys
+ * 3. Taxa (FAO ASFIS codes) - No dependencies
+ * 4. Surveys (forms) - No dependencies
+ * 5. Users - Depends on districts + surveys
  *
  * Usage: node scripts/sync_all_from_airtable.js
  */
@@ -67,19 +68,25 @@ async function main() {
     // Step 2: Districts (no dependencies)
     await runScript(
       'scripts/sync_districts_from_airtable.cjs',
-      'Step 2/4: Syncing districts (GAUL codes)'
+      'Step 2/5: Syncing districts (GAUL codes)'
     );
 
-    // Step 3: Surveys (no dependencies)
+    // Step 3: Taxa (no dependencies) — species-code reference data for the download filter
+    await runScript(
+      'scripts/sync_taxa_from_airtable.cjs',
+      'Step 3/5: Syncing taxa (FAO species codes)'
+    );
+
+    // Step 4: Surveys (no dependencies)
     await runScript(
       'scripts/sync_surveys_from_airtable.js',
-      'Step 3/4: Syncing surveys (forms)'
+      'Step 4/5: Syncing surveys (forms)'
     );
 
-    // Step 4: Users (depends on districts + surveys)
+    // Step 5: Users (depends on districts + surveys)
     await runScript(
       'scripts/sync_users_from_airtable.js',
-      'Step 4/4: Syncing users (depends on districts + surveys)'
+      'Step 5/5: Syncing users (depends on districts + surveys)'
     );
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);

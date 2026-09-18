@@ -36,8 +36,11 @@ npm run render:lessons   # Quarto → public/data-explorer/lessons/
 npm run sync:all         # Airtable → MongoDB (districts → surveys → users)
 ```
 
-**There is no test suite.** Verify with `npm run build` and `npm run lint`, and by exercising the
-change in the running app. Don't claim a change is tested when it isn't.
+**There is no test framework** — no Jest, no Vitest. `npm test` runs a handful of standalone
+`assert`-based checks over the logic that earned one (`npm test` is in `package.json`; each file
+is runnable on its own with `node`). Everything else is verified with `npm run build` and
+`npm run lint`, and by exercising the change in the running app. Don't claim a change is tested
+when it isn't.
 
 If `npm run render:lessons` fails with `MissingEnvVarsError`, use
 `cd data-explorer && quarto render .` — the root script validates `.env`, which a render doesn't need.

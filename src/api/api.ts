@@ -15,7 +15,8 @@ import {
   DataRow,
   CountryOption,
   District,
-  Survey
+  Survey,
+  Taxon
 } from '../types/download';
 
 /**
@@ -460,13 +461,21 @@ export const useFetchDownloadMetadata = (countryId?: string, surveyId?: string) 
     countries: CountryOption[];
     districts: District[];
     surveys: Survey[];
+    taxa: Taxon[];
   }>({
     countries: [],
     districts: [],
-    surveys: []
+    surveys: [],
+    taxa: []
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // The species list is the bulk of this payload and only changes with country, so ask for it
+  // when the country changes and hold it across survey changes — same shape as `metaSurveyRef`
+  // in useFetchSubmissions. Updated only after a successful response, so a failed request
+  // re-asks next time instead of leaving the picker permanently empty.
+  const taxaCountryRef = useRef<string | null>(null);
 
   const fetchMetadata = useCallback(async () => {
     setIsLoading(true);
@@ -477,15 +486,22 @@ export const useFetchDownloadMetadata = (countryId?: string, surveyId?: string) 
       if (countryId) params.append('country_id', countryId);
       if (surveyId) params.append('survey_id', surveyId);
 
+      const wantsTaxa = taxaCountryRef.current !== (countryId || '');
+      if (wantsTaxa) params.append('taxa', '1');
+
       const queryString = params.toString();
       const url = `${API_BASE_URL}/data-download/metadata${queryString ? `?${queryString}` : ''}`;
       const response = await axios.get(url);
 
-      setMetadata({
+      setMetadata((prev) => ({
         countries: response.data.countries || [],
         districts: response.data.districts || [],
-        surveys: response.data.surveys || []
-      });
+        surveys: response.data.surveys || [],
+        // Absent (not empty) when we didn't ask — keep what we already have.
+        taxa: response.data.taxa ?? prev.taxa
+      }));
+
+      if (wantsTaxa) taxaCountryRef.current = countryId || '';
     } catch (err: unknown) {
       console.error('Error fetching download metadata:', err);
       setError(extractErrorMessage(err, 'Failed to load filter metadata'));

@@ -16,8 +16,9 @@ name: Sync Airtable to MongoDB
 # Dependency Order:
 # 1. Countries - No dependencies
 # 2. Districts (GAUL codes) - No dependencies
-# 3. Surveys (forms) - No dependencies
-# 4. Users - Depends on districts + surveys for permissions
+# 3. Taxa (FAO species codes) - No dependencies
+# 4. Surveys (forms) - No dependencies
+# 5. Users - Depends on districts + surveys for permissions
 #
 # =============================================================================
 
@@ -38,6 +39,7 @@ on:
           - all
           - countries
           - districts
+          - taxa
           - surveys
           - users
 
@@ -200,7 +202,41 @@ jobs:
             echo "⏳ Waiting 30 seconds before retry..."
 
       # -----------------------------------------------------------------------
-      # Step 7: Sync Surveys (Forms)
+      # Step 7: Sync Taxa (FAO species codes) — reference data for the download filter
+      # -----------------------------------------------------------------------
+      - name: Sync Taxa
+        if: inputs.sync_type == 'all' || inputs.sync_type == 'taxa' || inputs.sync_type == ''
+        id: sync_taxa
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          retry_wait_seconds: 30
+          retry_on: error
+          warning_on_retry: true
+          command: |
+            echo "🐟 Starting taxa sync (FAO species codes)..."
+            echo "⏰ Started at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+            echo ""
+
+            node scripts/sync_taxa_from_airtable.cjs
+
+            SYNC_EXIT_CODE=$?
+            echo ""
+            echo "⏰ Completed at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+
+            if [ $SYNC_EXIT_CODE -eq 0 ]; then
+              echo "✅ Taxa sync completed successfully"
+            else
+              echo "❌ Taxa sync failed with exit code: $SYNC_EXIT_CODE"
+              exit $SYNC_EXIT_CODE
+            fi
+          on_retry_command: |
+            echo "⚠️  Retry attempt for taxa sync..."
+            echo "⏳ Waiting 30 seconds before retry..."
+
+      # -----------------------------------------------------------------------
+      # Step 8: Sync Surveys (Forms)
       # -----------------------------------------------------------------------
       - name: Sync Surveys
         if: inputs.sync_type == 'all' || inputs.sync_type == 'surveys' || inputs.sync_type == ''
@@ -234,7 +270,7 @@ jobs:
             echo "⏳ Waiting 30 seconds before retry..."
 
       # -----------------------------------------------------------------------
-      # Step 8: Sync Users (depends on districts + surveys)
+      # Step 9: Sync Users (depends on districts + surveys)
       # -----------------------------------------------------------------------
       - name: Sync Users
         if: inputs.sync_type == 'all' || inputs.sync_type == 'users' || inputs.sync_type == ''
@@ -268,7 +304,7 @@ jobs:
             echo "⏳ Waiting 30 seconds before retry..."
 
       # -----------------------------------------------------------------------
-      # Step 9: Generate Sync Summary
+      # Step 10: Generate Sync Summary
       # -----------------------------------------------------------------------
       - name: Generate sync summary
         if: success()
@@ -283,13 +319,14 @@ jobs:
           echo ""
           echo "✅ Countries: Synced"
           echo "✅ Districts: Synced"
+          echo "✅ Taxa: Synced"
           echo "✅ Surveys: Synced"
           echo "✅ Users: Synced"
           echo ""
           echo "════════════════════════════════════════════════════════════════════"
 
       # -----------------------------------------------------------------------
-      # Step 10: Store Logs as Artifacts (for debugging)
+      # Step 11: Store Logs as Artifacts (for debugging)
       # -----------------------------------------------------------------------
       - name: Upload sync logs
         if: always()  # Run even if previous steps failed

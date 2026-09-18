@@ -84,7 +84,9 @@ async function handler(req, res) {
       sharedFilters.scope = scope.trim();
     }
     if (catch_taxon && catch_taxon.trim()) {
-      sharedFilters.catch_taxon = catch_taxon.trim();
+      // Upper-cased here, not at the API boundary: this is the value the audit log and the
+      // "filters applied" echo also read, and PeSKAS matches the code case-sensitively.
+      sharedFilters.catch_taxon = catch_taxon.trim().toUpperCase();
     }
 
     // PeSKAS API requires lowercase country codes

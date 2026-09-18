@@ -66,6 +66,23 @@ export interface District {
 }
 
 /**
+ * A FAO ASFIS taxon, as offered by the species filter's picker.
+ */
+export interface Taxon {
+  /** 3-letter FAO ASFIS code (e.g. 'SKJ') — the value `catch_taxon` takes */
+  code: string;
+
+  /** Latin name (e.g. 'Katsuwonus pelamis') */
+  scientific_name: string;
+
+  /** Common English name (e.g. 'Skipjack tuna') */
+  english_name: string;
+
+  /** Taxonomic family (e.g. 'Scombridae'), normalised to Title Case by the taxa sync */
+  family: string;
+}
+
+/**
  * A survey, as returned by `/surveys` and by `/data-download/metadata`.
  *
  * The single declaration for the whole app — `src/api/admin.ts` re-exports it. `_id` and
