@@ -50,6 +50,7 @@ graphify-out/
 docs/
 .claude/
 .todo
+.agents/
 
 # Scripts - ignore all except those needed for GitHub Actions workflow
 # (.github/workflows/sync-airtable.yml runs these; they must be in the repo)

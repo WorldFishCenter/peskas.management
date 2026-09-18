@@ -1,5 +1,5 @@
 <!--
-SHARED FIELD DICTIONARY for the Data Explorer lessons — pull it into a lesson with Quarto's include
+SHARED FIELD DICTIONARY for the Data Academy lessons — pull it into a lesson with Quarto's include
 shortcode, naming this file (see the top of the "What each column means" section in dataset.qmd for a
 working example).
 

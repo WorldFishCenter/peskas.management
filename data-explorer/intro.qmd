@@ -169,6 +169,6 @@ You will only ever **press Run** and **change small things**. Take the lessons i
 ```{=html}
 <p class="mt-4">
   <a href="/data-explorer/lessons/dataset.html" class="btn btn-primary">Next: Getting to know your data &#8594;</a>
-  <a href="/data-explorer" class="btn btn-outline-primary ms-2">&#8592; Back to Data Explorer</a>
+  <a href="/data-explorer" class="btn btn-outline-primary ms-2">&#8592; Back to Data Academy</a>
 </p>
 ```

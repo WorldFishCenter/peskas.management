@@ -2,9 +2,9 @@
  * GET /api/data-download/explorer-data
  *
  * Returns a CAPPED, permission-filtered slice of the PeSKAS landings data as JSON
- * (a bare array of row objects), for the in-browser R lessons in the Data Explorer tab.
+ * (a bare array of row objects), for the in-browser R lessons in the Data Academy tab.
  *
- * This is the Data Explorer counterpart to /api/data-download/export. It reuses the
+ * This is the Data Academy counterpart to /api/data-download/export. It reuses the
  * exact same permission gate (resolveDownloadRequests + the per-form fan-out), so a lesson
  * can only ever see the data the same user could download. Differences from export:
  *   - JSON, not CSV — the lesson's {ojs} cell hands the array to a {webr} cell via
@@ -60,7 +60,7 @@ async function handler(req, res) {
     const database = await getDb();
 
     // Admins must normally specify a country (resolveDownloadRequests throws without one). For the
-    // Data Explorer we default it to their first accessible survey's country so a
+    // Data Academy we default it to their first accessible survey's country so a
     // lesson can load data without a country picker. Regular users are always scoped
     // to user.country[0] regardless of this value.
     const queryParams = { ...req.query };

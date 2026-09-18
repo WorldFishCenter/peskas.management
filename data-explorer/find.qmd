@@ -324,6 +324,6 @@ Next: **Add it up** — totals and averages by district, gear or month.
 ```{=html}
 <p class="mt-4">
   <a href="/data-explorer/lessons/summarise.html" class="btn btn-primary">Next: Add it up &#8594;</a>
-  <a href="/data-explorer" class="btn btn-outline-primary ms-2">&#8592; Back to Data Explorer</a>
+  <a href="/data-explorer" class="btn btn-outline-primary ms-2">&#8592; Back to Data Academy</a>
 </p>
 ```

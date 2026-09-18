@@ -1,5 +1,5 @@
 <!--
-SHARED "YOUR OWN RECORDS" PANEL for every Data Explorer lesson — pull it into a lesson with Quarto's
+SHARED "YOUR OWN RECORDS" PANEL for every Data Academy lesson — pull it into a lesson with Quarto's
 include shortcode, naming this file (see the "Before we start" section of find.qmd for a working example).
 It replaces the earlier pair of includes, _landings-data.qmd and _landings-guard.qmd, which put the fetch
 and the data-frame conversion in front of the learner as two editable code boxes. Nobody in the audience
@@ -164,7 +164,7 @@ landings_empty = landings_rows.length === 0
   if (s.phase === "signed-out") return html`<div class="alert alert-warning mb-0">
     <strong>You are not signed in, so there are no records to work with.</strong>
     The boxes below will still run, but they will come back empty.
-    Open this lesson from the <strong>Data Explorer</strong> tab while signed in.
+    Open this lesson from the <strong>Data Academy</strong> tab while signed in.
   </div>`;
 
   if (s.phase === "no-access") return html`<div class="alert alert-warning mb-0">

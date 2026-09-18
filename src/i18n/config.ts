@@ -27,7 +27,7 @@ i18n
       'enumerators', // Dashboard, charts, metrics
       'admin',       // User management
       'guide',       // HowItWorks user guide
-      'dataExplorer' // Data Explorer catalog (interactive R lessons)
+      'dataExplorer' // Data Academy catalog (interactive R lessons)
     ],
 
     // Interpolation settings

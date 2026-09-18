@@ -7,7 +7,7 @@ A scalable web platform for managing KoboToolbox survey data — validating subm
 - **Data Validation Interface** - Review and validate survey submissions with filtering and status updates
 - **Enumerator Performance Dashboard** - Track submission quality, error rates, and trends with interactive charts
 - **Data Download** - Preview and export permission-filtered landings data as CSV from the PeSKAS API
-- **Data Explorer** - Five interactive R lessons that run entirely in the browser (quarto-live + webR), teaching non-coders to filter, summarise and chart their own data
+- **Data Academy** - Five interactive R lessons that run entirely in the browser (quarto-live + webR), teaching non-coders to filter, summarise and chart their own data
 - **Multi-Survey Support** - Manage multiple surveys across different KoboToolbox servers
 - **Role-Based Access Control** - Admin and user roles with survey-level permissions
 - **Airtable Integration** - Centralized user and survey management with automated GitHub Actions sync

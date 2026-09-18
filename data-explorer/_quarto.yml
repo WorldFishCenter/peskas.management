@@ -1,4 +1,4 @@
-# Quarto SOURCE project for the Data Explorer lessons.
+# Quarto SOURCE project for the Data Academy lessons.
 #
 # Lessons are authored here as .qmd files using the quarto-live extension
 # (in-browser R via webR). They are rendered to static HTML that is committed

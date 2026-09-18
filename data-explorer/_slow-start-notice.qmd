@@ -1,5 +1,5 @@
 <!--
-SHARED FIRST-LOAD NOTICE for the Data Explorer lessons — pull it into a lesson with Quarto's include
+SHARED FIRST-LOAD NOTICE for the Data Academy lessons — pull it into a lesson with Quarto's include
 shortcode, naming this file (see just above the example-data include in find.qmd for a working example).
 Put it immediately before the first code box on the page.
 

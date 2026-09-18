@@ -9,7 +9,7 @@ Guidance for Claude Code working in this repository. **Version 2.6.0.**
 ## What this is
 
 A React + Express + MongoDB platform for KoboToolbox survey data: validation, enumerator
-performance tracking, data download, and an interactive Data Explorer. Users are fishery managers
+performance tracking, data download, and an interactive Data Academy. Users are fishery managers
 and NGO staff in Kenya, Mozambique and Zanzibar.
 
 - **Reference**: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — endpoints, collections, scripts, env, deployment
@@ -100,7 +100,7 @@ everything else and say explicitly what was left and why.
 
 ## Gotchas
 
-- **Data Explorer lesson source is base64** inside `<script type="webr-N-contents">` — grepping the
+- **Data Academy lesson source is base64** inside `<script type="webr-N-contents">` — grepping the
   rendered HTML cannot tell you what a learner sees. Decode it. Rendered HTML is **committed**
   (Vercel has no Quarto/R), so re-render after editing any `.qmd`.
 - **`docs/*.md` was invisible to git** until `!docs/**` was added to `.gitignore`; `*.md` still

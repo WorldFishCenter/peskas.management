@@ -1,5 +1,5 @@
 /**
- * Data Explorer lesson catalog (manifest).
+ * Data Academy lesson catalog (manifest).
  *
  * Each entry corresponds to a static quarto-live page rendered from
  * `data-explorer/<slug>.qmd` into `public/data-explorer/lessons/<slug>.html` and served

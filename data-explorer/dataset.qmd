@@ -278,6 +278,6 @@ only the landings from your district, or only one month.
 ```{=html}
 <p class="mt-4">
   <a href="/data-explorer/lessons/find.html" class="btn btn-primary">Next: Find what you need &#8594;</a>
-  <a href="/data-explorer" class="btn btn-outline-primary ms-2">&#8592; Back to Data Explorer</a>
+  <a href="/data-explorer" class="btn btn-outline-primary ms-2">&#8592; Back to Data Academy</a>
 </p>
 ```

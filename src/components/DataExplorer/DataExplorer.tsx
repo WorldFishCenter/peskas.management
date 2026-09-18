@@ -10,13 +10,13 @@ import {
 import { lessons, LESSON_BASE_PATH, LESSON_COUNT, lessonNumber } from './lessons';
 
 /**
- * Data Explorer catalog page.
+ * Data Academy catalog page.
  *
  * Mirrors the "data snacks" landing page: a short intro plus a grid of lesson cards.
  * Each available lesson links to a full-page, static quarto-live page (in-browser R via
  * webR) served from public/data-explorer/lessons/. These are plain anchors — they leave
  * the SPA on purpose so the lesson page can be cross-origin isolated (SharedArrayBuffer);
- * the lesson provides a "Back to Data Explorer" link to return.
+ * the lesson provides a "Back to Data Academy" link to return.
  *
  * Lessons run against the user's own permission-filtered landings data (same data/access
  * as Data Download) via /api/data-download/explorer-data.

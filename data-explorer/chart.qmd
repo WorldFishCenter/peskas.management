@@ -157,7 +157,7 @@ The last line will read `need finite 'xlim' values`. It looks alarming, but it i
 *"you gave me an empty table, so I cannot tell how wide to make the picture."* A few warnings about `min`
 and `max` may appear above it. Ignore those and read the **last line**, as always.
 
-Nothing is broken. Open this lesson from the **Data Explorer** tab while signed in, and the charts will
+Nothing is broken. Open this lesson from the **Data Academy** tab while signed in, and the charts will
 appear.
 :::
 
@@ -274,6 +274,6 @@ remember any of it.
 ```{=html}
 <p class="mt-4">
   <a href="/data-explorer/lessons/recipes.html" class="btn btn-primary">📋 Open the recipe card</a>
-  <a href="/data-explorer" class="btn btn-outline-primary ms-2">← Back to Data Explorer</a>
+  <a href="/data-explorer" class="btn btn-outline-primary ms-2">← Back to Data Academy</a>
 </p>
 ```

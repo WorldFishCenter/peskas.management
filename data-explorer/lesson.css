@@ -1,5 +1,5 @@
 /*
- * Shared stylesheet for every Data Explorer lesson.
+ * Shared stylesheet for every Data Academy lesson.
  *
  * Wired in _quarto.yml (`css: lesson.css`) so every lesson gets it, and again in recipes.qmd, which
  * overrides `format:` to plain html and so does not inherit the project format's options.

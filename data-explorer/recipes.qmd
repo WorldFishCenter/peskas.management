@@ -112,7 +112,7 @@ For a single catch, use **`catch_kg`**.
 </style>
 
 <p class="mt-4 no-print">
-  <a href="/data-explorer" class="btn btn-outline-primary">← Back to Data Explorer</a>
+  <a href="/data-explorer" class="btn btn-outline-primary">← Back to Data Academy</a>
   <button type="button" class="btn btn-primary ms-2" onclick="window.print()">🖨 Print this page</button>
 </p>
 ```

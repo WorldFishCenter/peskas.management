@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getApiBaseUrl } from './apiConfig';
 
 // Publish the resolved API base URL so same-origin static pages — specifically the
-// Data Explorer lesson HTML, which is NOT part of the React bundle and can't import
+// Data Academy lesson HTML, which is NOT part of the React bundle and can't import
 // apiConfig — can call the API exactly like the app does, in dev and prod alike.
 try {
   localStorage.setItem('apiBaseUrl', getApiBaseUrl());
