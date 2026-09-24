@@ -1,198 +1,94 @@
-# PESKAS | Management Platform
+# Peskas Management Platform
 
-A scalable web platform for managing KoboToolbox survey data — validating submissions, tracking enumerator performance, downloading data, and exploring it interactively — with multi-survey support and centralized management.
+A website where survey teams check the quality of fish landing data, follow how data collectors are doing, and download the data.
 
-## Features
+Live at https://validation.peskas.org (sign-in required).
 
-- **Data Validation Interface** - Review and validate survey submissions with filtering and status updates
-- **Enumerator Performance Dashboard** - Track submission quality, error rates, and trends with interactive charts
-- **Data Download** - Preview and export permission-filtered landings data as CSV from the PeSKAS API
-- **Data Academy** - Five interactive R lessons that run entirely in the browser (quarto-live + webR), teaching non-coders to filter, summarise and chart their own data
-- **Multi-Survey Support** - Manage multiple surveys across different KoboToolbox servers
-- **Role-Based Access Control** - Admin and user roles with survey-level permissions
-- **Airtable Integration** - Centralized user and survey management with automated GitHub Actions sync
-- **MongoDB-First Architecture** - Fast performance with MongoDB as single source of truth
+## What it is
 
-## Tech Stack
+The platform is for fisheries officers and survey coordinators in Kenya, Mozambique, Zanzibar and Timor-Leste who run landing surveys. It is available in English, Portuguese and Swahili. Accounts are created by the Peskas team or a platform administrator; you cannot sign up yourself. The first time you sign in, use "Forgot password" with the email address on your account to choose a password. Each account sees only the surveys it has been given.
 
-- **Frontend**: React 18 + TypeScript + Vite + React Router v7 + TanStack Table v8
-- **Backend**: Express.js + MongoDB + Vercel Serverless Functions
-- **UI Framework**: Tabler Core (Bootstrap-based)
-- **Charts**: Highcharts
-- **Data Pipeline**: R scripts for KoboToolbox data processing
+## What you can do
 
-## Quick Start
+- Review landing records that the automatic quality checks have flagged, and approve or reject them.
+- See how each enumerator is doing: how many records they submit and how often those records are flagged.
+- Preview and download the landing data you have access to, validated or raw, as a CSV file.
+- Learn to explore that data with R, a free data analysis tool, in five short Data Academy lessons that run in the browser, with nothing to install.
+- Send feedback or ask the Peskas team for help from any page.
 
-### Prerequisites
+## Where the data comes from
 
-- Node.js 18+
-- MongoDB instance
-- KoboToolbox account(s)
-- (Optional) Airtable base for centralized management
+Enumerators record landings with KoboToolbox. Each country's Peskas data pipeline downloads those records, runs quality checks on them and sends the results here: every 2 days for Kenya, Mozambique and Timor-Leste, every 4 days for Zanzibar. When you approve or reject a record, the decision is also saved in KoboToolbox, where the pipeline reads it on its next run. Downloads and Data Academy lessons use landing data from the [Peskas Fishery Data API](https://api.peskas.org/docs). User accounts, surveys, districts and species lists are kept in Airtable and copied to the platform once a day.
 
-### Installation
+- **Landing**: a boat's return to shore with its catch, recorded by an enumerator.
+- **Enumerator**: a trained data collector who records landings at landing sites.
+- **KoboToolbox**: the free mobile survey app enumerators use to record landings.
+- **Flag (alert)**: a code the quality checks attach to a record that looks wrong. The same code can mean different things in different surveys.
+
+## Who runs it
+
+WorldFish runs the platform as part of Peskas. For help, write to <peskas.platform@gmail.com> or use the feedback form in the platform.
+
+## Part of Peskas
+
+Peskas is WorldFish's open-source platform for monitoring small-scale fisheries (https://peskas.org).
+
+- [Peskas Zanzibar](https://zanzibar.peskas.org), [Peskas Kenya](https://peskas-dashboard-kenya.vercel.app/en), [Peskas Mozambique](https://peskas-dashboard-mozambique.vercel.app): country dashboards
+- [Peskas Timor-Leste](https://timor.peskas.org): Timor-Leste portal
+- [Peskas Coasts](https://coasts.peskas.org): regional comparison across countries
+- [Peskas Tracks](https://tracks.peskas.org): app for fishers to see their trips and log catches
+- [Peskas Kenya BMU dashboard](https://digitalfisheries.kenya.peskas.org): dashboard for Beach Management Units in Kenya
+- [Peskas Fishery Data API](https://api.peskas.org/docs): programmatic access to landing data
+- Data pipelines: [Kenya](https://github.com/WorldFishCenter/peskas.kenya.data.pipeline), [Zanzibar](https://github.com/WorldFishCenter/peskas.zanzibar.data.pipeline), [Mozambique](https://github.com/WorldFishCenter/peskas.mozambique.data.pipeline), [Timor-Leste](https://github.com/WorldFishCenter/peskas.timor.data.pipeline), [Coasts](https://github.com/WorldFishCenter/peskas.coasts)
+
+## For developers
+
+React 18 + TypeScript + Vite frontend (Tabler UI, Highcharts), Node serverless functions in `api/`, MongoDB.
+
+### How it fits together
+
+```
+KoboToolbox -> country pipelines -> MongoDB validation-* (surveys_flags-*, enumerators_stats-*) -> api/ -> React
+country pipelines -> Peskas Fishery Data API -> lib/peskas-api.js -> Data Download and Data Academy
+Airtable -> scripts/sync_* (daily) -> MongoDB (countries, districts, taxa, surveys, users)
+status changes -> MongoDB, optionally KoboToolbox -> read back by the pipelines on their next run
+```
+
+- MongoDB is the only store the pages read. The platform never calls KoboToolbox while a page loads.
+- Each survey has its own `surveys_flags-{asset_id}` and `enumerators_stats-{asset_id}` collections, written by the country pipelines. The pipelines live in their own repos; you cannot run or fix them here.
+- Airtable is where users, surveys, districts, species and countries are managed. Access is set by `permissions.surveys` on each user: an admin with an empty list sees every survey, anyone else sees only the surveys listed.
+
+### Setup
+
+Requirements: Node.js 18 or later, a MongoDB database written by the pipelines (`validation-dev` for development), and Quarto with R only if you edit Data Academy lessons.
 
 ```bash
-# Install dependencies
 npm install
-
-# Copy environment template
-cp .env.example .env
-
-# Configure environment variables (see below)
-# Edit .env with your MongoDB URI, JWT secret, etc.
-
-# Create first admin user
-node scripts/create_first_admin.js
-
-# Start development servers (frontend + backend)
-npm run dev
+cp .env.example .env   # then fill it in
+npm run dev            # frontend on :3000, API on :3001
 ```
 
-### Environment Variables
+[.env.example](.env.example) lists the variables. `PESKAS_API_KEY` is needed for Data Download and the Data Academy. The Airtable sync needs `AIRTABLE_TOKEN` and `AIRTABLE_BASE_ID`. Accounts come from Airtable through `npm run sync:users`; there is no sign-up.
 
-Required variables in `.env`:
+### Main commands
 
-```env
-# MongoDB
-MONGODB_VALIDATION_URI=mongodb+srv://...
-MONGODB_VALIDATION_DB=validation-dev
+- `npm run dev`: frontend (Vite) and API (`server/dev.js`) together. `npm run server` starts only the local API server; production does not use it.
+- `npm run lint` and `npm run build`: the main checks.
+- `npm test`: a handful of standalone checks listed in `package.json`. There is no test framework; everything else is checked with lint, build and the running app.
+- `npm run render:lessons`: renders the Data Academy lessons from `data-explorer/*.qmd` into `public/data-explorer/lessons/`. Commit the rendered HTML, because Vercel has no Quarto or R. If it fails with `MissingEnvVarsError`, run `cd data-explorer && quarto render .`.
+- `npm run sync:all`: copies Airtable into MongoDB in the order countries, districts, taxa, surveys, users (users last, because their permissions point at districts and surveys). Each step also runs alone: `sync:countries`, `sync:districts`, `sync:taxa`, `sync:surveys`, `sync:users`.
+- `npm run ensure:indexes`: adds the indexes the pages need to each survey collection (`npm run ensure:indexes -- --dry-run` to preview).
 
-# JWT Authentication
-JWT_SECRET=<generate with: node -e "console.log(require('crypto').randomBytes(32).toString('hex'))">
-JWT_EXPIRY=7d
+Every user-facing string goes into all three languages under `public/locales/{en,pt,sw}/` in the same change.
 
-# Server
-PORT=3001
-NODE_ENV=development
+### Production
 
-# Airtable (optional, for sync scripts)
-AIRTABLE_TOKEN=...
-AIRTABLE_BASE_ID=...
-```
+Vercel builds the frontend and deploys `api/` as serverless functions from `main` ([vercel.json](vercel.json)). `server/dev.js` mounts the same handlers for local development, so a new endpoint must be added there too. The Airtable sync runs daily at 02:00 UTC in [.github/workflows/sync-airtable.yml](.github/workflows/sync-airtable.yml) and can be started by hand from the Actions tab.
 
-## Development Commands
+### Releases
 
-```bash
-# Development (recommended - runs both frontend and backend)
-npm run dev
+Add a `# Management Platform X.Y.Z` block at the top of [NEWS.md](NEWS.md). On a push to `main`, [.github/workflows/release.yaml](.github/workflows/release.yaml) turns that block into a GitHub release.
 
-# Frontend only
-npm run dev:frontend
+### AI-assisted work
 
-# Backend only
-npm run dev:backend
-
-# Production build
-npm run build
-
-# Start production server
-npm run server
-
-# Code quality
-npm run lint
-npm run format
-```
-
-## Management Scripts
-
-All management scripts are in the `scripts/` directory:
-
-```bash
-# User Management
-node scripts/create_first_admin.js         # Create admin user (interactive)
-node scripts/create_admin_simple.js        # Create admin user (CLI args)
-node scripts/delete_user.js                # Delete user by username
-
-# Survey Configuration (R scripts)
-Rscript scripts/list_surveys.R             # List all surveys
-Rscript scripts/update_single_survey.R     # Configure one survey
-Rscript scripts/update_all_surveys.R       # Batch configure all surveys
-
-# Performance
-node scripts/add_performance_indexes.cjs   # Add MongoDB indexes for optimization
-```
-
-### Automated Airtable Sync
-
-User and survey management is automatically synced from Airtable using **GitHub Actions**.
-
-- **📅 Schedule**: Daily at 2:00 AM UTC (automated)
-- **🎮 Manual Trigger**: Via GitHub Actions UI, CLI, or npm scripts
-- **🔄 Sync Order**: Districts → Surveys → Users
-- **✅ Features**: Retry logic, error handling, audit logs, Slack notifications
-
-**Quick Start**:
-1. Configure GitHub Secrets: `MONGODB_VALIDATION_URI`, `MONGODB_VALIDATION_DB`,
-   `AIRTABLE_BASE_ID`, `AIRTABLE_TOKEN`, and optionally `SLACK_WEBHOOK_URL`
-2. Test: Actions → Run workflow → Select sync type
-3. View logs and artifacts in GitHub Actions tab
-
-**Manual Sync Options**:
-```bash
-npm run sync:all        # Sync everything (recommended)
-npm run sync:users      # Sync only users
-npm run sync:surveys    # Sync only surveys
-npm run sync:districts  # Sync only districts
-```
-
-The workflow itself is [.github/workflows/sync-airtable.yml](.github/workflows/sync-airtable.yml);
-a longer setup walkthrough is kept locally in `.github/AIRTABLE_SYNC_SETUP.md` (not committed).
-
-## Architecture
-
-### Data Flow
-
-```
-KoboToolbox → R Pipeline → MongoDB → Portal
-                    ↓           ↑
-                    └─ Validation Status Updates
-```
-
-1. **R Pipeline** fetches submissions from KoboToolbox, calculates alerts, writes to MongoDB
-2. **Portal** reads all data from MongoDB (no KoboToolbox API calls during page loads)
-3. **Validation Updates** sync to both MongoDB (primary) and KoboToolbox (secondary)
-
-### MongoDB Collections
-
-- `users` - User accounts with roles and permissions
-- `surveys` - Survey metadata and KoboToolbox configurations
-- `countries` - Country metadata for multi-country support
-- `surveys_flags-{asset_id}` - Submission data per survey
-- `enumerators_stats-{asset_id}` - Pre-computed statistics per survey
-
-### Project Structure
-
-```
-peskas-management-platform/
-├── src/                    # Frontend React application
-│   ├── components/         # React components
-│   ├── api/               # API client hooks
-│   └── types/             # TypeScript definitions
-├── server/                # Express backend server
-├── api/                   # Vercel serverless functions
-├── scripts/               # Management and migration scripts
-├── docs/                  # Detailed documentation
-└── public/                # Static assets
-```
-
-## Documentation
-
-- [CLAUDE.md](CLAUDE.md) - Project guide: commands, architecture, conventions
-- [NEWS.md](NEWS.md) - Version history and changelog
-
-A local `docs/` folder holds the longer working material — architecture reference, decision log,
-lesson authoring guide, data download notes. It is deliberately **not** version-controlled, so it is
-only present on a maintainer's machine.
-
-## Deployment
-
-The application is configured for deployment on Vercel:
-
-1. Connect your GitHub repository to Vercel
-2. Configure environment variables in Vercel dashboard
-3. Deploy
-
-Build configuration and function limits are in [vercel.json](vercel.json); required environment
-variables are documented in [.env.example](.env.example).
-
+[CLAUDE.md](CLAUDE.md) and `.claude/rules/` hold the conventions and known traps.

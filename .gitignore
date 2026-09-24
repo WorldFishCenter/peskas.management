@@ -40,15 +40,15 @@ Thumbs.db
 graphify-out/
 
 # Documentation
-# Only CLAUDE.md, README.md and NEWS.md are committed. Everything else is local working material:
-# docs/ (architecture reference, decision log, authoring guides) and .claude/ (rules, agents,
-# commands) stay out of the repo on purpose.
+# Only CLAUDE.md, README.md, NEWS.md and the Claude Code team config (.claude/rules, .claude/commands)
+# are committed. docs/ (architecture reference, decision log, authoring guides) stays local on purpose.
 *.md
 !CLAUDE.md
 !/README.md
 !/NEWS.md
+!.claude/rules/*.md
+!.claude/commands/*.md
 docs/
-.claude/
 .todo
 .agents/
 
@@ -67,3 +67,6 @@ docs/
 scripts/*
 !scripts/sync_*
 !scripts/ensure_survey_indexes.cjs
+# Claude Code (personal)
+.claude/settings.local.json
+CLAUDE.local.md

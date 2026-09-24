@@ -2,12 +2,12 @@
  * GET /api/surveys/:asset_id/alert-codes
  *
  * Get survey-specific alert code definitions
- * Requires authentication
+ * Requires authentication and access to the survey
  */
 
-const { getDb } = require('../../../lib/db');
-const { sendDetailedError, setCorsHeaders } = require('../../../lib/response');
+const { sendDetailedError, sendForbidden, setCorsHeaders } = require('../../../lib/response');
 const { withMiddleware, authenticateUser } = require('../../../lib/middleware');
+const { getAccessibleSurveys } = require('../../../lib/filter-permissions');
 
 async function handler(req, res) {
   // Set CORS headers
@@ -32,16 +32,10 @@ async function handler(req, res) {
         new Error('asset_id parameter is required'), req, 400);
     }
 
-    const database = await getDb();
-    if (!database) {
-      return sendDetailedError(res, 'GET /api/surveys/:asset_id/alert-codes - Database connection',
-        new Error('Database connection not available'), req, 500);
-    }
-
-    const survey = await database.collection('surveys').findOne({ asset_id });
+    const accessibleSurveys = await getAccessibleSurveys(req.user);
+    const survey = accessibleSurveys.find(s => s.asset_id === asset_id);
     if (!survey) {
-      return sendDetailedError(res, 'GET /api/surveys/:asset_id/alert-codes - Survey not found',
-        new Error(`Survey with asset_id '${asset_id}' not found in database`), req, 404);
+      return sendForbidden(res, 'You do not have access to the requested survey.');
     }
 
     // Return survey-specific alert codes if available, otherwise return default codes

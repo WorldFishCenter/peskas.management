@@ -1,116 +1,65 @@
-# CLAUDE.md
+# peskas-validation
 
-Guidance for Claude Code working in this repository. **Version 2.6.0.**
+React + Express management portal for KoboToolbox landing surveys: validation, enumerator
+performance, data download and the Data Academy (interactive R lessons). Users are fishery managers
+and NGO staff in Kenya, Mozambique and Zanzibar. Ecosystem context (other repos, data flow,
+cross-repo contracts): see PESKAS.md, loaded via CLAUDE.local.md.
 
-<!-- Keep this file under ~200 lines: it loads into every session, and length costs adherence.
-     Detail belongs in .claude/rules/ (path-scoped, loads only for matching files), in docs/, or in
-     a skill. Before adding a line, ask: "would removing this cause a mistake?" -->
-
-## What this is
-
-A React + Express + MongoDB platform for KoboToolbox survey data: validation, enumerator
-performance tracking, data download, and an interactive Data Academy. Users are fishery managers
-and NGO staff in Kenya, Mozambique and Zanzibar.
-
-- **Reference**: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — endpoints, collections, scripts, env, deployment
-- **Changelog**: [NEWS.md](NEWS.md) · **Lesson authoring**: [docs/LESSON_AUTHORING_GUIDE.md](docs/LESSON_AUTHORING_GUIDE.md)
-- **Path-scoped rules** load automatically when you touch matching files:
-  `.claude/rules/backend.md` (`api/`, `server/`, `lib/`), `.claude/rules/frontend.md` (`src/`),
-  `.claude/rules/data-explorer.md` (lessons)
-- **Decision history**: [docs/DECISIONS.md](docs/DECISIONS.md) — *why* past changes were made. Add an
-  entry with `/document` when a change alters a pattern.
-
-`docs/` and `.claude/` are **gitignored working material**, present locally but not in the repo. If
-a link above resolves to nothing, you are in a fresh clone — everything you strictly need is here.
+Path-scoped rules load when you touch matching files: `.claude/rules/backend.md` (`api/`,
+`server/`, `lib/`, `scripts/`), `frontend.md` (`src/`), `data-explorer.md` (lessons). `docs/` is
+gitignored local material (`docs/ARCHITECTURE.md` for the endpoint and collection inventory,
+`docs/DECISIONS.md` for past decisions, updated with `/document`); a fresh clone has none of it.
 
 ## Commands
 
-```bash
-npm run dev              # frontend + backend together (use this)
-npm run dev:frontend     # Vite on :3000
-npm run dev:backend      # Express (server/dev.js) on $PORT, default 3001
-npm run build            # tsc + vite build
-npm run lint             # ESLint + type checking   (lint:fix to autofix)
-npm run format           # Prettier                 (format:check to verify)
-npm run render:lessons   # Quarto → public/data-explorer/lessons/
-npm run sync:all         # Airtable → MongoDB (districts → surveys → users)
-```
+- `npm run dev` runs frontend (Vite, :3000) and backend (`server/dev.js`, :3001) together.
+- `npm run lint` (tsc for frontend and backend + ESLint) and `npm run build` are the main checks.
+- **There is no test framework.** `npm test` runs a handful of standalone `assert`-based files
+  (listed in `package.json`, each runnable with `node`/`tsx`). Everything else is verified with
+  lint, build, and exercising the change in the running app. Say so when a change is untested.
+- `npm run render:lessons` renders the Quarto lessons. If it fails with `MissingEnvVarsError`, use
+  `cd data-explorer && quarto render .` (the root script validates `.env`, which a render doesn't need).
+- `npm run sync:all` syncs Airtable to Mongo in the order countries -> districts -> taxa ->
+  surveys -> users (`scripts/sync_all_from_airtable.js`); `.github/workflows/sync-airtable.yml`
+  runs it on a schedule. Users go last because their permissions reference districts and surveys.
 
-**There is no test framework** — no Jest, no Vitest. `npm test` runs a handful of standalone
-`assert`-based checks over the logic that earned one (`npm test` is in `package.json`; each file
-is runnable on its own with `node`). Everything else is verified with `npm run build` and
-`npm run lint`, and by exercising the change in the running app. Don't claim a change is tested
-when it isn't.
-
-If `npm run render:lessons` fails with `MissingEnvVarsError`, use
-`cd data-explorer && quarto render .` — the root script validates `.env`, which a render doesn't need.
-
-## Architecture in brief
+## Architecture
 
 ```
-KoboToolbox → R pipeline (external) → MongoDB → api/ → React
+R pipelines -> Mongo validation-* (surveys_flags-*, enumerators_stats-*) --\
+                                                                           +-> api/ -> React
+country pipelines -> peskas-api-* bucket -> peskas-api (lib/peskas-api.js) /
+Airtable -> scripts/sync_* -> Mongo (countries, districts, taxa, surveys, users)
 ```
 
-MongoDB is the single source of truth. An **external R pipeline** writes submissions and alert
-flags; the portal reads from Mongo and does not call KoboToolbox during page load.
+- Validation, enumerator stats and admin screens read Mongo (`lib/db.js`,
+  `MONGODB_VALIDATION_URI` / `MONGODB_VALIDATION_DB`). Data download and the Data Academy read
+  landings from peskas-api through `lib/peskas-api.js` (`api/data-download/*`).
+- The portal never calls KoboToolbox during page load. Status changes update Mongo, optionally push
+  to KoboToolbox, and are reconciled on the pipeline's next run.
+- **Multi-survey**: each survey has its own `surveys_flags-{asset_id}` and
+  `enumerators_stats-{asset_id}` collections. Per-survey KoboToolbox config and alert-code meanings
+  live in the `surveys` collection, so alert codes differ between surveys.
+- **Permissions**: `permissions.surveys` on the user gates everything. An admin with an empty array
+  has access to all surveys; a regular user sees only what is listed.
+- Production is `api/` (Vercel serverless); `server/dev.js` mounts the same handlers for local dev.
 
-**Multi-survey**: each survey gets its own collections, `surveys_flags-{asset_id}` and
-`enumerators_stats-{asset_id}`. Per-survey KoboToolbox config and alert-code meanings live in the
-`surveys` collection, so alert codes differ between surveys.
+## Rules
 
-**Permissions**: `permissions.surveys` on the user gates everything. **An admin with an empty array
-has access to all surveys**; a regular user sees only what is listed. Never trust a client-supplied
-survey or country id — filter through `lib/filter-permissions.js`.
-
-**Production is `api/` (Vercel serverless); `server/dev.js` mounts those same handlers for local
-dev. `server/index.js` was deleted** — do not reference or recreate it.
-
-## Rules that apply everywhere
-
-- **Adding an `api/` endpoint means also adding `mountServerlessFunction(...)` to `server/dev.js`**,
-  or it will work in production and 404 locally.
-- **`await logAuditEvent(db, event)` before sending the response.** Vercel freezes the context after
-  `res.json()`, so fire-and-forget audit writes are silently lost.
-- **Validate `asset_id` before interpolating a collection name**, and ObjectIds before querying.
-- **Use `lib/` helpers** (`response.js`, `db.js`, `middleware.js`, `helpers.js`) rather than
-  re-implementing responses, connections or guards.
-- **Tabler UI first.** Check <https://tabler.io/docs> for a component or utility class before
-  writing custom CSS. Icons: `@tabler/icons-react` only.
-- **Every user-facing string is translated into all three languages** (en/pt/sw) in the same change.
-- **Never mutate state** — build new arrays/objects.
-- **Keep files under ~400 lines**; extract when one grows past that.
-- TypeScript strict mode is on. Don't reach for `any`.
-
-## Working style
-
-**Think before coding.** State assumptions; if a request has two readings, say so instead of
-silently picking one. If a simpler approach exists, push back.
-
-**Simplicity first.** The minimum code that solves the problem — no speculative abstractions, no
-configurability nobody asked for, no error handling for impossible states. If 200 lines could be 50,
-write 50.
-
-**Surgical changes.** Touch only what the task requires. Don't reformat or "improve" adjacent code,
-and match the existing style even where you'd choose differently. Clean up orphans *your* change
-created; if you spot unrelated dead code, mention it rather than deleting it.
-
-**Verify, don't assume.** Define what "done" looks like before starting, then check it. State what
-you actually ran and what it returned. If something is unverified — a browser-only behaviour, a
-flow you couldn't exercise — say so plainly instead of implying it was checked.
-
-**Persist.** Finish the whole task, not the easy parts. If something is genuinely blocked, complete
-everything else and say explicitly what was left and why.
+- Add every user-facing string to all three languages (en/pt/sw) under `public/locales/` in the
+  same change.
+- Keep files under ~400 lines; extract when one grows past that.
+- Release: add a `# Management Platform X.Y.Z` block at the top of `NEWS.md`; a push to `main`
+  turns it into a GitHub release (`.github/workflows/release.yaml`).
 
 ## Gotchas
 
-- **Data Academy lesson source is base64** inside `<script type="webr-N-contents">` — grepping the
-  rendered HTML cannot tell you what a learner sees. Decode it. Rendered HTML is **committed**
-  (Vercel has no Quarto/R), so re-render after editing any `.qmd`.
-- **`docs/*.md` was invisible to git** until `!docs/**` was added to `.gitignore`; `*.md` still
-  catches new root-level markdown, so re-check if you add a doc there.
-- The R pipeline is **external to this repo** — it is not something you can run or fix here.
-
-<!-- Note on .claude/: agents/ and commands/ are discovered by Claude Code automatically and need
-     no documentation here. skills/ currently holds plain .md files with no SKILL.md, so nothing in
-     it auto-loads; contexts/ is not a Claude Code feature. The hooks in ~/.cursor/settings.json are
-     Cursor's, not Claude Code's — assume no automatic checks run, and verify your own work. -->
+- **Data Academy lesson source is base64** inside `<script type="webr-N-contents">`, so grepping
+  the rendered HTML cannot tell you what a learner sees. Rendered HTML is committed (Vercel has no
+  Quarto/R): re-render after editing any `.qmd`.
+- `*.md` is gitignored with explicit exceptions (`CLAUDE.md`, `README.md`, `NEWS.md`,
+  `.claude/rules/`, `.claude/commands/`). A new markdown file anywhere else is silently untracked.
+- The `data-explorer/*.qmd` lessons hard-code landings column names, and `lib/peskas-api.js` /
+  `api/data-download/*` hard-code its filter and scope parameters (`catch_taxon`, `gaul_2`,
+  `trip_info`/`catch_info`). A column or parameter change in peskas-api breaks them.
+- The R pipelines are external to this repo; you cannot run or fix them here.
