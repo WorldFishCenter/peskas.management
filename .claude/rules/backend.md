@@ -63,7 +63,7 @@ module.exports = withMiddleware(handler, authenticateUser);          // admin: a
 | Permission filtering | `filter-permissions.js`: `getAccessibleSurveys(user, countryId)`, `getAccessibleCountries(user)`, `getAccessibleDistricts(user, countryId, surveyId)`, `getAccessibleTaxa(countries, countryId)` (takes the output of `getAccessibleCountries`), `resolveDownloadRequests(user, query)` |
 | Audit | `audit-logger.js`: `logAuditEvent`, `ensureAuditIndexes` |
 | Helpers | `helpers.js`: `validateObjectId`, `sanitizeCSV`, `getSurveyFlagsCollection`, `getEnumeratorStatsCollection`, `escapeRegex`, `isValidDate`, `validatePassword` |
-| External APIs | `peskas-api.js` (PeSKAS API), `api-utils.js` (KoboToolbox), `email.js` (SES), `rate-limit.js` |
+| External APIs | `peskas-api.js` (Peskas API), `api-utils.js` (KoboToolbox), `email.js` (SES), `rate-limit.js` |
 
 Both `server/dev.js` and `api/` import from `lib/`; put shared logic there, not in one caller.
 

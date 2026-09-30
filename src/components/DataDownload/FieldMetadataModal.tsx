@@ -1,7 +1,7 @@
 /**
  * FieldMetadataModal Component
  *
- * Modal dialog that displays comprehensive field documentation from PeSKAS API metadata.
+ * Modal dialog that displays comprehensive field documentation from Peskas API metadata.
  * Shows field descriptions, data types, units, examples, and other metadata.
  *
  * Features:

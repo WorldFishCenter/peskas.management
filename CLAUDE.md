@@ -2,7 +2,7 @@
 
 React + Express management portal for KoboToolbox landing surveys: validation, enumerator
 performance, data download and the Data Academy (interactive R lessons). Users are fishery managers
-and NGO staff in Kenya, Mozambique and Zanzibar. Ecosystem context (other repos, data flow,
+and NGO staff in Kenya, Mozambique, Zanzibar and Timor-Leste. Ecosystem context (other repos, data flow,
 cross-repo contracts): loaded by the `peskas` Claude Code plugin (repo `peskas-context`).
 
 Path-scoped rules load when you touch matching files: `.claude/rules/backend.md` (`api/`,

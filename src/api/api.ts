@@ -523,7 +523,7 @@ export const useFetchDownloadMetadata = (countryId?: string, surveyId?: string) 
 };
 
 /**
- * Hook to fetch field metadata from PeSKAS API
+ * Hook to fetch field metadata from Peskas API
  *
  * Fetches comprehensive field documentation including descriptions, data types,
  * units, examples, and categorical values. Used to enhance UX with field

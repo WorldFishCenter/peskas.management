@@ -70,7 +70,7 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
   const selectedTaxon = taxa.find((tx) => tx.code === taxonCode);
 
   // The hint invites typing a species name, but anything that isn't a 3-letter code is rejected
-  // by the PeSKAS filter validator with an English-only message. Catch it here instead, in the
+  // by the Peskas filter validator with an English-only message. Catch it here instead, in the
   // user's language. Only when we actually have a list to check against — if the species list
   // failed to load, a user who knows the code must still be able to use it.
   const taxonInvalid = taxonCode !== '' && taxa.length > 0 && !selectedTaxon;

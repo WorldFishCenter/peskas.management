@@ -8,7 +8,7 @@ paths:
 # Data Academy rules (interactive R lessons)
 
 Five numbered lessons + a printable recipe card, teaching non-coders (fishery officers in Kenya,
-Mozambique, Zanzibar) to read, filter, summarise and chart their own landings data. R runs **in the
+Mozambique, Zanzibar, Timor-Leste) to read, filter, summarise and chart their own landings data. R runs **in the
 browser** via quarto-live + webR — there is no server-side R.
 
 **Read `docs/LESSON_AUTHORING_GUIDE.md` before writing or editing a lesson.** (`docs/` is gitignored; the guide exists only in local checkouts.) It holds the audience

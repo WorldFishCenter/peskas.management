@@ -15,7 +15,7 @@ export const FEEDBACK_FORM_EMBED_URL =
 
 export function getSupportMailtoHref(): string {
   const query = new URLSearchParams({
-    subject: 'PeSKAS management platform – support request'
+    subject: 'Peskas Management Platform – support request'
   });
   return `mailto:${SUPPORT_EMAIL}?${query.toString()}`;
 }

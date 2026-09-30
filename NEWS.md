@@ -1,3 +1,12 @@
+# Management Platform 2.8.1
+
+The Data Explorer has a new name.
+
+## Changed
+
+- **Data Explorer is now Data Academy.** The navigation item, catalog title, lesson pages and
+  audit-log label use the new name in English, Portuguese and Swahili.
+
 # Management Platform 2.8.0
 
 Peskas users can now write to the team without leaving the portal.
@@ -10,7 +19,7 @@ Peskas users can now write to the team without leaving the portal.
 
   The form covers the **whole system**, not only this portal: the public country dashboards, the
   Tracks app, the open data exports, and the validation, enumerator performance, data download and
-  Data Academy screens here. Report a figure that looks wrong, ask what a column means, ask for
+  Data Explorer screens here. Report a figure that looks wrong, ask what a column means, ask for
   help with validation work, propose a new feature, or propose adding or changing a quality flag.
   Questions are as welcome as bug reports, and you can write in English, Portuguese or Swahili.
 
@@ -20,11 +29,6 @@ Peskas users can now write to the team without leaving the portal.
   is left for you to answer rather than guessed: administrators and users working across several
   countries pick their own, and a country the portal does not recognise is never stamped onto your
   message.
-
-## Changed
-
-- **Data Explorer is now Data Academy.** The navigation item, catalog title, lesson pages and
-  audit-log label use the new name in English, Portuguese and Swahili.
 
 ## Notes
 

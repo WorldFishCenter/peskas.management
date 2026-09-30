@@ -120,7 +120,7 @@ export interface PreviewResponse {
 }
 
 /**
- * Field description from PeSKAS API metadata
+ * Field description from Peskas API metadata
  *
  * Comprehensive documentation for a single data field including type,
  * unit, examples, and semantic information.
