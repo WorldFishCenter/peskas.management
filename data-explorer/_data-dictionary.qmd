@@ -27,7 +27,7 @@ places its own warnings around it, so anything but the tables would fight with t
 
 | Column | Meaning |
 |--------|---------|
-| `survey_organization` | The organization that runs the survey: `WCS` or `KEFS` (Kenya), `ZAFIRI` (Zanzibar), `ADNAP` (Mozambique), `MAF` (Timor-Leste) |
+| `survey_organization` | The organization that runs the survey: `WCS` or `KEFS` (Kenya), `ZAFIRI` (Zanzibar), `DINAPA` (Mozambique), `MAF` (Timor-Leste) |
 | `survey_id` | The survey this record came from |
 | `trip_id` | The fishing trip. Rows sharing a `trip_id` are from the same trip |
 | `n_catch` | How many kinds of catch that trip recorded |
