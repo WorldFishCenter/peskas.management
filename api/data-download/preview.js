@@ -16,7 +16,7 @@
  * @queryparam {string} survey_id - Survey asset_id (currently NOT sent to PeSKAS API - see limitation)
  * @queryparam {string} gaul_2 - District GAUL code (single value only, e.g., "12345")
  * @queryparam {string} status - Data validation status: "validated" or "raw" (default: "validated")
- * @queryparam {string} catch_taxon - FAO ASFIS species code (3 letters, e.g., "SKJ", "YFT")
+ * @queryparam {string} catch_taxon - FAO ASFIS species code(s), comma-separated (e.g., "SKJ" or "SKJ,YFT")
  * @queryparam {string} scope - Data scope: "trip_info" or "catch_info" (optional)
  *
  * Known Limitations:
@@ -34,7 +34,7 @@
  */
 
 const { withMiddleware, authenticateUser } = require('../../lib/middleware');
-const { fetchLandingsPreviewMerged, PeskasAPIError } = require('../../lib/peskas-api');
+const { fetchLandingsPreviewMerged, normalizeTaxa, PeskasAPIError } = require('../../lib/peskas-api');
 const { resolveDownloadRequests, DownloadPermissionError } = require('../../lib/filter-permissions');
 const {
   sendSuccess,
@@ -79,10 +79,11 @@ async function handler(req, res) {
     if (scope && scope.trim()) {
       sharedFilters.scope = scope.trim();
     }
-    if (catch_taxon && catch_taxon.trim()) {
-      // Upper-cased here, not at the API boundary: this is the value the audit log and the
+    const taxa = normalizeTaxa(catch_taxon);
+    if (taxa) {
+      // Normalized here, not at the API boundary: this is the value the audit log and the
       // "filters applied" echo also read, and PeSKAS matches the code case-sensitively.
-      sharedFilters.catch_taxon = catch_taxon.trim().toUpperCase();
+      sharedFilters.catch_taxon = taxa;
     }
 
     // PeSKAS API requires lowercase country codes

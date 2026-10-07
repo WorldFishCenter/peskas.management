@@ -22,7 +22,7 @@
     "sync:districts": "node scripts/sync_districts_from_airtable.cjs",
     "sync:taxa": "node scripts/sync_taxa_from_airtable.cjs",
     "ensure:indexes": "node scripts/ensure_survey_indexes.cjs",
-    "test": "tsx src/utils/countryMetadata.test.ts && tsx src/utils/taxon.test.ts && node lib/submissions-query.test.js && node scripts/sync_taxa_from_airtable.test.cjs"
+    "test": "tsx src/utils/countryMetadata.test.ts && tsx src/utils/taxon.test.ts && node lib/submissions-query.test.js && node lib/peskas-api.test.js && node scripts/sync_taxa_from_airtable.test.cjs"
   },
   "dependencies": {
     "@aws-sdk/client-ses": "^3.972.0",

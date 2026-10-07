@@ -66,14 +66,27 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
     [taxa]
   );
 
-  const taxonCode = toTaxonCode(filters.catch_taxon || '');
-  const selectedTaxon = taxa.find((tx) => tx.code === taxonCode);
+  // `catch_taxon` is the comma-separated list the Peskas API takes. Leading "ABC," segments are
+  // picked codes, shown as chips; whatever follows is the text still being typed. Typed text
+  // thus stays part of the filter — one code typed and previewed works as it always did — and may
+  // hold commas of its own, as species names do ("Sharks, rays, skates").
+  const [, pickedTaxa = '', taxonText = ''] =
+    /^((?:[a-z]{3},)*)(.*)$/i.exec(filters.catch_taxon || '') || [];
+  const taxonCodes = [...new Set(pickedTaxa.toUpperCase().split(',').filter(Boolean))];
+  const taxaByCode = useMemo(() => new Map(taxa.map((tx) => [tx.code, tx])), [taxa]);
+  const typedCode = toTaxonCode(taxonText);
+  const typedTaxon = taxaByCode.get(typedCode);
+
+  // Only checked against the list when we actually have one — if the species list failed to
+  // load, a user who knows the code must still be able to use it.
+  const isKnownTaxon = (code: string) =>
+    taxa.length > 0 ? taxaByCode.has(code) : /^[A-Z]{3}$/.test(code);
 
   // The hint invites typing a species name, but anything that isn't a 3-letter code is rejected
   // by the Peskas filter validator with an English-only message. Catch it here instead, in the
-  // user's language. Only when we actually have a list to check against — if the species list
-  // failed to load, a user who knows the code must still be able to use it.
-  const taxonInvalid = taxonCode !== '' && taxa.length > 0 && !selectedTaxon;
+  // user's language. A picked code can also stop being known when the country changes under it.
+  const taxonInvalid =
+    taxonCodes.some((code) => !isKnownTaxon(code)) || (typedCode !== '' && !isKnownTaxon(typedCode));
 
   const isPreviewDisabled = isLoading || loadingMetadata || !hasAccess || taxonInvalid;
 
@@ -86,6 +99,9 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
       setFilters({ ...filters, [field]: value });
     }
   };
+
+  const setTaxon = (codes: string[], text: string) =>
+    handleChange('catch_taxon', codes.map((code) => `${code},`).join('') + text);
 
   // Survey is single-select with an explicit "All forms" option so it can be cleared.
   const handleSelectAllSurveys = () => {
@@ -173,21 +189,52 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
           className={`form-control${taxonInvalid ? ' is-invalid' : ''}`}
           list="catch-taxon-options"
           placeholder={t('filters.catchTaxonPlaceholder')}
-          value={filters.catch_taxon || ''}
-          onChange={(e) => handleChange('catch_taxon', taxonInput(e.target.value))}
+          value={taxonText}
+          onChange={(e) => {
+            // A picked option carries the label separator and becomes a chip at once. Typed text
+            // waits for Enter or a comma: a species name can begin with three letters that are
+            // themselves a code.
+            const value = e.target.value;
+            if (value !== taxonInput(value)) setTaxon([...taxonCodes, toTaxonCode(value)], '');
+            else setTaxon(taxonCodes, value);
+          }}
+          onKeyUp={(e) => {
+            if (e.key === 'Enter' && typedCode && isKnownTaxon(typedCode)) {
+              setTaxon([...taxonCodes, typedCode], '');
+            }
+          }}
         />
         <datalist id="catch-taxon-options">{taxonOptions}</datalist>
+        {taxonCodes.length > 0 && (
+          <div className="d-flex flex-wrap gap-1 mt-2">
+            {taxonCodes.map((code) => {
+              const tx = taxaByCode.get(code);
+              return (
+                <span
+                  key={code}
+                  className={`badge ${isKnownTaxon(code) ? 'bg-blue-lt' : 'bg-red-lt'}`}
+                  title={tx && [tx.scientific_name, tx.family].filter(Boolean).join(' · ')}
+                >
+                  <strong>{code}</strong>
+                  {tx && <span className="ms-1">{tx.english_name || tx.scientific_name}</span>}
+                  <button
+                    type="button"
+                    className="btn-close ms-1"
+                    aria-label={t('filters.catchTaxonRemove', { code })}
+                    onClick={() => setTaxon(taxonCodes.filter((c) => c !== code), taxonText)}
+                  />
+                </span>
+              );
+            })}
+          </div>
+        )}
         {taxonInvalid ? (
           <div className="invalid-feedback d-block">{t('filters.catchTaxonInvalid')}</div>
-        ) : selectedTaxon ? (
+        ) : typedTaxon ? (
           <small className="form-hint text-secondary">
-            <strong>{selectedTaxon.code}</strong> — {selectedTaxon.english_name}
-            {selectedTaxon.scientific_name && (
-              <em className="ms-1">({selectedTaxon.scientific_name})</em>
-            )}
-            {selectedTaxon.family && (
-              <span className="badge bg-blue-lt ms-2">{selectedTaxon.family}</span>
-            )}
+            <strong>{typedTaxon.code}</strong> — {typedTaxon.english_name}
+            {typedTaxon.scientific_name && <em className="ms-1">({typedTaxon.scientific_name})</em>}
+            {typedTaxon.family && <span className="badge bg-blue-lt ms-2">{typedTaxon.family}</span>}
           </small>
         ) : (
           <small

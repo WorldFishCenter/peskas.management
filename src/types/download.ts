@@ -21,7 +21,7 @@ export interface DownloadFilters {
   /** Data validation status */
   status: 'validated' | 'raw';
 
-  /** FAO ASFIS species code (optional) */
+  /** FAO ASFIS species codes, comma-separated (e.g. 'SKJ,YFT'); empty = all species */
   catch_taxon?: string;
 
   /** Data scope - trip information, catch information, or all data (optional) */

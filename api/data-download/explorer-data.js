@@ -26,7 +26,7 @@
  */
 
 const { withMiddleware, authenticateUser } = require('../../lib/middleware');
-const { fetchLandingsPreviewMerged, PeskasAPIError } = require('../../lib/peskas-api');
+const { fetchLandingsPreviewMerged, normalizeTaxa, PeskasAPIError } = require('../../lib/peskas-api');
 const {
   resolveDownloadRequests,
   getAccessibleSurveys,
@@ -87,10 +87,11 @@ async function handler(req, res) {
     if (scope && scope.trim()) {
       sharedFilters.scope = scope.trim();
     }
-    if (catch_taxon && catch_taxon.trim()) {
-      // Upper-cased here, not at the API boundary: this is the value the audit log and the
+    const taxa = normalizeTaxa(catch_taxon);
+    if (taxa) {
+      // Normalized here, not at the API boundary: this is the value the audit log and the
       // "filters applied" echo also read, and PeSKAS matches the code case-sensitively.
-      sharedFilters.catch_taxon = catch_taxon.trim().toUpperCase();
+      sharedFilters.catch_taxon = taxa;
     }
 
     // PeSKAS API requires lowercase country codes
