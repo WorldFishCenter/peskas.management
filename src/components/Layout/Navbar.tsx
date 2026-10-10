@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../Auth/AuthContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import FeedbackModal from './FeedbackModal';
+import { PeskasLogo, PeskasMark } from '../common/PeskasLogo';
 import { FEEDBACK_FORM_EMBED_URL, getFeedbackFormUrl } from '../../constants/support';
 
 const Navbar: React.FC = () => {
@@ -21,8 +22,11 @@ const Navbar: React.FC = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
         <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-          <Link to="/">
-            {t('brand').split('|')[0]} | <span className="text-muted">{t('brand').split('|')[1]?.trim()}</span>
+          {/* The full logo, or the mark alone on a phone; with the product name it reads "Peskas Management Platform". */}
+          <Link to="/" className="d-flex align-items-center gap-2">
+            <PeskasLogo className="peskas-brand-logo" style={{ height: 28, width: 'auto' }} />
+            <PeskasMark className="peskas-brand-mark" style={{ height: 28, width: 'auto' }} />
+            <span className="peskas-brand-name fs-3 fw-medium text-muted">{t('brand')}</span>
           </Link>
         </h1>
         <div className="navbar-nav flex-row order-md-last">

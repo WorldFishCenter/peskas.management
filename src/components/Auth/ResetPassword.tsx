@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { IconLock, IconArrowLeft, IconCheck } from '@tabler/icons-react';
 import LanguageSwitcher from '../Layout/LanguageSwitcher';
+import { PeskasLogo } from '../common/PeskasLogo';
 import { validateResetToken, resetPassword } from '../../api/auth';
 
 const ResetPassword: React.FC = () => {
@@ -90,7 +91,7 @@ const ResetPassword: React.FC = () => {
         <div className="container container-tight py-4">
           <div className="text-center mb-4">
             <Link to="/">
-              <img src="https://upload.wikimedia.org/wikipedia/en/9/9e/WorldFish_logo.svg" height="36" alt="WorldFish" />
+              <PeskasLogo style={{ height: 36, width: 'auto' }} />
             </Link>
           </div>
           <div className="card card-md">
@@ -127,7 +128,7 @@ const ResetPassword: React.FC = () => {
         <div className="container container-tight py-4">
           <div className="text-center mb-4">
             <Link to="/">
-              <img src="https://upload.wikimedia.org/wikipedia/en/9/9e/WorldFish_logo.svg" height="36" alt="WorldFish" />
+              <PeskasLogo style={{ height: 36, width: 'auto' }} />
             </Link>
           </div>
           <div className="card card-md">
@@ -153,7 +154,7 @@ const ResetPassword: React.FC = () => {
       <div className="container container-tight py-4">
         <div className="text-center mb-4">
           <Link to="/">
-            <img src="https://upload.wikimedia.org/wikipedia/en/9/9e/WorldFish_logo.svg" height="36" alt="WorldFish" />
+            <PeskasLogo style={{ height: 36, width: 'auto' }} />
           </Link>
         </div>
         <div className="card card-md">

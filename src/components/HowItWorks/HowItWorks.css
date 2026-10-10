@@ -57,7 +57,7 @@
 
   /* Add page title at top */
   .page::before {
-    content: "PESKAS Management Platform - User Guide";
+    content: "Peskas Management Platform - User Guide";
     display: block;
     font-size: 1.5rem;
     font-weight: bold;

@@ -5,6 +5,7 @@ import { useAuth } from './AuthContext';
 import { useI18n } from '../../i18n/I18nContext';
 import { requestPasswordReset } from '../../api/auth';
 import { SUPPORT_EMAIL, getSupportMailtoHref } from '../../constants/support';
+import { PeskasLogo } from '../common/PeskasLogo';
 
 const Login: React.FC = () => {
   const { t } = useTranslation('auth');
@@ -90,7 +91,7 @@ const Login: React.FC = () => {
       <div className="container-tight py-4">
         <div className="text-center mb-4">
           <a href="." className="navbar-brand navbar-brand-autodark">
-            <img src="https://upload.wikimedia.org/wikipedia/en/9/9e/WorldFish_logo.svg" height="36" alt="Peskas" />
+            <PeskasLogo style={{ height: 36, width: 'auto' }} />
           </a>
         </div>
         <div className="card card-md" tabIndex={-1} style={{ outline: 'none' }}>
