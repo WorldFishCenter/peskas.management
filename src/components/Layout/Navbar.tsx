@@ -22,11 +22,13 @@ const Navbar: React.FC = () => {
           <span className="navbar-toggler-icon"></span>
         </button>
         <h1 className="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
-          {/* The full logo, or the mark alone on a phone; with the product name it reads "Peskas Management Platform". */}
+          {/* The full logo, or the mark alone on a phone; with the product name it reads "Peskas Management Platform".
+              24px and 14px, a step below the brand kit's 28px and 16px: at 28px the Swahili and Portuguese menus
+              wrap their labels at 1280-1440px wide. */}
           <Link to="/" className="d-flex align-items-center gap-2">
-            <PeskasLogo className="peskas-brand-logo" style={{ height: 28, width: 'auto' }} />
-            <PeskasMark className="peskas-brand-mark" style={{ height: 28, width: 'auto' }} />
-            <span className="peskas-brand-name fs-3 fw-medium text-muted">{t('brand')}</span>
+            <PeskasLogo className="peskas-brand-logo" style={{ height: 24, width: 'auto' }} />
+            <PeskasMark className="peskas-brand-mark" style={{ height: 24, width: 'auto' }} />
+            <span className="peskas-brand-name fs-4 fw-medium text-muted">{t('brand')}</span>
           </Link>
         </h1>
         <div className="navbar-nav flex-row order-md-last">
