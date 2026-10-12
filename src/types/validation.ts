@@ -1,3 +1,14 @@
+/**
+ * One catch that raised an alert, as the pipeline stores it: the catch's position in the form
+ * (1 for the first species entered), the alert code, the species and the value recorded.
+ */
+export interface AlertCatch {
+  catch_number: number;
+  code: string;
+  species?: string;
+  value?: string;
+}
+
 export interface Submission {
   submission_id: string;
   submission_date: string;
@@ -9,6 +20,8 @@ export interface Submission {
   validated_at: string | null;
   alert_flag?: string;
   alert_flags?: string[];
+  /** Where each catch-level alert was raised. Absent when no catch was flagged. */
+  alert_catches?: AlertCatch[];
   asset_id?: string;
   survey_name?: string;
   survey_country?: string;

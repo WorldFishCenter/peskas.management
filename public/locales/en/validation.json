@@ -43,6 +43,8 @@
     "submittedByLabel": "Submitted By:",
     "statusLabel": "Status:",
     "alertFlagsLabel": "Alert Flags:",
+    "flaggedCatchesLabel": "Flagged Catches:",
+    "catchNumber": "Catch {{number}}",
     "lastValidatedLabel": "Last Validated:",
     "codeHeader": "Code",
     "descriptionHeader": "Description"
@@ -102,7 +104,7 @@
       "8": "Price per kg exceeds threshold",
       "9": "Catch per unit effort exceeds maximum (30kg per hour per fisher)",
       "10": "Revenue per unit effort exceeds threshold",
-      "11": "Total fishers is reported as 0 while catch is greater than 0",
+      "11": "Number of fishers is reported as 0 on a fishing trip",
       "12": "Trip duration is unreasonable (negative or longer than 5 days)",
       "13": "Form submission date is earlier than landing date recorded"
     },

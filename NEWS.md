@@ -1,3 +1,18 @@
+# Management Platform 2.9.0
+
+Reviewers can see which catch raised an alert.
+
+## New Features
+
+- **Flagged catches in the submission details.** When an alert comes from one catch, such as a
+  length outside the species' range, the details panel lists the catch's number in the form, its
+  species and the value recorded, so the reviewer goes straight to it. Mozambique surveys first.
+
+## Changed
+
+- **Alert 11 on Mozambique's DINAPA survey** now reads "number of fishers is 0 on a fishing
+  trip", whatever was caught, matching what the pipeline checks.
+
 # Management Platform 2.8.1
 
 The Data Explorer has a new name.

@@ -43,6 +43,8 @@
     "submittedByLabel": "Imewasilishwa na:",
     "statusLabel": "Hali:",
     "alertFlagsLabel": "Bendera za Tahadhari:",
+    "flaggedCatchesLabel": "Mavuno Yenye Tahadhari:",
+    "catchNumber": "Mavuno Na. {{number}}",
     "lastValidatedLabel": "Ilithibitishwa Mwisho:",
     "codeHeader": "Msimbo",
     "descriptionHeader": "Maelezo"
@@ -102,7 +104,7 @@
       "8": "Bei kwa kilo inazidi kizingiti",
       "9": "Uvuvi kwa jitihada (CPUE) unazidi kiwango cha juu (30kg kwa saa kwa mvuvi)",
       "10": "Mapato kwa jitihada (RPUE) yanazidi kizingiti",
-      "11": "Jumla ya wavuvi imeripotiwa kuwa 0 ilhali nyara ni zaidi ya 0",
+      "11": "Idadi ya wavuvi imeripotiwa kuwa 0 katika safari ya uvuvi",
       "12": "Muda wa safari si wa kawaida (ni hasi au ni zaidi ya siku 5)",
       "13": "Tarehe ya kutuma fomu ni ya mapema kuliko tarehe ya kutua iliyorekodiwa"
     },

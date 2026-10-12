@@ -555,6 +555,21 @@ const ValidationTable: React.FC = () => {
                       </div>
                     </div>
                   )}
+                  {selectedRow?.alert_catches && selectedRow.alert_catches.length > 0 && (
+                    <div className="datagrid-item">
+                      <div className="datagrid-title">{t('table.flaggedCatchesLabel')}</div>
+                      <div className="datagrid-content">
+                        {selectedRow.alert_catches.map(c => (
+                          <div key={`${c.catch_number}-${c.code}`}>
+                            <span className="badge bg-red-lt text-red me-1">{c.code}</span>
+                            {t('table.catchNumber', { number: c.catch_number })}
+                            {c.species && `: ${c.species}`}
+                            {c.value && `, ${c.value}`}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   <div className="datagrid-item">
                     <div className="datagrid-title">{t('table.lastValidatedLabel')}</div>
                     <div className="datagrid-content">

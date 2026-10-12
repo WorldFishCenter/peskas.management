@@ -43,6 +43,8 @@
     "submittedByLabel": "Submetido por:",
     "statusLabel": "Estado:",
     "alertFlagsLabel": "Sinalizadores de Alerta:",
+    "flaggedCatchesLabel": "Capturas Sinalizadas:",
+    "catchNumber": "Captura {{number}}",
     "lastValidatedLabel": "Última Validação:",
     "codeHeader": "Código",
     "descriptionHeader": "Descrição"
@@ -102,7 +104,7 @@
       "8": "Preço por kg excede o limite",
       "9": "Captura por unidade de esforço excede o máximo (30kg por hora por pescador)",
       "10": "Receita por unidade de esforço excede o limite",
-      "11": "Total de pescadores reportado é 0 enquanto a captura é maior que 0",
+      "11": "Número de pescadores reportado é 0 numa viagem de pesca",
       "12": "A duração da viagem é irrealista (negativa ou superior a 5 dias)",
       "13": "A data de submissão do formulário é anterior à data de desembarque registada"
     },

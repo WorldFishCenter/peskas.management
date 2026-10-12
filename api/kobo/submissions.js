@@ -26,6 +26,9 @@ const PROJECTION = {
   validated_at: 1,
   validated_by: 1,
   alert_flag: 1,
+  // Which catch raised each alert. Sent only when there is one: most submissions store an
+  // empty list, and sending it on every row would add about a megabyte to the largest survey.
+  alert_catches: { $cond: [{ $eq: ['$alert_catches', []] }, '$$REMOVE', '$alert_catches'] },
   _id: 0
 };
 
