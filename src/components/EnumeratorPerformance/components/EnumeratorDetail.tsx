@@ -11,6 +11,7 @@ interface EnumeratorDetailProps {
   enumerators: EnumeratorData[];
   detailActiveTab: DetailTabType;
   setDetailActiveTab: (tab: DetailTabType) => void;
+  describeAlert: (code: string) => string | undefined;
 }
 
 const EnumeratorDetail: React.FC<EnumeratorDetailProps> = ({
@@ -19,7 +20,8 @@ const EnumeratorDetail: React.FC<EnumeratorDetailProps> = ({
   setSelectedEnumerator,
   enumerators,
   detailActiveTab,
-  setDetailActiveTab
+  setDetailActiveTab,
+  describeAlert
 }) => {
   const { t } = useTranslation('enumerators');
 
@@ -99,7 +101,7 @@ const EnumeratorDetail: React.FC<EnumeratorDetailProps> = ({
                     <div className="d-flex justify-content-between">
                       <div>
                         <div className="subheader">{t('totalSubmissionsLabel')}</div>
-                        <div className="h1 mt-2">{selectedEnumeratorData.filteredTotal || selectedEnumeratorData.totalSubmissions}</div>
+                        <div className="h1 mt-2">{selectedEnumeratorData.filteredTotal ?? selectedEnumeratorData.totalSubmissions}</div>
                       </div>
                       <div>
                         <span className="badge bg-primary text-white p-2">
@@ -110,7 +112,7 @@ const EnumeratorDetail: React.FC<EnumeratorDetailProps> = ({
                     <div className="d-flex mt-3">
                       <div>{t('submissionRate')}</div>
                       <div className="ms-auto text-green">
-                        {Math.round((selectedEnumeratorData.filteredTotal || selectedEnumeratorData.totalSubmissions) / (enumerators.reduce((sum, e) => sum + (e.filteredTotal || e.totalSubmissions), 0) / enumerators.length) * 100)}%
+                        {Math.round((selectedEnumeratorData.filteredTotal ?? selectedEnumeratorData.totalSubmissions) / (enumerators.reduce((sum, e) => sum + (e.filteredTotal ?? e.totalSubmissions), 0) / enumerators.length) * 100)}%
                         <svg xmlns="http://www.w3.org/2000/svg" className="icon ms-1" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                           <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                           <path d="M3 17l6 -6l4 4l8 -8"></path>
@@ -139,10 +141,10 @@ const EnumeratorDetail: React.FC<EnumeratorDetailProps> = ({
                     <div className="d-flex mt-3">
                       <div>{t('cleanSubmissions')}</div>
                       <div className="ms-auto text-green">
-                        {(selectedEnumeratorData.filteredTotal || selectedEnumeratorData.totalSubmissions) -
-                         (selectedEnumeratorData.filteredAlertsCount || selectedEnumeratorData.submissionsWithAlerts)}
+                        {(selectedEnumeratorData.filteredTotal ?? selectedEnumeratorData.totalSubmissions) -
+                         (selectedEnumeratorData.filteredAlertsCount ?? selectedEnumeratorData.submissionsWithAlerts)}
                         <span className="text-muted ms-2">
-                          {t('pagination.of', { ns: 'common' })} {selectedEnumeratorData.filteredTotal || selectedEnumeratorData.totalSubmissions}
+                          {t('pagination.of', { ns: 'common' })} {selectedEnumeratorData.filteredTotal ?? selectedEnumeratorData.totalSubmissions}
                         </span>
                       </div>
                     </div>
@@ -167,6 +169,7 @@ const EnumeratorDetail: React.FC<EnumeratorDetailProps> = ({
             <h4 className="mb-3">{t('alertTypesFor')}{selectedEnumeratorData.name}</h4>
             <AlertDistributionChart
               selectedEnumeratorData={selectedEnumeratorData}
+              describeAlert={describeAlert}
             />
           </div>
         </div>

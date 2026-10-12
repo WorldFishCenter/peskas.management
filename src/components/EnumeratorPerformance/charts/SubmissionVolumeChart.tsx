@@ -26,7 +26,7 @@ const SubmissionVolumeChart: React.FC<SubmissionVolumeChartProps> = React.memo((
 
   const chartOptions: Highcharts.Options = useMemo(() => {
     const sortedEnumerators = [...enumerators].sort(
-      (a, b) => (b.filteredTotal || b.totalSubmissions) - (a.filteredTotal || a.totalSubmissions)
+      (a, b) => (b.filteredTotal ?? b.totalSubmissions) - (a.filteredTotal ?? a.totalSubmissions)
     );
     return {
       chart: {
@@ -94,7 +94,7 @@ const SubmissionVolumeChart: React.FC<SubmissionVolumeChartProps> = React.memo((
       series: [{
         name: t('charts.submissions'),
         type: 'bar',
-        data: sortedEnumerators.map(e => e.filteredTotal || e.totalSubmissions)
+        data: sortedEnumerators.map(e => e.filteredTotal ?? e.totalSubmissions)
       }],
       legend: { enabled: false },
       credits: { enabled: false }

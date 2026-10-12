@@ -32,15 +32,12 @@ const normalizeSubmissionData = (
   item: Record<string, unknown>,
   survey: AccessibleSurvey | undefined
 ): Submission => {
-  const alertFlag = typeof item.alert_flag === 'string' ? item.alert_flag : '';
-
   return {
     ...(item as unknown as Submission),
     submitted_by: item.submitted_by ? String(item.submitted_by) : '',
     validation_status: (item.validation_status as string) || 'validation_status_on_hold',
     validated_at: (item.validated_at as string) ?? null,
-    alert_flag: alertFlag,
-    alert_flags: alertFlag ? alertFlag.split(', ') : [],
+    alert_flag: typeof item.alert_flag === 'string' ? item.alert_flag : '',
     asset_id: survey?.asset_id,
     survey_name: survey?.name,
     survey_country: survey?.country_id,

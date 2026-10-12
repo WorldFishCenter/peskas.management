@@ -137,7 +137,7 @@ const ValidationTable: React.FC = () => {
 
   // Alert codes for the survey these rows came from. The API names it directly, so this no
   // longer keeps a second filtered copy of every row just to work out which survey they are.
-  const { surveyAlertCodes } = useContextualAlertCodes(loadedSurvey);
+  const { surveyAlertCodes, describeAlert } = useContextualAlertCodes(loadedSurvey);
 
   const columns = useMemo<ColumnDef<Submission, unknown>[]>(
     () => [
@@ -218,20 +218,7 @@ const ValidationTable: React.FC = () => {
       {
         accessorKey: 'alert_flag',
         header: () => t('columns.alert'),
-        cell: info => {
-          const row = info.row.original;
-          const alertFlag = info.getValue() as string;
-          
-          if (alertFlag && alertFlag.trim() !== '') {
-            return (
-              <AlertBadge 
-                alertFlag={alertFlag} 
-                alertFlags={row.alert_flags} 
-              />
-            );
-          }
-          return <span className="text-muted">—</span>;
-        },
+        cell: info => <AlertBadge alertFlag={info.getValue() as string} describeAlert={describeAlert} />,
         enableColumnFilter: true,
       },
       {
@@ -250,7 +237,7 @@ const ValidationTable: React.FC = () => {
         enableSorting: true,
       },
     ],
-    [t]
+    [t, describeAlert]
   );
 
   const table = useReactTable({
@@ -551,7 +538,7 @@ const ValidationTable: React.FC = () => {
                     <div className="datagrid-item">
                       <div className="datagrid-title">{t('table.alertFlagsLabel')}</div>
                       <div className="datagrid-content">
-                        <AlertBadge alertFlag={selectedRow.alert_flag} alertFlags={selectedRow.alert_flags} />
+                        <AlertBadge alertFlag={selectedRow.alert_flag} describeAlert={describeAlert} />
                       </div>
                     </div>
                   )}
@@ -561,7 +548,9 @@ const ValidationTable: React.FC = () => {
                       <div className="datagrid-content">
                         {selectedRow.alert_catches.map(c => (
                           <div key={`${c.catch_number}-${c.code}`}>
-                            <span className="badge bg-red-lt text-red me-1">{c.code}</span>
+                            <span className="me-1">
+                              <AlertBadge alertFlag={c.code} describeAlert={describeAlert} />
+                            </span>
                             {t('table.catchNumber', { number: c.catch_number })}
                             {c.species && `: ${c.species}`}
                             {c.value && `, ${c.value}`}

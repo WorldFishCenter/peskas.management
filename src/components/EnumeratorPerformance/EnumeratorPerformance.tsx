@@ -56,7 +56,7 @@ const EnumeratorPerformance: React.FC = () => {
     return survey?.country_id || '';
   }, [selectedSurvey, accessibleSurveys]);
 
-  const { surveyAlertCodes } = useContextualAlertCodes(loadedSurvey);
+  const { surveyAlertCodes, describeAlert } = useContextualAlertCodes(loadedSurvey);
 
   // Process raw data from the hook (already filtered to selected survey by backend)
   const processedData = useMemo<EnumeratorData[]>(() => {
@@ -210,8 +210,8 @@ const EnumeratorPerformance: React.FC = () => {
   const selectedEnumeratorData = enumerators.find(e => e.name === selectedEnumerator);
 
   // Calculate summary statistics based on filtered data
-  const totalSubmissions = enumerators.reduce((sum, e) => sum + (e.filteredTotal || e.totalSubmissions), 0);
-  const totalAlerts = enumerators.reduce((sum, e) => sum + (e.filteredAlertsCount || e.submissionsWithAlerts), 0);
+  const totalSubmissions = enumerators.reduce((sum, e) => sum + (e.filteredTotal ?? e.totalSubmissions), 0);
+  const totalAlerts = enumerators.reduce((sum, e) => sum + (e.filteredAlertsCount ?? e.submissionsWithAlerts), 0);
   const avgErrorRate = totalSubmissions > 0 ? (totalAlerts / totalSubmissions) * 100 : 0;
 
   // Find the best enumerator using a weighted quality score
@@ -261,6 +261,7 @@ const EnumeratorPerformance: React.FC = () => {
             enumerators={enumerators}
             onEnumeratorSelect={setSelectedEnumerator}
             uniqueDates={uniqueDates}
+            describeAlert={describeAlert}
           />
 
           {/* Detailed enumerator analysis section */}
@@ -272,6 +273,7 @@ const EnumeratorPerformance: React.FC = () => {
               enumerators={enumerators}
               detailActiveTab={detailActiveTab}
               setDetailActiveTab={setDetailActiveTab}
+              describeAlert={describeAlert}
             />
           )}
 

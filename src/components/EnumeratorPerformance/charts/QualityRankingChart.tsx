@@ -107,7 +107,7 @@ const QualityRankingChart: React.FC<QualityRankingChartProps> = React.memo(({
     }, {
       name: t('charts.submissions'),
       type: 'bar',
-      data: sortedEnumerators.map(e => e.filteredTotal || e.totalSubmissions),
+      data: sortedEnumerators.map(e => e.filteredTotal ?? e.totalSubmissions),
       color: chartColors.info,
       yAxis: 1,
       opacity: 0.8,

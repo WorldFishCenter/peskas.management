@@ -2,13 +2,8 @@ import React, { useState, useMemo } from 'react';
 import { IconAlertTriangle } from '@tabler/icons-react';
 import { getCountryFlag, getCountryName } from '../../utils/countryMetadata';
 import { useTranslation } from 'react-i18next';
-
-interface SurveyAlertCodes {
-  surveyName: string;
-  surveyCountry: string;
-  assetId: string;
-  alertCodes: Record<string, string>;
-}
+import { describeAlertCode, displayAlertCode } from '../../utils/alertCodes';
+import type { SurveyAlertCodes } from '../../hooks/useContextualAlertCodes';
 
 interface AlertGuideModalProps {
   onClose: () => void;
@@ -16,7 +11,7 @@ interface AlertGuideModalProps {
 }
 
 const AlertGuideModal: React.FC<AlertGuideModalProps> = ({ onClose, surveyAlertCodes }) => {
-  const { t } = useTranslation('validation');
+  const { t, i18n } = useTranslation('validation');
   const [selectedSurvey, setSelectedSurvey] = useState<string>(
     surveyAlertCodes.length > 0 ? surveyAlertCodes[0].assetId : ''
   );
@@ -121,27 +116,15 @@ const AlertGuideModal: React.FC<AlertGuideModalProps> = ({ onClose, surveyAlertC
                   </tr>
                 </thead>
                 <tbody>
-                  {Object.entries(currentSurvey.alertCodes).map(([code, description]) => {
-                    // Try survey-specific translation first, then generic, then database value
-                    // Priority: surveys.{assetId}.{code} > alertCodes.{code} > database value
-                    const surveySpecificKey = `surveys.${currentSurvey.assetId}.${code}`;
-                    const genericKey = `alertCodes.${code}`;
-
-                    // Check if survey-specific translation exists
-                    const surveySpecific = t(surveySpecificKey);
-                    const isSurveySpecificFound = surveySpecific !== surveySpecificKey;
-
-                    // If survey-specific not found, try generic
-                    const generic = !isSurveySpecificFound ? t(genericKey) : null;
-                    const isGenericFound = generic && generic !== genericKey;
-
-                    const translatedDescription = isSurveySpecificFound ? surveySpecific : (isGenericFound ? generic : description);
+                  {Object.keys(currentSurvey.alertCodes).map(code => {
+                    const translatedDescription =
+                      describeAlertCode(i18n, currentSurvey.assetId, code, currentSurvey.alertCodes);
 
                     return (
                       <tr key={code}>
                         <td>
                           <span className="badge bg-red-lt text-red fs-5">
-                            {code}
+                            {displayAlertCode(code)}
                           </span>
                         </td>
                         <td className="text-wrap">

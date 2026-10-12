@@ -4,16 +4,19 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { IconMoodSmile } from '@tabler/icons-react';
 import { EnumeratorData } from '../types';
-import { baseTooltipConfig, wrapTooltip, formatTooltipHeader } from '../utils/chartConfig';
+import { baseTooltipConfig, wrapTooltip, formatTooltipHeader, formatTooltipNote } from '../utils/chartConfig';
 import { tallyAlertFlags } from '../utils/dataUtils';
 
 interface AlertDistributionChartProps {
   enumerators: EnumeratorData[];
+  /** What an alert code means, shown in its tooltip. */
+  describeAlert: (code: string) => string | undefined;
 }
 
 // PERFORMANCE FIX: Wrap in React.memo to prevent unnecessary re-renders
 const AlertDistributionChart: React.FC<AlertDistributionChartProps> = React.memo(({
-  enumerators
+  enumerators,
+  describeAlert
 }) => {
   const { t } = useTranslation('enumerators');
 
@@ -38,6 +41,7 @@ const AlertDistributionChart: React.FC<AlertDistributionChartProps> = React.memo
       formatter: function(this: Highcharts.Point) {
         return wrapTooltip(
           formatTooltipHeader(`${t('charts.alert')}${this.name}`) +
+          formatTooltipNote(describeAlert(String(this.name))) +
           `<div style="display: flex; justify-content: space-between; margin: 4px 0;">
             <span style="color: #666;">${t('charts.count')}</span>
             <span style="font-weight: 600;">${this.y}</span>
@@ -88,7 +92,7 @@ const AlertDistributionChart: React.FC<AlertDistributionChartProps> = React.memo
       data: alertData
     }],
     credits: { enabled: false }
-  }), [alertData, totalAlerts, t]);
+  }), [alertData, totalAlerts, t, describeAlert]);
 
   // Empty state with friendly message
   if (alertData.length === 0) {
@@ -109,7 +113,8 @@ const AlertDistributionChart: React.FC<AlertDistributionChartProps> = React.memo
 }, (prevProps, nextProps) => {
   // Custom comparison: only re-render if enumerators data actually changed
   // Deep comparison on enumerators array to prevent unnecessary chart re-renders
-  return JSON.stringify(prevProps.enumerators) === JSON.stringify(nextProps.enumerators);
+  return JSON.stringify(prevProps.enumerators) === JSON.stringify(nextProps.enumerators) &&
+    prevProps.describeAlert === nextProps.describeAlert;
 });
 
 export default AlertDistributionChart; 

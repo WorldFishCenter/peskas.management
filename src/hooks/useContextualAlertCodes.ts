@@ -1,6 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { getApiBaseUrl } from '../utils/apiConfig';
+import { describeAlertCode } from '../utils/alertCodes';
 import { AccessibleSurvey } from '../types/validation';
 
 const API_BASE_URL = getApiBaseUrl();
@@ -14,6 +16,8 @@ interface SurveyAlertCodes {
 
 interface AlertCodesResult {
   surveyAlertCodes: SurveyAlertCodes[];
+  /** One code's description in the reader's language; undefined when it has none. */
+  describeAlert: (code: string) => string | undefined;
   isLoading: boolean;
 }
 
@@ -33,6 +37,7 @@ export const useContextualAlertCodes = (
   const [alertCodes, setAlertCodes] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
 
+  const { i18n } = useTranslation('validation');
   const assetId = survey?.asset_id;
 
   useEffect(() => {
@@ -72,7 +77,13 @@ export const useContextualAlertCodes = (
     }];
   }, [survey, alertCodes]);
 
-  return { surveyAlertCodes, isLoading };
+  // Called when a popover opens or a tooltip shows, so it reads the language current then.
+  const describeAlert = useCallback(
+    (code: string) => (assetId ? describeAlertCode(i18n, assetId, code, alertCodes) : undefined),
+    [i18n, assetId, alertCodes]
+  );
+
+  return { surveyAlertCodes, describeAlert, isLoading };
 };
 
 export type { SurveyAlertCodes };

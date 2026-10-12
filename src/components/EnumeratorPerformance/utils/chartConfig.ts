@@ -87,6 +87,20 @@ export const formatTooltipHeader = (title: string): string => {
   return `<div style="font-weight: 600; font-size: 14px; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #eee;">${title}</div>`;
 };
 
+const HTML_ESCAPES: Record<string, string> = {
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+};
+
+/**
+ * A line of explanation under the header, such as what an alert code means. Escaped, since the
+ * text can come from the database, and wrapped, since it can be a full sentence.
+ */
+export const formatTooltipNote = (text: string | undefined): string => {
+  if (!text) return '';
+  const escaped = text.replace(/[&<>"']/g, c => HTML_ESCAPES[c]);
+  return `<div style="width: 240px; white-space: normal; color: #444; margin-bottom: 8px;">${escaped}</div>`;
+};
+
 /**
  * Format a simple stat row without bullet
  */

@@ -19,7 +19,6 @@ export interface Submission {
   /** Null until the submission has been validated — the pipeline omits the field entirely. */
   validated_at: string | null;
   alert_flag?: string;
-  alert_flags?: string[];
   /** Where each catch-level alert was raised. Absent when no catch was flagged. */
   alert_catches?: AlertCatch[];
   asset_id?: string;
@@ -29,16 +28,19 @@ export interface Submission {
 
 /**
  * One row from `/enumerators-stats`: a count of submissions sharing an enumerator, a day and an
- * alert code. The endpoint groups in MongoDB rather than returning raw submissions — the
- * dashboard only ever renders counts, and the largest survey collapses from 52,102 documents to
- * 9,582 of these.
+ * alert list. The endpoint groups in MongoDB rather than returning raw submissions — the
+ * dashboard only ever renders counts.
  */
 export interface EnumeratorDailyStat {
   submitted_by: string;
   /** `YYYY-MM-DD` (UTC), or null when the stored date could not be parsed. */
   date: string | null;
-  /** Absent means no alert — the endpoint folds missing, `"NA"` and `""` into one absent field. */
+  /**
+   * The submissions' alert codes as stored ("3, 7"); absent means no alert — the endpoint folds
+   * missing, `"NA"` and `""` into one absent field.
+   */
   alert_flag?: string;
+  /** Submissions, each counted once whatever its number of alert codes. */
   count: number;
 }
 

@@ -9,6 +9,7 @@ import {
   columnTooltipConfig,
   wrapTooltip,
   formatTooltipHeader,
+  formatTooltipNote,
   formatTooltipRow,
   formatStatRow,
   chartColors
@@ -17,11 +18,14 @@ import { tallyAlertFlags } from '../utils/dataUtils';
 
 interface AlertDistributionChartProps {
   selectedEnumeratorData: EnumeratorData;
+  /** What an alert code means, shown in its tooltip. */
+  describeAlert: (code: string) => string | undefined;
 }
 
 // PERFORMANCE FIX: Wrap in React.memo to prevent unnecessary re-renders
 export const AlertDistributionChart: React.FC<AlertDistributionChartProps> = React.memo(({
-  selectedEnumeratorData
+  selectedEnumeratorData,
+  describeAlert
 }) => {
   const { t } = useTranslation('enumerators');
 
@@ -49,6 +53,7 @@ export const AlertDistributionChart: React.FC<AlertDistributionChartProps> = Rea
 
         return wrapTooltip(
           formatTooltipHeader(`${t('charts.alertType')}${this.name}`) +
+          formatTooltipNote(describeAlert(String(this.name))) +
           formatTooltipRow(this.color, t('charts.count'), this.y ?? 0, '') +
           formatStatRow(t('charts.percentage'), `${(this.percentage ?? 0).toFixed(1)}%`) +
           formatStatRow(t('charts.outOfTotal'), alertText)
@@ -76,7 +81,7 @@ export const AlertDistributionChart: React.FC<AlertDistributionChartProps> = Rea
     }],
     legend: { enabled: false },
     credits: { enabled: false }
-  }), [alertData, totalAlerts, t]);
+  }), [alertData, totalAlerts, t, describeAlert]);
 
   // Empty state
   if (alertData.length === 0) {
@@ -95,7 +100,8 @@ export const AlertDistributionChart: React.FC<AlertDistributionChartProps> = Rea
 
   return <HighchartsReact highcharts={Highcharts} options={chartOptions} />;
 }, (prevProps, nextProps) => {
-  return JSON.stringify(prevProps.selectedEnumeratorData) === JSON.stringify(nextProps.selectedEnumeratorData);
+  return JSON.stringify(prevProps.selectedEnumeratorData) === JSON.stringify(nextProps.selectedEnumeratorData) &&
+    prevProps.describeAlert === nextProps.describeAlert;
 });
 
 interface EnumeratorTrendChartProps {

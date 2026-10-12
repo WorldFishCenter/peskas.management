@@ -18,6 +18,7 @@ interface ChartTabsProps {
   enumerators: EnumeratorData[];
   onEnumeratorSelect: (name: string) => void;
   uniqueDates: string[];
+  describeAlert: (code: string) => string | undefined;
 }
 
 const ChartTabs: React.FC<ChartTabsProps> = ({
@@ -25,7 +26,8 @@ const ChartTabs: React.FC<ChartTabsProps> = ({
   setActiveTab,
   enumerators,
   onEnumeratorSelect,
-  uniqueDates
+  uniqueDates,
+  describeAlert
 }) => {
   const { t } = useTranslation('enumerators');
 
@@ -120,7 +122,7 @@ const ChartTabs: React.FC<ChartTabsProps> = ({
 
           {/* Error Distribution Tab */}
           <div className={`tab-pane ${activeTab === 'errors' ? 'active show' : ''}`}>
-            <AlertDistributionChart enumerators={enumerators} />
+            <AlertDistributionChart enumerators={enumerators} describeAlert={describeAlert} />
           </div>
         </div>
       </div>

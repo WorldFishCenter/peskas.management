@@ -1,3 +1,50 @@
+# Management Platform 2.10.0
+
+Reviewers can see what an alert means without opening the Alert Guide, and alert rates count each
+submission once.
+
+## New Features
+
+- **Alert definitions on hover.** Pointing at an alert badge, in the submissions table or the
+  details panel, or focusing it with the keyboard, opens a popover with what each of its codes
+  means, each code once. The alert charts on the Enumerators page show the same definition in
+  their tooltips.
+
+## Changed
+
+- **Mozambique alert definitions match the pipeline's limits.** Alert 12 is a trip of 0 hours or
+  less, or 60 hours or more (it said "negative or longer than 5 days"). DINAPA's limits are 250
+  buckets (6) and 500 individuals (7), Lurio's 200 individuals (7); all three said otherwise.
+  Lurio's alerts 11, 12 and 13 now have a definition.
+- **Kenya KEFS sub-codes are described.** Badges write them as 5.2 but their definitions are
+  stored as 5_2, so they showed "not described". The Alert Guide now writes them as 5.2 too,
+  and codes 7 and 5.3 are translated into Portuguese and Swahili.
+- **Zanzibar alert definitions match the pipeline and are translated.** Alerts 6 and 7 read 250
+  buckets and 500 individuals (they said 300 and 100). Zanzibar SSF 1.2 has Portuguese and
+  Swahili definitions for the first time, 1.0 and 1.1 gain them for alerts 11 to 13, and 1.2's
+  alert 12 now reads "fishers count or trip duration is zero" (it repeated alert 13).
+- **Alert definitions follow the pipelines' cleanup.** Zanzibar's alert 12 reads "trip duration is
+  zero or negative", since zero fishers is 13's alone, and Kenya's 4.2 reads "> 0 KSH".
+- **The default definitions name no bucket or individual limit.** Limits differ by country, so a
+  survey without its own definitions (and BMU Daily Artisanal 2025) no longer shows 300 and 100.
+- **Definitions say what the checks do.** Alert 2 reads "neither the number of fish nor their
+  weight was recorded": no version of the check looks at size. Kenya's alert 1.1 (no catch outcome
+  and no total catch weight), which the pipeline can raise, has a definition.
+- **Limits are stated.** Alerts 8 and 10 give their limit for Mozambique (2,500 MZN) and Zanzibar
+  (81,420 TZS), and Timor's alerts 6, 17 and 20 give theirs (1,500 USD; 0.25 to 30 USD per kg;
+  200 mm). Timor's definitions are in Portuguese.
+
+## Fixed
+
+- **Alert rates count submissions, not alert codes.** The Enumerators page counted one row per
+  alert code, so a submission with two codes counted as two submissions, both flagged. Totals,
+  daily counts and alert rates now count each submission once; only the alert-type chart counts
+  codes. On production data, survey-wide rates drop by 0.1 to 2.2 points, and some enumerators'
+  by up to 8 (one in Zanzibar 1.2 goes from 27.0% to 18.7%).
+- **A date range with no submissions shows zero.** An enumerator with no submissions, or no
+  alerts, in the chosen range showed their all-time figures in the summary cards, the volume and
+  quality charts and the detail panel.
+
 # Management Platform 2.9.0
 
 Reviewers can see which catch raised an alert.

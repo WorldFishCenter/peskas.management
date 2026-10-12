@@ -41,12 +41,12 @@ async function handler(req, res) {
     // Return survey-specific alert codes if available, otherwise return default codes
     const alertCodes = survey.alert_codes || {
       "1": "A catch was reported, but no taxon was specified",
-      "2": "A taxon was specified, but no information was provided about the number of fish, their size, or their weight",
+      "2": "A taxon was specified, but neither the number of fish nor their weight was recorded",
       "3": "Length is smaller than minimum length threshold for the selected catch taxon",
       "4": "Length exceeds maximum length threshold for the selected catch taxon",
       "5": "Bucket weight exceeds maximum (50kg)",
-      "6": "Number of buckets exceeds maximum (300)",
-      "7": "Number of individuals exceeds maximum (100)",
+      "6": "Number of buckets exceeds maximum",
+      "7": "Number of individuals exceeds maximum",
       "8": "Price per kg exceeds threshold",
       "9": "Catch per unit effort exceeds maximum (30kg per hour per fisher)",
       "10": "Revenue per unit effort exceeds threshold"

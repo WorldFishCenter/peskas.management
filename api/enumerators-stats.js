@@ -9,7 +9,7 @@
 
 const { withMiddleware, authenticateUser } = require('../lib/middleware');
 const { getDb } = require('../lib/db');
-const { getEnumeratorStatsCollection, PLACEHOLDER_ENUMERATORS } = require('../lib/helpers');
+const { getSurveyFlagsCollection, PLACEHOLDER_ENUMERATORS } = require('../lib/helpers');
 const { getAccessibleSurveys } = require('../lib/filter-permissions');
 const { sendSuccess, sendServerError, sendMethodNotAllowed, setCorsHeaders } = require('../lib/response');
 
@@ -87,12 +87,18 @@ async function handler(req, res) {
     // per day, or per alert code. So the grouping happens in MongoDB rather than being shipped raw
     // and grouped in the browser — 52,102 documents collapse to 9,582 rollup rows for the largest
     // survey, measured. Every figure the UI renders is still derivable, because the rollup key is
-    // the full (enumerator, day, alert code) triple.
+    // the full (enumerator, day, alerts) triple.
+    //
+    // Read from the flags collection, one document per submission, so `count` is submissions: an
+    // error rate is flagged submissions over submissions. `enumerators_stats-*` holds one row per
+    // submission per alert code, so a submission with two codes counted as two flagged
+    // submissions there. `alert_flag` is the submission's whole list ("3, 7"); the client splits
+    // it into codes for the alert-type chart.
     //
     // `$convert` rather than a bare `$dateToString`: not every collection is guaranteed to store
     // `submission_date` as a BSON date, and a string would abort the whole pipeline. A row whose
     // date will not parse still counts toward the enumerator's total, it just has no day.
-    const results = await database.collection(getEnumeratorStatsCollection(survey.asset_id))
+    const results = await database.collection(getSurveyFlagsCollection(survey.asset_id))
       .aggregate([
         {
           $match: {

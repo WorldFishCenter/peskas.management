@@ -1,4 +1,5 @@
 import { EnumeratorData, EnumeratorDailyStat } from '../types';
+import { splitAlertCodes } from '../../../utils/alertCodes';
 
 /** Sum the counts of a set of rollup rows. */
 export const sumCounts = (stats: EnumeratorDailyStat[]): number =>
@@ -70,10 +71,14 @@ export const qualityScore = (
 ): number => 100 - (enumerator?.filteredErrorRate ?? enumerator?.errorRate ?? 0);
 
 /**
- * Tally alert flags across one or more enumerators, most frequent first.
+ * Tally alert codes across one or more enumerators, most frequent first.
+ *
+ * A rollup row counts submissions sharing one alert list ("3, 7"), so each code in the list
+ * gains that many: a submission with two codes adds one to each. Every other figure on the page
+ * counts the submission once.
  *
  * Shared by the aggregate alert chart and the single-enumerator one — the former passes the
- * whole list, the latter an array of one. "NA" is the pipeline's marker for no alert.
+ * whole list, the latter an array of one.
  */
 export const tallyAlertFlags = (
   enumerators: EnumeratorData[]
@@ -82,8 +87,9 @@ export const tallyAlertFlags = (
 
   enumerators.forEach(enumerator => {
     (enumerator.filteredStats || enumerator.dailyStats).forEach(stat => {
-      if (stat.alert_flag) {
-        counts[stat.alert_flag] = (counts[stat.alert_flag] || 0) + stat.count;
+      if (!stat.alert_flag) return;
+      for (const code of splitAlertCodes(stat.alert_flag)) {
+        counts[code] = (counts[code] || 0) + stat.count;
       }
     });
   });
