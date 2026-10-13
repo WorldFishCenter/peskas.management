@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   IconSchool,
@@ -6,6 +7,7 @@ import {
   IconLock,
   IconClock,
   IconChecklist,
+  IconSailboat,
 } from '@tabler/icons-react';
 import { lessons, LESSON_BASE_PATH, LESSON_COUNT, lessonNumber } from './lessons';
 
@@ -18,8 +20,8 @@ import { lessons, LESSON_BASE_PATH, LESSON_COUNT, lessonNumber } from './lessons
  * the SPA on purpose so the lesson page can be cross-origin isolated (SharedArrayBuffer);
  * the lesson provides a "Back to Data Academy" link to return.
  *
- * Lessons run against the user's own permission-filtered landings data (same data/access
- * as Data Download) via /api/data-download/explorer-data.
+ * Lessons run against the user's own permission-filtered landings data (the trip level of
+ * Data Download, same access) via /api/data-download/explorer-data.
  */
 const DataExplorer: React.FC = () => {
   const { t } = useTranslation('dataExplorer');
@@ -64,6 +66,23 @@ const DataExplorer: React.FC = () => {
                   >
                     R for SSF
                   </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Trip-level banner: the lessons are written for trip rows, so the monthly figures per
+              district that Data Download also offers are not part of them. */}
+          <div className="alert alert-warning" role="alert">
+            <div className="d-flex">
+              <div>
+                <IconSailboat className="icon alert-icon" />
+              </div>
+              <div>
+                <h4 className="alert-title">{t('tripLevel.title')}</h4>
+                <div className="text-secondary">
+                  {t('tripLevel.body')}{' '}
+                  <Link to="/data-download">{t('dataDownload', { ns: 'navigation' })}</Link>.
                 </div>
               </div>
             </div>

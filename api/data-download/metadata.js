@@ -65,14 +65,14 @@ async function handler(req, res) {
     const { country_id, survey_id } = req.query;
 
     // 2. Fetch all metadata in parallel using shared utilities.
-    //    Taxa chain off the countries promise rather than re-resolving the user's countries
-    //    from their surveys, so the two can't drift apart — but only taxa waits on it, so a
-    //    request that doesn't ask for the species list keeps full concurrency.
+    //    Districts and taxa chain off the countries promise rather than re-resolving the user's
+    //    countries from their surveys, so they can't drift apart.
     const countriesPromise = getAccessibleCountries(req.user);
 
     const [countries, districts, surveys, taxa] = await Promise.all([
       countriesPromise,
-      getAccessibleDistricts(req.user, country_id, survey_id), // Pass survey_id for cascade filtering
+      // Pass survey_id for cascade filtering
+      countriesPromise.then(c => getAccessibleDistricts(req.user, country_id, survey_id, c)),
       getAccessibleSurveys(req.user, country_id),
       // Species list only on request. It changes with country and nothing else, so the client
       // holds it and re-asks only when the country does — same contract as `?meta=1` on

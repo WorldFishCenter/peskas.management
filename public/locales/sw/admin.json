@@ -115,6 +115,10 @@
       "download": "Upakuaji",
       "admin": "Utawala"
     },
+    "datasets": {
+      "landings": "Safari",
+      "district-months": "Kila mwezi"
+    },
     "actions": {
       "login_success": "Kuingia",
       "login_failure": "Kuingia kumeshindwa",

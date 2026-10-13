@@ -3,6 +3,11 @@
   "description": "Download landings data from the PESKAS database with custom filters",
   "filters": {
     "title": "Filters",
+    "dataset": "Data Level",
+    "datasetTrips": "Trips",
+    "datasetMonthly": "Monthly",
+    "datasetTripsHint": "One row per catch of each trip recorded by enumerators",
+    "datasetMonthlyHint": "One row per district and month: averages of the trips recorded and estimates for the whole fleet, as on the country dashboard. Validated data only",
     "country": "Country",
     "selectCountry": "Select a country",
     "countryHint": "Changing the country will reset survey and area selections",
@@ -55,6 +60,8 @@
     "loading": "Fetching preview...",
     "noData": "No data found",
     "noDataHint": "Try adjusting your filters.",
+    "noDataMonthlyHint": "There are no monthly figures for this selection yet.",
+    "monthlyNote": "Empty cells are figures that could not be estimated, not zeros. Totals (n_submissions and the estimated_ columns) can be added across rows; averages (mean_ columns) must be weighted by n_submissions. The Data Dictionary describes every column.",
     "error": "Error loading preview",
     "dataDictionary": "Data Dictionary",
     "viewFieldDescriptions": "View field descriptions"
@@ -63,6 +70,7 @@
     "title": "Data Dictionary",
     "fieldInfo": "Field Information",
     "subtitle": "Field descriptions and data types for the landings dataset",
+    "subtitleMonthly": "Field descriptions and units for the monthly figures per district",
     "searchPlaceholder": "Search fields...",
     "noMetadata": "Field descriptions are currently unavailable",
     "loading": "Loading field descriptions...",

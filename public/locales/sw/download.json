@@ -3,6 +3,11 @@
   "description": "Pakua data ya kutua kutoka hifadhidata ya PESKAS kwa vichujio maalum",
   "filters": {
     "title": "Vichujio",
+    "dataset": "Kiwango cha Data",
+    "datasetTrips": "Safari",
+    "datasetMonthly": "Kila Mwezi",
+    "datasetTripsHint": "Safu moja kwa kila mavuno ya kila safari iliyorekodiwa na wakusanyaji",
+    "datasetMonthlyHint": "Safu moja kwa kila wilaya na mwezi: wastani wa safari zilizorekodiwa na makadirio ya vyombo vyote vya uvuvi, kama kwenye dashibodi ya nchi. Data iliyothibitishwa tu",
     "country": "Nchi",
     "selectCountry": "Chagua nchi",
     "countryHint": "Kubadilisha nchi kutaweka upya uchaguzi wa utafiti na eneo",
@@ -55,6 +60,8 @@
     "loading": "Inapata maangalizi...",
     "noData": "Hakuna data iliyopatikana",
     "noDataHint": "Jaribu kubadilisha vichujio vyako.",
+    "noDataMonthlyHint": "Bado hakuna takwimu za kila mwezi kwa uchaguzi huu.",
+    "monthlyNote": "Seli tupu ni takwimu ambazo hazikuweza kukadiriwa, si sifuri. Jumla (n_submissions na safu wima za estimated_) zinaweza kujumlishwa kati ya safu; wastani (safu wima za mean_) lazima upimwe kwa uzito wa n_submissions. Kamusi ya Data inaeleza kila safu wima.",
     "error": "Hitilafu ya kupakia maangalizi",
     "dataDictionary": "Kamusi ya Data",
     "viewFieldDescriptions": "Angalia maelezo ya sehemu"
@@ -63,6 +70,7 @@
     "title": "Kamusi ya Data",
     "fieldInfo": "Taarifa za Sehemu",
     "subtitle": "Maelezo ya sehemu na aina za data kwa seti ya data ya kutua",
+    "subtitleMonthly": "Maelezo ya sehemu na vitengo kwa takwimu za kila mwezi kwa wilaya",
     "searchPlaceholder": "Tafuta sehemu...",
     "noMetadata": "Maelezo ya sehemu hayapatikani kwa sasa",
     "loading": "Inapakia maelezo ya sehemu...",

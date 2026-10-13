@@ -11,13 +11,15 @@ import {
   IconFish,
   IconClipboardList,
   IconMapPin,
-  IconStack2,
-  IconFileDescription
+  IconTable
 } from '@tabler/icons-react';
 import { DownloadFilters as FiltersType } from '../../types/download';
 import { taxonLabel, taxonInput, toTaxonCode } from '../../utils/taxon';
-import { useFetchDownloadMetadata } from '../../api/api';
+import { useFetchDownloadMetadata } from '../../api/download';
 import { AuthUser } from '../Auth/AuthContext';
+import DatasetSelect from './DatasetSelect';
+import { datasetInfo } from './datasets';
+import SurveySelect from './SurveySelect';
 
 interface DownloadFiltersProps {
   filters: FiltersType;
@@ -44,11 +46,17 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
   const { t } = useTranslation('download');
   const isAdmin = user?.role === 'admin';
 
+  // Monthly figures per district add up every survey of a country and are validated data only,
+  // so status, scope, species and survey do not apply: only country and district.
+  const { tripFilters } = datasetInfo(filters.dataset);
+
   // Fetch all metadata in one request (pre-filtered server-side by user permissions).
   // Pass the selected survey so districts cascade to that survey (Country → Survey → District).
+  // The species list only for trips: monthly figures have no species filter.
   const { metadata, isLoading: loadingMetadata } = useFetchDownloadMetadata(
     isAdmin ? filters.country : undefined,
-    filters.survey_id?.[0]
+    filters.survey_id?.[0],
+    tripFilters
   );
   const { countries, districts, surveys, taxa } = metadata;
 
@@ -88,12 +96,13 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
   const taxonInvalid =
     taxonCodes.some((code) => !isKnownTaxon(code)) || (typedCode !== '' && !isKnownTaxon(typedCode));
 
-  const isPreviewDisabled = isLoading || loadingMetadata || !hasAccess || taxonInvalid;
+  const isPreviewDisabled = isLoading || loadingMetadata || !hasAccess || (tripFilters && taxonInvalid);
 
   // Every caller passes a `<select>`/`<input>` value, so a plain string covers all fields.
   const handleChange = (field: keyof FiltersType, value: string) => {
-    if (field === 'country') {
-      // Country changed → reset the cascade below it (survey + district).
+    if (field === 'country' || field === 'dataset') {
+      // Country or data level changed → reset the cascade below it (survey + district). The
+      // district list depends on both: one survey's for trips, the country's for monthly figures.
       setFilters({ ...filters, [field]: value, survey_id: [], gaul_2: '' });
     } else {
       setFilters({ ...filters, [field]: value });
@@ -117,6 +126,15 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
 
   return (
     <div>
+      {/* Data level: decides which of the filters below apply */}
+      <div className="mb-3">
+        <label className="form-label">
+          <LabelIcon icon={IconTable} />
+          {t('filters.dataset')}
+        </label>
+        <DatasetSelect value={filters.dataset} onChange={(value) => handleChange('dataset', value)} />
+      </div>
+
       {/* Admin Only: Country Selector */}
       {isAdmin && (
         <div className="mb-3">
@@ -139,190 +157,140 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
         </div>
       )}
 
-      {/* Status Selector */}
-      <div className="mb-3">
-        <label className="form-label required">
-          <LabelIcon icon={IconCircleCheck} />
-          {t('filters.status')}
-        </label>
-        <select
-          className="form-select"
-          value={filters.status}
-          onChange={(e) => handleChange('status', e.target.value as 'validated' | 'raw')}
-        >
-          <option value="validated">{t('filters.statusValidated')}</option>
-          <option value="raw">{t('filters.statusRaw')}</option>
-        </select>
-        <small className="form-hint">{t('filters.statusHint')}</small>
-      </div>
-
-      {/* Scope Selector */}
-      <div className="mb-3">
-        <label className="form-label">
-          <LabelIcon icon={IconAdjustmentsHorizontal} />
-          {t('filters.scope')}
-        </label>
-        <select
-          className="form-select"
-          value={filters.scope || ''}
-          onChange={(e) => handleChange('scope', e.target.value)}
-        >
-          <optgroup label={t('filters.scopeGroupDefault')}>
-            <option value="">{t('filters.scopeAll')}</option>
-          </optgroup>
-          <optgroup label={t('filters.scopeGroupFiltered')}>
-            <option value="trip_info">{t('filters.scopeTripInfo')}</option>
-            <option value="catch_info">{t('filters.scopeCatchInfo')}</option>
-          </optgroup>
-        </select>
-        <small className="form-hint">{t('filters.scopeHint')}</small>
-      </div>
-
-      {/* Catch Taxon */}
-      <div className="mb-3">
-        <label className="form-label">
-          <LabelIcon icon={IconFish} />
-          {t('filters.catchTaxon')}
-        </label>
-        <input
-          type="text"
-          className={`form-control${taxonInvalid ? ' is-invalid' : ''}`}
-          list="catch-taxon-options"
-          placeholder={t('filters.catchTaxonPlaceholder')}
-          value={taxonText}
-          onChange={(e) => {
-            // A picked option carries the label separator and becomes a chip at once. Typed text
-            // waits for Enter or a comma: a species name can begin with three letters that are
-            // themselves a code.
-            const value = e.target.value;
-            if (value !== taxonInput(value)) setTaxon([...taxonCodes, toTaxonCode(value)], '');
-            else setTaxon(taxonCodes, value);
-          }}
-          onKeyUp={(e) => {
-            if (e.key === 'Enter' && typedCode && isKnownTaxon(typedCode)) {
-              setTaxon([...taxonCodes, typedCode], '');
-            }
-          }}
-        />
-        <datalist id="catch-taxon-options">{taxonOptions}</datalist>
-        {taxonCodes.length > 0 && (
-          <div className="d-flex flex-wrap gap-1 mt-2">
-            {taxonCodes.map((code) => {
-              const tx = taxaByCode.get(code);
-              return (
-                <span
-                  key={code}
-                  className={`badge ${isKnownTaxon(code) ? 'bg-blue-lt' : 'bg-red-lt'}`}
-                  title={tx && [tx.scientific_name, tx.family].filter(Boolean).join(' · ')}
-                >
-                  <strong>{code}</strong>
-                  {tx && <span className="ms-1">{tx.english_name || tx.scientific_name}</span>}
-                  <button
-                    type="button"
-                    className="btn-close ms-1"
-                    aria-label={t('filters.catchTaxonRemove', { code })}
-                    onClick={() => setTaxon(taxonCodes.filter((c) => c !== code), taxonText)}
-                  />
-                </span>
-              );
-            })}
+      {/* Trip level only: status, scope and species */}
+      {tripFilters && (
+        <>
+          {/* Status Selector */}
+          <div className="mb-3">
+            <label className="form-label required">
+              <LabelIcon icon={IconCircleCheck} />
+              {t('filters.status')}
+            </label>
+            <select
+              className="form-select"
+              value={filters.status}
+              onChange={(e) => handleChange('status', e.target.value as 'validated' | 'raw')}
+            >
+              <option value="validated">{t('filters.statusValidated')}</option>
+              <option value="raw">{t('filters.statusRaw')}</option>
+            </select>
+            <small className="form-hint">{t('filters.statusHint')}</small>
           </div>
-        )}
-        {taxonInvalid ? (
-          <div className="invalid-feedback d-block">{t('filters.catchTaxonInvalid')}</div>
-        ) : typedTaxon ? (
-          <small className="form-hint text-secondary">
-            <strong>{typedTaxon.code}</strong> — {typedTaxon.english_name}
-            {typedTaxon.scientific_name && <em className="ms-1">({typedTaxon.scientific_name})</em>}
-            {typedTaxon.family && <span className="badge bg-blue-lt ms-2">{typedTaxon.family}</span>}
-          </small>
-        ) : (
-          <small
-            className="form-hint"
-            dangerouslySetInnerHTML={{ __html: t('filters.catchTaxonHint') }}
-          />
-        )}
-      </div>
+
+          {/* Scope Selector */}
+          <div className="mb-3">
+            <label className="form-label">
+              <LabelIcon icon={IconAdjustmentsHorizontal} />
+              {t('filters.scope')}
+            </label>
+            <select
+              className="form-select"
+              value={filters.scope || ''}
+              onChange={(e) => handleChange('scope', e.target.value)}
+            >
+              <optgroup label={t('filters.scopeGroupDefault')}>
+                <option value="">{t('filters.scopeAll')}</option>
+              </optgroup>
+              <optgroup label={t('filters.scopeGroupFiltered')}>
+                <option value="trip_info">{t('filters.scopeTripInfo')}</option>
+                <option value="catch_info">{t('filters.scopeCatchInfo')}</option>
+              </optgroup>
+            </select>
+            <small className="form-hint">{t('filters.scopeHint')}</small>
+          </div>
+
+          {/* Catch Taxon */}
+          <div className="mb-3">
+            <label className="form-label">
+              <LabelIcon icon={IconFish} />
+              {t('filters.catchTaxon')}
+            </label>
+            <input
+              type="text"
+              className={`form-control${taxonInvalid ? ' is-invalid' : ''}`}
+              list="catch-taxon-options"
+              placeholder={t('filters.catchTaxonPlaceholder')}
+              value={taxonText}
+              onChange={(e) => {
+                // A picked option carries the label separator and becomes a chip at once. Typed text
+                // waits for Enter or a comma: a species name can begin with three letters that are
+                // themselves a code.
+                const value = e.target.value;
+                if (value !== taxonInput(value)) setTaxon([...taxonCodes, toTaxonCode(value)], '');
+                else setTaxon(taxonCodes, value);
+              }}
+              onKeyUp={(e) => {
+                if (e.key === 'Enter' && typedCode && isKnownTaxon(typedCode)) {
+                  setTaxon([...taxonCodes, typedCode], '');
+                }
+              }}
+            />
+            <datalist id="catch-taxon-options">{taxonOptions}</datalist>
+            {taxonCodes.length > 0 && (
+              <div className="d-flex flex-wrap gap-1 mt-2">
+                {taxonCodes.map((code) => {
+                  const tx = taxaByCode.get(code);
+                  return (
+                    <span
+                      key={code}
+                      className={`badge ${isKnownTaxon(code) ? 'bg-blue-lt' : 'bg-red-lt'}`}
+                      title={tx && [tx.scientific_name, tx.family].filter(Boolean).join(' · ')}
+                    >
+                      <strong>{code}</strong>
+                      {tx && <span className="ms-1">{tx.english_name || tx.scientific_name}</span>}
+                      <button
+                        type="button"
+                        className="btn-close ms-1"
+                        aria-label={t('filters.catchTaxonRemove', { code })}
+                        onClick={() => setTaxon(taxonCodes.filter((c) => c !== code), taxonText)}
+                      />
+                    </span>
+                  );
+                })}
+              </div>
+            )}
+            {taxonInvalid ? (
+              <div className="invalid-feedback d-block">{t('filters.catchTaxonInvalid')}</div>
+            ) : typedTaxon ? (
+              <small className="form-hint text-secondary">
+                <strong>{typedTaxon.code}</strong> — {typedTaxon.english_name}
+                {typedTaxon.scientific_name && <em className="ms-1">({typedTaxon.scientific_name})</em>}
+                {typedTaxon.family && <span className="badge bg-blue-lt ms-2">{typedTaxon.family}</span>}
+              </small>
+            ) : (
+              <small
+                className="form-hint"
+                dangerouslySetInnerHTML={{ __html: t('filters.catchTaxonHint') }}
+              />
+            )}
+          </div>
+        </>
+      )}
 
       {/* Survey + District cascade (only once the user has access) */}
       {surveys.length > 0 && (
         <>
-          <hr className="my-3" />
-
-          {/* Survey (single-select; "All forms" is the distinct default) */}
-          <div className="mb-3">
-            <label className="form-label">
-              <LabelIcon icon={IconClipboardList} />
-              {t('filters.surveys')}
-            </label>
-            <div className="form-selectgroup form-selectgroup-boxes d-flex flex-column gap-2">
-              {/* All forms — the default, visually distinct (green icon + badge) */}
-              <label className="form-selectgroup-item">
-                <input
-                  type="radio"
-                  name="survey_select"
-                  value=""
-                  className="form-selectgroup-input"
-                  checked={!hasSurveySelected}
-                  onChange={handleSelectAllSurveys}
-                />
-                <span className="form-selectgroup-label d-flex align-items-center p-3">
-                  <span className="me-3">
-                    <span className="form-selectgroup-check"></span>
-                  </span>
-                  <IconStack2 className="icon me-3 text-green" size={24} stroke={1.5} />
-                  <span className="flex-fill">
-                    <span className="d-flex align-items-center gap-2">
-                      <strong>{t('filters.surveysAll')}</strong>
-                      <span className="badge bg-green-lt">{t('filters.defaultBadge')}</span>
-                    </span>
-                    <span className="d-block text-secondary small">
-                      {t('filters.surveysAllDesc')}
-                    </span>
-                  </span>
-                </span>
-              </label>
-
-              {/* Specific surveys */}
-              {surveys.map(survey => (
-                <label key={survey.asset_id} className="form-selectgroup-item">
-                  <input
-                    type="radio"
-                    name="survey_select"
-                    value={survey.asset_id}
-                    className="form-selectgroup-input"
-                    checked={selectedSurveyId === survey.asset_id}
-                    onChange={() => handleSurveySelect(survey.asset_id)}
-                  />
-                  <span className="form-selectgroup-label d-flex align-items-center p-3">
-                    <span className="me-3">
-                      <span className="form-selectgroup-check"></span>
-                    </span>
-                    <IconFileDescription className="icon me-3 text-secondary" size={24} stroke={1.5} />
-                    <span className="flex-fill">
-                      <span className="d-block">{survey.name}</span>
-                      {typeof survey.country_id === 'string' && survey.country_id && (
-                        <span className="d-block text-secondary small text-capitalize">
-                          {survey.country_id}
-                        </span>
-                      )}
-                    </span>
-                  </span>
+          {/* Survey (trip level only; "All forms" is the distinct default) */}
+          {tripFilters && (
+            <>
+              <hr className="my-3" />
+              <div className="mb-3">
+                <label className="form-label">
+                  <LabelIcon icon={IconClipboardList} />
+                  {t('filters.surveys')}
                 </label>
-              ))}
-            </div>
+                <SurveySelect
+                  surveys={surveys}
+                  selectedSurveyId={selectedSurveyId}
+                  onSelectAll={handleSelectAllSurveys}
+                  onSelect={handleSurveySelect}
+                />
+              </div>
+            </>
+          )}
 
-            {/* Signpost: districts unlock once a specific survey is chosen */}
-            {!hasSurveySelected && (
-              <small className="form-hint d-flex align-items-center mt-2">
-                <IconMapPin className="icon icon-inline me-1" size={14} />
-                {t('filters.surveyAreaHint')}
-              </small>
-            )}
-          </div>
-
-          {/* District (GAUL 2) — only after a specific survey is chosen */}
-          {hasSurveySelected && districts.length > 0 && (
+          {/* District (GAUL 2): after a specific survey for trips, straight away for monthly figures */}
+          {(tripFilters ? hasSurveySelected : hasAccess) && districts.length > 0 && (
             <div className="mb-3">
               <label className="form-label">
                 <LabelIcon icon={IconMapPin} />

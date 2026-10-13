@@ -186,8 +186,9 @@ landings_empty = landings_rows.length === 0
     ${s.rows.length.toLocaleString()} records loaded when you opened this page.
     ${capped
       ? html`That is the most a lesson loads. If you have more records, open the
-             <strong>Data Download</strong> tab to get them all.`
-      : html`They are the same records you can open in the <strong>Data Download</strong> tab.`}
+             <strong>Data Download</strong> tab and choose <strong>Trips</strong> to get them all.`
+      : html`They are the same records you can open in the <strong>Data Download</strong> tab,
+             under <strong>Trips</strong>.`}
   </div>`;
 }
 ```

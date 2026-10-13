@@ -6,16 +6,34 @@ import {
   flexRender,
   ColumnDef
 } from '@tanstack/react-table';
-import { IconDownload, IconAlertCircle, IconBook } from '@tabler/icons-react';
-import { DownloadFilters, DataRow } from '../../types/download';
-import { useFetchFieldMetadata } from '../../api/api';
+import { IconDownload, IconAlertCircle, IconBook, IconInfoCircle } from '@tabler/icons-react';
+import { AppliedFilters, DataRow } from '../../types/download';
+import { useFetchFieldMetadata } from '../../api/download';
 import FieldInfoIcon from './FieldInfoIcon';
 import FieldMetadataModal from './FieldMetadataModal';
+import { DATASETS, datasetInfo } from './datasets';
+
+/**
+ * How the "Filters Applied" line names what the server echoes: the filter form's own labels
+ * (`download` keys), for each key and for the values the form offers as choices.
+ */
+const APPLIED_FILTERS: Record<string, { label: string; values?: Record<string, string> }> = {
+  dataset: {
+    label: 'filters.dataset',
+    values: Object.fromEntries(Object.entries(DATASETS).map(([name, info]) => [name, info.label]))
+  },
+  status: { label: 'filters.status', values: { validated: 'filters.statusValidated', raw: 'filters.statusRaw' } },
+  scope: { label: 'filters.scope', values: { trip_info: 'filters.scopeTripInfo', catch_info: 'filters.scopeCatchInfo' } },
+  catch_taxon: { label: 'filters.catchTaxon' },
+  country: { label: 'filters.country' },
+  survey_id: { label: 'filters.surveys' },
+  gaul_2: { label: 'filters.gaulCodes' }
+};
 
 interface DataPreviewProps {
   data: DataRow[];
   totalCount: number;
-  appliedFilters: DownloadFilters | null;
+  appliedFilters: AppliedFilters | null;
   isLoading: boolean;
   error: string | null;
   onDownload: () => void;
@@ -41,7 +59,10 @@ const DataPreview: React.FC<DataPreviewProps> = ({
     isLoading: metadataLoading,
     error: metadataError,
     fetchMetadata
-  } = useFetchFieldMetadata(appliedFilters?.scope);
+  } = useFetchFieldMetadata(appliedFilters?.scope, appliedFilters?.dataset);
+
+  // The last preview served says which table is on screen
+  const level = datasetInfo(appliedFilters?.dataset);
 
   // Handle field info icon click
   const handleFieldInfoClick = useCallback((fieldName: string) => {
@@ -128,7 +149,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({
         <div className="card-body text-center py-5">
           <IconAlertCircle className="icon text-muted mb-3" size={48} stroke={1.5} />
           <h3 className="text-muted">{t('preview.noData')}</h3>
-          <p className="text-muted">{t('preview.noDataHint')}</p>
+          <p className="text-muted">{t(level.noDataHint)}</p>
         </div>
       </div>
     );
@@ -173,12 +194,22 @@ const DataPreview: React.FC<DataPreviewProps> = ({
             {Object.entries(appliedFilters)
               .filter(([, value]) => value !== undefined && value !== null && value !== '')
               .map(([key, value]) => {
-                // Format the display
-                const displayKey = key.replace(/_/g, ' ');
+                const names = APPLIED_FILTERS[key];
                 const displayValue = Array.isArray(value) ? value.join(', ') : String(value);
-                return `${displayKey}: ${displayValue}`;
+                const valueLabel = names?.values?.[displayValue];
+                return `${names ? t(names.label) : key.replace(/_/g, ' ')}: ${valueLabel ? t(valueLabel) : displayValue}`;
               })
               .join(' | ')}
+          </div>
+        </div>
+      )}
+
+      {/* How to read the table, when the level needs it (monthly: the two mistakes a spreadsheet invites) */}
+      {level.previewNote && (
+        <div className="card-body border-bottom">
+          <div className="alert alert-info mb-0 d-flex align-items-center">
+            <IconInfoCircle className="icon me-2 flex-shrink-0" size={18} />
+            {t(level.previewNote)}
           </div>
         </div>
       )}
@@ -253,6 +284,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({
           isLoading={metadataLoading}
           error={metadataError}
           highlightField={selectedField || undefined}
+          dataset={appliedFilters?.dataset}
         />
       )}
     </>

@@ -3,8 +3,12 @@
   "description": "Jifunze kuchambua data ya uvuvi mdogo kwa masomo shirikishi ya R yanayoendeshwa kwenye kivinjari chako.",
   "intro": {
     "title": "R shirikishi, moja kwa moja kwenye kivinjari chako",
-    "body": "Kila somo linaendesha msimbo halisi wa R kwa kutumia data yako ya mavuno — data ile ile na ruhusa za ufikiaji kama kichupo cha Pakua Data. Hakuna cha kusakinisha. Chagua somo ili kuanza. Yafuate kwa mpangilio — kila somo linajenga juu ya lile lililotangulia.",
+    "body": "Kila somo linaendesha msimbo halisi wa R kwa kutumia data yako ya mavuno — data ile ile ya kiwango cha safari na ruhusa za ufikiaji kama kichupo cha Pakua Data. Hakuna cha kusakinisha. Chagua somo ili kuanza. Yafuate kwa mpangilio — kila somo linajenga juu ya lile lililotangulia.",
     "deeper": "Unataka kujifunza R kwa kina zaidi? Tazama kozi kamili ya WorldFish:"
+  },
+  "tripLevel": {
+    "title": "Data ya kiwango cha safari tu",
+    "body": "Masomo yanapakia safari zako: safu moja kwa kila mavuno ya kila safari. Takwimu za kila mwezi kwa wilaya si sehemu ya masomo: zinapatikana kwenye"
   },
   "startLesson": "Anza somo",
   "comingSoon": "Inakuja hivi karibuni",

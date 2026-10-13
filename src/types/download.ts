@@ -6,9 +6,18 @@
  */
 
 /**
+ * The table to download, by its Peskas API name: `landings` has one row per catch of each trip,
+ * `district-months` one row per district and month (averages and whole-fleet estimates).
+ */
+export type DownloadDataset = 'landings' | 'district-months';
+
+/**
  * Filter parameters for data download
  */
 export interface DownloadFilters {
+  /** Table to download. District-months take only country and gaul_2. */
+  dataset: DownloadDataset;
+
   /** Country identifier (e.g., 'zanzibar', 'mozambique') - Admin only, pre-filled for regular users */
   country?: string;
 
@@ -27,6 +36,12 @@ export interface DownloadFilters {
   /** Data scope - trip information, catch information, or all data (optional) */
   scope?: 'trip_info' | 'catch_info' | '';
 }
+
+/**
+ * What a preview was served with, echoed by the server for display (`filters_applied`).
+ * Monthly figures carry no status, scope or species, so every field may be absent.
+ */
+export type AppliedFilters = Partial<DownloadFilters>;
 
 /**
  * One row of downloaded data. The schema is dynamic — it depends on the survey and the
@@ -116,7 +131,7 @@ export interface PreviewResponse {
   success: boolean;
   data: DataRow[];
   total_count: number;
-  filters_applied: DownloadFilters;
+  filters_applied: AppliedFilters;
 }
 
 /**
@@ -162,8 +177,8 @@ export interface FieldDescription {
 /**
  * Field metadata response from API
  *
- * Contains metadata for all fields in the landings dataset,
- * optionally filtered by scope (trip_info or catch_info).
+ * Contains metadata for all fields of one dataset. Landings can be
+ * filtered by scope (trip_info or catch_info).
  */
 export interface FieldMetadata {
   /** Map of field names to their descriptions */

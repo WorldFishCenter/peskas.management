@@ -1,7 +1,7 @@
 /**
  * GET /api/data-download/metadata-fields
  *
- * Fetch field metadata from PeSKAS API for landings dataset.
+ * Fetch field metadata from PeSKAS API for a dataset (landings by default).
  * Returns comprehensive field documentation including descriptions, data types,
  * units, examples, and categorical values.
  *
@@ -11,7 +11,8 @@
  * @access Protected - Requires JWT authentication
  *
  * Query Parameters (all optional):
- * @queryparam {string} scope - Optional scope filter: "trip_info" or "catch_info"
+ * @queryparam {string} scope - Optional scope filter: "trip_info" or "catch_info" (landings only)
+ * @queryparam {string} dataset - "landings" (default) or "district-months"
  *
  * Response Format:
  * {
@@ -34,12 +35,9 @@
  */
 
 const { withMiddleware, authenticateUser } = require('../../lib/middleware');
-const { fetchLandingsMetadata, PeskasAPIError } = require('../../lib/peskas-api');
-const {
-  sendSuccess,
-  sendServerError,
-  setCorsHeaders
-} = require('../../lib/response');
+const { fetchFieldMetadata, PeskasAPIError } = require('../../lib/peskas-api');
+const { datasetOf, sendDownloadError } = require('../../lib/download');
+const { sendSuccess, setCorsHeaders } = require('../../lib/response');
 
 /**
  * Handler function for metadata-fields endpoint
@@ -57,11 +55,11 @@ async function handler(req, res) {
   }
 
   try {
-    // Extract scope parameter if provided
+    // Scope applies to landings only; the dataset comes from datasetOf
     const { scope } = req.query;
 
     // Fetch metadata from PeSKAS API
-    const metadata = await fetchLandingsMetadata(scope);
+    const metadata = await fetchFieldMetadata(datasetOf(req.query), scope);
 
     // Return success response
     // Include scope in response for client-side cache key generation
@@ -73,21 +71,16 @@ async function handler(req, res) {
   } catch (error) {
     console.error('Metadata fetch error:', error);
 
-    // Handle PeSKAS API errors with user-friendly messages
-    if (error instanceof PeskasAPIError) {
-      // For 404 errors, return empty metadata (graceful degradation)
-      if (error.statusCode === 404) {
-        return sendSuccess(res, {
-          fields: {},
-          scope: req.query.scope || null,
-          message: 'Field metadata is currently unavailable'
-        });
-      }
-      return sendServerError(res, error.message);
+    // For 404 errors, return empty metadata (graceful degradation)
+    if (error instanceof PeskasAPIError && error.statusCode === 404) {
+      return sendSuccess(res, {
+        fields: {},
+        scope: req.query.scope || null,
+        message: 'Field metadata is currently unavailable'
+      });
     }
 
-    // Generic error
-    return sendServerError(res, 'Failed to fetch field metadata. Please try again later.');
+    return sendDownloadError(res, error, 'Failed to fetch field metadata. Please try again later.');
   }
 }
 

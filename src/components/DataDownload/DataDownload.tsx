@@ -4,7 +4,7 @@ import { useAuth } from '../Auth/AuthContext';
 import { IconDownload } from '@tabler/icons-react';
 import DownloadFilters from './DownloadFilters';
 import DataPreview from './DataPreview';
-import { useFetchDownloadPreview, downloadCSV } from '../../api/api';
+import { useFetchDownloadPreview, downloadCSV } from '../../api/download';
 import { DownloadFilters as FiltersType } from '../../types/download';
 
 const DataDownload: React.FC = () => {
@@ -13,6 +13,7 @@ const DataDownload: React.FC = () => {
 
   // Filter state
   const [filters, setFilters] = useState<FiltersType>({
+    dataset: 'landings', // Trips; 'district-months' = monthly figures per district
     status: 'validated',
     scope: '', // Empty = download all data (default API behavior)
     survey_id: [] // Empty = all surveys user has access to
@@ -26,6 +27,15 @@ const DataDownload: React.FC = () => {
 
   // Preview data hook
   const { data, totalCount, appliedFilters, isLoading, error, fetchPreview } = useFetchDownloadPreview();
+
+  /**
+   * Handle filter changes. Another data level is another table, so the preview of the
+   * previous one is dropped rather than left next to a download button for the new one.
+   */
+  const handleFiltersChange = (next: FiltersType) => {
+    if (next.dataset !== filters.dataset) setShowPreview(false);
+    setFilters(next);
+  };
 
   /**
    * Handle preview button click
@@ -57,6 +67,7 @@ const DataDownload: React.FC = () => {
    */
   const handleResetFilters = () => {
     setFilters({
+      dataset: filters.dataset, // The data level is not a filter: it stays
       status: 'validated',
       scope: '',
       survey_id: [],
@@ -96,7 +107,7 @@ const DataDownload: React.FC = () => {
                   <div className="card-body">
                     <DownloadFilters
                       filters={filters}
-                      setFilters={setFilters}
+                      setFilters={handleFiltersChange}
                       onPreview={handlePreview}
                       onReset={handleResetFilters}
                       isLoading={isLoading}
@@ -117,7 +128,7 @@ const DataDownload: React.FC = () => {
                   <div className="card-body">
                     <DownloadFilters
                       filters={filters}
-                      setFilters={setFilters}
+                      setFilters={handleFiltersChange}
                       onPreview={handlePreview}
                       onReset={handleResetFilters}
                       isLoading={isLoading}

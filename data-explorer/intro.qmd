@@ -123,7 +123,8 @@ That is all "coding" is here. Small instructions you can change, with the answer
 ## This works on YOUR data too
 
 The table above was made up. In the next lessons the table will be **your real landing records**. It is
-the same data you can open in **Data Download**, from your own district.
+the same data you can open in **Data Download** under **Trips**, from your own districts. The monthly
+figures in Data Download are not used in these lessons.
 
 Your records are fetched for you as soon as you open a lesson. You do not have to do anything:
 

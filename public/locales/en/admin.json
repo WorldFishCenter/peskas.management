@@ -115,6 +115,10 @@
       "download": "Download",
       "admin": "Admin"
     },
+    "datasets": {
+      "landings": "Trips",
+      "district-months": "Monthly"
+    },
     "actions": {
       "login_success": "Login",
       "login_failure": "Login failed",

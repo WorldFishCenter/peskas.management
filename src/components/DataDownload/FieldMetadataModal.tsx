@@ -16,7 +16,8 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { IconBook, IconSearch } from '@tabler/icons-react';
-import { FieldMetadata } from '../../types/download';
+import { FieldMetadata, DownloadDataset } from '../../types/download';
+import { datasetInfo } from './datasets';
 
 interface FieldMetadataModalProps {
   /** Function to close the modal */
@@ -33,6 +34,9 @@ interface FieldMetadataModalProps {
 
   /** Optional field to highlight */
   highlightField?: string;
+
+  /** Table the fields belong to (absent = landings) */
+  dataset?: DownloadDataset;
 }
 
 const FieldMetadataModal: React.FC<FieldMetadataModalProps> = ({
@@ -40,7 +44,8 @@ const FieldMetadataModal: React.FC<FieldMetadataModalProps> = ({
   metadata,
   isLoading,
   error,
-  highlightField
+  highlightField,
+  dataset
 }) => {
   const { t } = useTranslation('download');
   const [searchQuery, setSearchQuery] = useState('');
@@ -101,7 +106,7 @@ const FieldMetadataModal: React.FC<FieldMetadataModalProps> = ({
             {/* Subtitle - only show in all fields mode */}
             {!highlightField && (
               <p className="text-muted mb-3">
-                {t('metadata.subtitle')}
+                {t(datasetInfo(dataset).dictionarySubtitle)}
               </p>
             )}
 

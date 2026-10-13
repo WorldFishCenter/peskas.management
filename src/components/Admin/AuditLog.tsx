@@ -61,17 +61,20 @@ function renderDetails(entry: AuditLogEntry, t: Translate): React.ReactNode {
     case 'data_preview':
     case 'data_export':
     case 'data_explorer_load': {
+      // Recorded from 2.11.0: trips (landings) or monthly figures per district (district-months)
+      const dataset = str(d['dataset']);
       const country = str(d['country_id']);
       const dataStatus = str(d['data_status']);
       const scope = str(d['scope']);
       const catchTaxon = str(d['catch_taxon']);
       const district = str(d['district']);
       const surveyId = str(d['survey_asset_id']);
-      const hasAny = country || dataStatus || scope || catchTaxon || district || surveyId;
+      const hasAny = dataset || country || dataStatus || scope || catchTaxon || district || surveyId;
       if (!hasAny) return <span className="text-secondary">—</span>;
       return (
         <div className="d-flex flex-wrap gap-1">
           {country    && <span className="badge bg-blue-lt">{country}</span>}
+          {dataset    && <span className="badge bg-secondary-lt">{t(`auditLog.datasets.${dataset}`, { defaultValue: dataset })}</span>}
           {dataStatus && <span className="badge bg-secondary-lt">{dataStatus}</span>}
           {scope      && <span className="badge bg-secondary-lt">{scope}</span>}
           {catchTaxon && <span className="badge bg-secondary-lt">{catchTaxon}</span>}

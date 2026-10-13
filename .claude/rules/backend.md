@@ -60,7 +60,8 @@ module.exports = withMiddleware(handler, authenticateUser);          // admin: a
 | Responses and CORS | `response.js`: `sendSuccess`, `sendBadRequest`, `sendForbidden`, `sendNotFound`, `sendServerError`, `sendDetailedError`, `sendMethodNotAllowed`, `setCorsHeaders` |
 | DB connection | `db.js`: `getDb` |
 | Auth / guards | `middleware.js`: `withMiddleware`, `authenticateUser`, `requireAdmin`; `jwt.js` |
-| Permission filtering | `filter-permissions.js`: `getAccessibleSurveys(user, countryId)`, `getAccessibleCountries(user)`, `getAccessibleDistricts(user, countryId, surveyId)`, `getAccessibleTaxa(countries, countryId)` (takes the output of `getAccessibleCountries`), `resolveDownloadRequests(user, query)` |
+| Permission filtering | `filter-permissions.js`: `getAccessibleSurveys(user, countryId)`, `getAccessibleCountries(user)`, `getAccessibleDistricts(user, countryId, surveyId, countries)` (pass `countries` to keep districts to them), `getAccessibleTaxa(countries, countryId)` (takes the output of `getAccessibleCountries`), `resolveDownloadRequests(user, query)` |
+| Downloads | `download.js`: `resolveDownload(user, query)` turns a query into a `download` (`{ dataset, requests, sharedFilters }`) that `fetchPreview`, `fetchDownloadRows`, `fetchDownloadCSV`, `servedScope` and `downloadAuditDetails` take whole; `sendDownloadError` for the catch block |
 | Audit | `audit-logger.js`: `logAuditEvent`, `ensureAuditIndexes` |
 | Helpers | `helpers.js`: `validateObjectId`, `sanitizeCSV`, `getSurveyFlagsCollection`, `getEnumeratorStatsCollection`, `escapeRegex`, `isValidDate`, `validatePassword` |
 | External APIs | `peskas-api.js` (Peskas API), `api-utils.js` (KoboToolbox), `email.js` (SES), `rate-limit.js` |
@@ -74,6 +75,15 @@ surveys**; a regular user sees only the surveys listed (`getAccessibleSurveys`).
 data-returning endpoint filters through `filter-permissions.js` rather than trusting a
 client-supplied survey/country id. Authentication is not authorization: check that the
 requested `asset_id` is in the user's accessible surveys.
+
+Downloads come in two datasets (`?dataset=`, names from peskas-api), both resolved by
+`resolveDownload` (`lib/download.js`). `landings` (trips) is pinned to permitted forms by
+`resolveDownloadRequests`. `district-months` (monthly figures per district) adds up every form
+of a country, so it resolves to one request per country the user has a form in, with no
+`survey_id`. Pass the `download` object whole: its requests sent to the landings endpoint would
+return every form of the country. A user with a district list (`gaul_codes`) gets only those
+districts in both: no district picked sends the whole list as a comma-separated `gaul_2`, so
+trips with no district are left out for them. Admins and users with no list are not limited.
 
 ## Traps that have already bitten
 
