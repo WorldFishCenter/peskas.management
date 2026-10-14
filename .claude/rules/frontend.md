@@ -19,7 +19,11 @@ React 18 + TypeScript (strict) + Vite + React Router v7 + TanStack Table v8 + Hi
 ## State
 
 - **Custom hooks for data fetching**, each exposing loading/error state: `src/api/api.ts` (app data),
-  `src/api/admin.ts` (admin data). Add new fetching there rather than calling axios in a component.
+  `src/api/admin.ts` (admin data), `src/api/download.ts` (Data Download). Add new fetching there
+  rather than calling axios in a component.
+- Data Download's two data levels (trips, monthly figures) differ only through
+  `src/components/DataDownload/datasets.ts`. Read a level's strings and filters from there rather
+  than comparing the dataset name.
 - React Context for global state: `AuthContext` (`src/components/Auth/`), `SurveyContext` (`src/contexts/`), `I18nContext` (`src/i18n/`).
 - **No Redux/MobX.** Hooks and context only.
 - `SurveyContext` is the single source of truth for the selected survey across routes — read it,

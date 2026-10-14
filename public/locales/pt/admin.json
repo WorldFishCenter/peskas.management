@@ -115,6 +115,10 @@
       "download": "Transferência",
       "admin": "Administração"
     },
+    "datasets": {
+      "landings": "Viagens",
+      "district-months": "Mensal"
+    },
     "actions": {
       "login_success": "Login",
       "login_failure": "Login falhado",

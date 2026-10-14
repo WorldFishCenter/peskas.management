@@ -3,6 +3,11 @@
   "description": "Baixe dados de desembarques da base de dados PESKAS com filtros personalizados",
   "filters": {
     "title": "Filtros",
+    "dataset": "Nível dos Dados",
+    "datasetTrips": "Viagens",
+    "datasetMonthly": "Mensal",
+    "datasetTripsHint": "Uma linha por captura de cada viagem registrada pelos enumeradores",
+    "datasetMonthlyHint": "Uma linha por distrito e mês: médias das viagens registradas e estimativas para toda a frota, como no painel do país. Apenas dados validados",
     "country": "País",
     "selectCountry": "Selecione um país",
     "countryHint": "Alterar o país redefinirá as seleções de pesquisa e área",
@@ -55,6 +60,8 @@
     "loading": "Buscando visualização...",
     "noData": "Nenhum dado encontrado",
     "noDataHint": "Tente ajustar seus filtros.",
+    "noDataMonthlyHint": "Ainda não há valores mensais para esta seleção.",
+    "monthlyNote": "Células vazias são valores que não puderam ser estimados, não zeros. Os totais (n_submissions e as colunas estimated_) podem ser somados entre linhas; as médias (colunas mean_) devem ser ponderadas por n_submissions. O Dicionário de Dados descreve cada coluna.",
     "error": "Erro ao carregar visualização",
     "dataDictionary": "Dicionário de Dados",
     "viewFieldDescriptions": "Ver descrições dos campos"
@@ -63,6 +70,7 @@
     "title": "Dicionário de Dados",
     "fieldInfo": "Informações do Campo",
     "subtitle": "Descrições de campos e tipos de dados para o conjunto de dados de desembarques",
+    "subtitleMonthly": "Descrições de campos e unidades para os valores mensais por distrito",
     "searchPlaceholder": "Pesquisar campos...",
     "noMetadata": "Descrições de campos não estão disponíveis no momento",
     "loading": "Carregando descrições de campos...",

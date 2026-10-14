@@ -61,4 +61,8 @@ This is how authoring notes and `tryCatch(as.data.frame(...))` once shipped insi
 - `lessons.ts` array order **is** curriculum order and drives "Lesson 3 of 5". Each `.qmd` hard-codes
   its own position and duration, so reordering means editing those strips and the "Next:" links too.
 - Lesson data comes from `GET /api/data-download/explorer-data` — permission-filtered in
-  `api/data-download/explorer-data.js` through `resolveDownloadRequests` (`lib/filter-permissions.js`), capped at `LESSON_ROW_CAP = 5000`.
+  `api/data-download/explorer-data.js` through `resolveDownload` (`lib/download.js`, dataset fixed to `landings`), capped at `LESSON_ROW_CAP = 5000`.
+- Lessons are **trip level only** (`landings`). Data Download also offers monthly figures per
+  district (`district-months`), which the lessons do not load; the catalog page says so
+  in its own banner (`dataExplorer:tripLevel`), and `intro.qmd` and `_landings-panel.qmd` say
+  the records are the **Trips** of Data Download.

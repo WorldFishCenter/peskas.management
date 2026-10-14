@@ -5,7 +5,7 @@
  * (a bare array of row objects), for the in-browser R lessons in the Data Academy tab.
  *
  * This is the Data Academy counterpart to /api/data-download/export. It reuses the
- * exact same permission gate (resolveDownloadRequests + the per-form fan-out), so a lesson
+ * exact same permission gate (resolveDownload in lib/download.js: the per-form fan-out), so a lesson
  * can only ever see the data the same user could download. Differences from export:
  *   - JSON, not CSV — the lesson's {ojs} cell hands the array to a {webr} cell via
  *     quarto-live's `input` option, where quarto-live converts the array of row objects
@@ -26,17 +26,14 @@
  */
 
 const { withMiddleware, authenticateUser } = require('../../lib/middleware');
-const { fetchLandingsPreviewMerged, normalizeTaxa, PeskasAPIError } = require('../../lib/peskas-api');
 const {
-  resolveDownloadRequests,
-  getAccessibleSurveys,
-  DownloadPermissionError
-} = require('../../lib/filter-permissions');
-const {
-  sendError,
-  sendServerError,
-  setCorsHeaders
-} = require('../../lib/response');
+  resolveDownload,
+  fetchDownloadRows,
+  downloadAuditDetails,
+  sendDownloadError
+} = require('../../lib/download');
+const { getAccessibleSurveys } = require('../../lib/filter-permissions');
+const { setCorsHeaders } = require('../../lib/response');
 const { logAuditEvent } = require('../../lib/audit-logger');
 const { getDb } = require('../../lib/db');
 
@@ -73,41 +70,11 @@ async function handler(req, res) {
 
     // Each request is pinned to one permitted form, with its country taken from the form
     // itself — the same gate preview.js and export.js use, so a lesson can never see data
-    // the user could not download.
-    const requests = await resolveDownloadRequests(req.user, queryParams);
+    // the user could not download. Lessons are written for trip rows, so the dataset is fixed.
+    const download = await resolveDownload(req.user, { ...queryParams, dataset: 'landings' });
 
-    const {
-      status = 'validated',
-      catch_taxon,
-      scope
-    } = queryParams;
-
-    // Filters applied to every request in the fan-out
-    const sharedFilters = { status: status || 'validated' };
-    if (scope && scope.trim()) {
-      sharedFilters.scope = scope.trim();
-    }
-    const taxa = normalizeTaxa(catch_taxon);
-    if (taxa) {
-      // Normalized here, not at the API boundary: this is the value the audit log and the
-      // "filters applied" echo also read, and PeSKAS matches the code case-sensitively.
-      sharedFilters.catch_taxon = taxa;
-    }
-
-    // PeSKAS API requires lowercase country codes
-    const normalizedRequests = requests.map(r => ({ ...r, country: r.country.toLowerCase() }));
-
-    // PeSKAS accepts one (country, survey_id, gaul_2) triple per call, so a user with
-    // several forms is served by one call each, merged and capped.
-    const { data: rows } = await fetchLandingsPreviewMerged(
-      normalizedRequests,
-      sharedFilters,
-      LESSON_ROW_CAP
-    );
-
-    const countries = [...new Set(normalizedRequests.map(r => r.country))];
-    const surveyIds = [...new Set(normalizedRequests.map(r => r.survey_id).filter(Boolean))];
-    const districts = [...new Set(normalizedRequests.map(r => r.gaul_2).filter(Boolean))];
+    // One PeSKAS call per permitted form, merged and capped.
+    const { data: rows } = await fetchDownloadRows(download, LESSON_ROW_CAP);
 
     res.setHeader('Cache-Control', 'no-store');
 
@@ -125,13 +92,7 @@ async function handler(req, res) {
       action: 'data_explorer_load',
       status: 'success',
       details: {
-        country_id: countries.join(',') || null,
-        survey_asset_id: surveyIds.join(',') || null,
-        data_status: sharedFilters.status || null,
-        scope: sharedFilters.scope || null,
-        catch_taxon: sharedFilters.catch_taxon || null,
-        district: districts.join(',') || null,
-        request_count: normalizedRequests.length,
+        ...downloadAuditDetails(download),
         row_cap: LESSON_ROW_CAP,
         row_count: rows.length
       },
@@ -146,15 +107,7 @@ async function handler(req, res) {
     // Permission/selection problems are the user's situation, not a server fault. A 500 here
     // makes the lesson panel say "connection problem", which sends the learner looking for a
     // fault that does not exist.
-    if (error instanceof DownloadPermissionError) {
-      return sendError(res, error.message, error.statusCode);
-    }
-
-    if (error instanceof PeskasAPIError) {
-      return sendServerError(res, error.message);
-    }
-
-    return sendServerError(res, 'Failed to load explorer data. Please try again later.');
+    return sendDownloadError(res, error, 'Failed to load explorer data. Please try again later.');
   }
 }
 

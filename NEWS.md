@@ -1,3 +1,44 @@
+# Management Platform 2.11.0
+
+Data Download offers monthly figures per district next to the trip-level data, and a user's
+districts now limit what they can download. 
+
+## New Features
+
+- **Monthly figures per district in Data Download.** A new Data Level choice sits at the top of
+  the filters: Trips (one row per catch of each trip, as before) or Monthly (one row per district
+  and month). Monthly rows carry the averages of the trips recorded and the whole fleet's
+  estimated trips, catch and revenue by the GPS tracker and FAO ARTFISH methods: the figures the
+  country dashboards show. They are validated data only and add up every survey of a country, so
+  the only filters are country and district. The preview states how many rows the download will
+  have, and the data dictionary and CSV download work as for trips. A country has no monthly
+  figures until its data pipeline has written them.
+
+
+## Changed
+
+- **A user's districts limit their downloads.** A user with districts assigned in Airtable now
+  gets only those districts, in trip and monthly downloads and in the Data Academy. Before,
+  leaving "All districts" returned every district of the survey. Trips with no district
+  recorded are left out for these users; a user who should see them needs no district list.
+  Admins and users with no district list are not limited.
+- **Who can read monthly figures.** A user with at least one survey in a country can read that
+  country's monthly figures, which add up all of its surveys, for their own districts. The
+  district filter lists the districts of their countries only.
+- **The Data Academy says it uses trip-level data only.** A banner above the lessons points to
+  Data Download for the monthly figures, and the lessons say their records are the Trips of
+  Data Download.
+- **A CSV file is named after its level**: `peskas-landings-…` for trips, as before, and
+  `peskas-district-months-…` for monthly figures.
+
+## Fixed
+
+- **A wrong request says what is wrong.** An unknown data level or a malformed filter now
+  answers with its own message instead of "Internal server error".
+- **The data dictionary follows the preview.** After a second preview with another data scope,
+  the column descriptions of the first one were still shown, so a column new to the table read
+  "no metadata available".
+
 # Management Platform 2.10.0
 
 Reviewers can see what an alert means without opening the Alert Guide, and alert rates count each

@@ -34,7 +34,10 @@ Airtable -> scripts/sync_* -> Mongo (countries, districts, taxa, surveys, users)
 
 - Validation, enumerator stats and admin screens read Mongo (`lib/db.js`,
   `MONGODB_VALIDATION_URI` / `MONGODB_VALIDATION_DB`). Data download and the Data Academy read
-  landings from peskas-api through `lib/peskas-api.js` (`api/data-download/*`).
+  landings from peskas-api through `lib/download.js` and `lib/peskas-api.js`
+  (`api/data-download/*`). Data download also reads `district-months` (monthly figures per
+  district, `?dataset=district-months`); the Data Academy is trip level only. A user with a
+  district list (`permissions.gaul_codes`) downloads only those districts.
 - The portal never calls KoboToolbox during page load. Status changes update Mongo, optionally push
   to KoboToolbox, and are reconciled on the pipeline's next run.
 - **Multi-survey**: each survey has its own `surveys_flags-{asset_id}` and
@@ -60,6 +63,11 @@ Airtable -> scripts/sync_* -> Mongo (countries, districts, taxa, surveys, users)
 - `*.md` is gitignored with explicit exceptions (`CLAUDE.md`, `README.md`, `NEWS.md`,
   `.claude/rules/`, `.claude/commands/`). A new markdown file anywhere else is silently untracked.
 - The `data-explorer/*.qmd` lessons hard-code landings column names, and `lib/peskas-api.js` /
-  `api/data-download/*` hard-code its filter and scope parameters (`catch_taxon`, `gaul_2`,
-  `trip_info`/`catch_info`). A column or parameter change in peskas-api breaks them.
+  `lib/download.js` hard-code its filter and scope parameters (`catch_taxon`, `gaul_2`,
+  `trip_info`/`catch_info`). The dataset names (`landings`, `district-months`) are in
+  `lib/peskas-api.js`, `lib/download.js`, `src/types/download.ts`,
+  `src/components/DataDownload/datasets.ts` and the `admin` locale keys `auditLog.datasets.*`;
+  `download:preview.monthlyNote` names district-months columns. A column, parameter or dataset
+  change in peskas-api breaks them. A district list goes out as a comma-separated `gaul_2`,
+  which needs peskas-api >= 1.8.0: an older API matches no row and the download is empty.
 - The R pipelines are external to this repo; you cannot run or fix them here.

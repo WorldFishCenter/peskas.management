@@ -3,8 +3,12 @@
   "description": "Learn to analyse small-scale fisheries data with interactive R lessons that run in your browser.",
   "intro": {
     "title": "Interactive R, right in your browser",
-    "body": "Each lesson runs real R code against your own landings data — the same data and access permissions as the Data Download tab. Nothing to install. Pick a lesson to get started. Take them in order — each one builds on the last.",
+    "body": "Each lesson runs real R code against your own landings data — the same trip-level data and access permissions as the Data Download tab. Nothing to install. Pick a lesson to get started. Take them in order — each one builds on the last.",
     "deeper": "Want to learn R more deeply? See WorldFish's full course:"
+  },
+  "tripLevel": {
+    "title": "Trip-level data only",
+    "body": "The lessons load your trips: one row per catch of each trip. The monthly figures per district are not part of the lessons: they are in"
   },
   "startLesson": "Start lesson",
   "comingSoon": "Coming soon",

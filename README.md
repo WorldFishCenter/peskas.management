@@ -17,7 +17,7 @@ The platform is for fisheries officers and survey coordinators in Kenya, Mozambi
 
 - Review landing records that the automatic quality checks have flagged, and approve or reject them.
 - See how each enumerator is doing: how many records they submit and how often those records are flagged.
-- Preview and download the landing data you have access to, validated or raw, as a CSV file.
+- Preview and download the landing data you have access to as a CSV file: trip by trip, validated or raw, or as monthly figures per district with estimates for the whole fleet.
 - Learn to explore that data with R, a free data analysis tool, in five short Data Academy lessons that run in the browser, with nothing to install.
 - Send feedback or ask the Peskas team for help from any page.
 

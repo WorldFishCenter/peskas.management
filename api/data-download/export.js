@@ -19,6 +19,9 @@
  * @queryparam {string} status - Data validation status: "validated" or "raw" (default: "validated")
  * @queryparam {string} catch_taxon - FAO ASFIS species code(s), comma-separated (e.g., "SKJ" or "SKJ,YFT")
  * @queryparam {string} scope - Data scope: "trip_info" or "catch_info" (optional)
+ * @queryparam {string} dataset - "landings" (trips, default) or "district-months" (monthly figures
+ *                                per district). District-months take only country and gaul_2:
+ *                                validated data, every form of the country.
  *
  * Known Limitations:
  * - survey_id filtering is disabled (PeSKAS uses different survey identifiers)
@@ -32,20 +35,21 @@
  *
  * Response Format:
  * Content-Type: text/csv; charset=utf-8
- * Content-Disposition: attachment; filename="peskas-landings-{country}-{date}.csv"
+ * Content-Disposition: attachment; filename="peskas-{dataset}-{country}-{date}.csv"
  *
  * @module api/data-download/export
  */
 
 const { withMiddleware, authenticateUser } = require('../../lib/middleware');
-const { getLandingsCSVMerged, normalizeTaxa, PeskasAPIError } = require('../../lib/peskas-api');
-const { resolveDownloadRequests, DownloadPermissionError } = require('../../lib/filter-permissions');
-const { sanitizeCSV } = require('../../lib/helpers');
 const {
-  sendError,
-  sendServerError,
-  setCorsHeaders
-} = require('../../lib/response');
+  resolveDownload,
+  fetchDownloadCSV,
+  servedScope,
+  downloadAuditDetails,
+  sendDownloadError
+} = require('../../lib/download');
+const { sanitizeCSV } = require('../../lib/helpers');
+const { setCorsHeaders } = require('../../lib/response');
 const { logAuditEvent } = require('../../lib/audit-logger');
 const { getDb } = require('../../lib/db');
 
@@ -67,43 +71,17 @@ async function handler(req, res) {
   try {
     const database = await getDb();
 
-    // Resolve the selection into permission-safe PeSKAS requests. Each request is pinned
-    // to a survey the user may access, with the country derived per-survey. A user with
-    // several forms/districts fans out to multiple CSV requests that are merged below.
-    const requests = await resolveDownloadRequests(req.user, req.query);
+    // Resolve the selection into permission-safe PeSKAS requests (lib/download.js): one per
+    // permitted form for trips, one per country for monthly figures, merged into one CSV.
+    const download = await resolveDownload(req.user, req.query);
+    const sanitizedCSV = sanitizeCSV(await fetchDownloadCSV(download));
 
-    const {
-      status = 'validated',
-      catch_taxon,
-      scope
-    } = req.query;
-
-    // Filters applied to every request (single-valued, shared across the fan-out)
-    const sharedFilters = { status: status || 'validated' };
-    if (scope && scope.trim()) {
-      sharedFilters.scope = scope.trim();
-    }
-    const taxa = normalizeTaxa(catch_taxon);
-    if (taxa) {
-      // Normalized here, not at the API boundary: this is the value the audit log and the
-      // "filters applied" echo also read, and PeSKAS matches the code case-sensitively.
-      sharedFilters.catch_taxon = taxa;
-    }
-
-    // PeSKAS API requires lowercase country codes
-    const normalizedRequests = requests.map(r => ({ ...r, country: r.country.toLowerCase() }));
-
-    const csvData = await getLandingsCSVMerged(normalizedRequests, sharedFilters);
-    const sanitizedCSV = sanitizeCSV(csvData);
-
-    // Distinct scope actually served (for filename + audit)
-    const countries = [...new Set(normalizedRequests.map(r => r.country))];
-    const surveyIds = [...new Set(normalizedRequests.map(r => r.survey_id).filter(Boolean))];
-    const districts = [...new Set(normalizedRequests.map(r => r.gaul_2).filter(Boolean))];
+    // Distinct scope actually served (for filename)
+    const { countries } = servedScope(download);
 
     const timestamp = new Date().toISOString().split('T')[0];
     const countryLabel = countries.length === 1 ? countries[0] : 'multi-country';
-    const filename = `peskas-landings-${countryLabel}-${timestamp}.csv`;
+    const filename = `peskas-${download.dataset}-${countryLabel}-${timestamp}.csv`;
 
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
@@ -115,15 +93,7 @@ async function handler(req, res) {
       category: 'download',
       action: 'data_export',
       status: 'success',
-      details: {
-        country_id: countries.join(',') || null,
-        survey_asset_id: surveyIds.join(',') || null,
-        data_status: sharedFilters.status || null,
-        scope: sharedFilters.scope || null,
-        catch_taxon: sharedFilters.catch_taxon || null,
-        district: districts.join(',') || null,
-        request_count: normalizedRequests.length,
-      },
+      details: downloadAuditDetails(download),
       req
     });
 
@@ -131,19 +101,7 @@ async function handler(req, res) {
 
   } catch (error) {
     console.error('Export error:', error);
-
-    // Permission/selection errors → clear 400/403 for the client
-    if (error instanceof DownloadPermissionError) {
-      return sendError(res, error.message, error.statusCode);
-    }
-
-    // Handle PeSKAS API errors with user-friendly messages
-    if (error instanceof PeskasAPIError) {
-      return sendServerError(res, error.message);
-    }
-
-    // Generic error
-    return sendServerError(res, 'Failed to export data. Please try again later.');
+    return sendDownloadError(res, error, 'Failed to export data. Please try again later.');
   }
 }
 
