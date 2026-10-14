@@ -9,6 +9,8 @@ import '@tabler/core/dist/js/tabler.min.js';
 import './utils/axiosConfig'; // Configure axios interceptors first
 import App from './App';
 import './index.css';
+// The Peskas logo's colours (synced from peskas-context/brand).
+import './components/common/peskas-logo.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

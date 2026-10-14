@@ -10,15 +10,6 @@
   --tblr-primary-fg: #ffffff;
   --tblr-primary-darken: #1a5aa8;  /* Darker shade for hover states */
   --tblr-primary-lighten: #4d8dd6;  /* Lighter shade */
-
-  /* The Peskas logo (components/common/PeskasLogo.tsx; brand kit in peskas-context/brand): its cells
-     shade from the tail (1) to the head (4, also the wordmark), plus the eye. Light values only:
-     the app has no dark theme. */
-  --peskas-1: #a9d1d4;
-  --peskas-2: #5aa8af;
-  --peskas-3: #006d77;
-  --peskas-4: #0b2233;
-  --peskas-eye: #d96c50;
 }
 
 /* Top-bar brand (Navbar.tsx): the full logo, or the mark alone below 640px. Beside the full logo

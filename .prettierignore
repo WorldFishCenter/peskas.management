@@ -5,3 +5,6 @@ server/node_modules/
 *.log
 .env*
 package-lock.json
+# synced from peskas-context/brand (brand/sync.py); the kit owns their format
+src/components/common/PeskasLogo.tsx
+src/components/common/peskas-logo.css
