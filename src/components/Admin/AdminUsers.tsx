@@ -15,6 +15,7 @@ import { useFetchUsers, useFetchSurveys, deleteUser, User } from '../../api/admi
 import ResetPasswordModal from './ResetPasswordModal';
 import { getApiBaseUrl } from '../../utils/apiConfig';
 import axios from '../../utils/axiosConfig';
+import { extractErrorMessage } from '../../utils/errors';
 import { getCountryFlag, getCountryName } from '../../utils/countryMetadata';
 
 const AdminUsers: React.FC = () => {
@@ -244,7 +245,7 @@ const AdminUsers: React.FC = () => {
         alert(t('messages.syncFailed', { message: result.message }));
       }
     } catch (err) {
-      alert(t('messages.syncFailedCheck'));
+      alert(extractErrorMessage(err, t('messages.syncFailedCheck')));
       console.error('Sync error:', err);
     } finally {
       setIsSyncing(false);

@@ -42,7 +42,7 @@ async function handler(req, res) {
     console.error('Sync users error:', error);
     return res.status(500).json({
       success: false,
-      error: 'Failed to sync users from Airtable',
+      error: `Failed to sync users from Airtable: ${error.message}`,
       message: error.message
     });
   }
