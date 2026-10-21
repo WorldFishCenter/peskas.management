@@ -22,6 +22,10 @@ const DataDownload: React.FC = () => {
   // Preview visibility state
   const [showPreview, setShowPreview] = useState(false);
 
+  // The selection the shown preview was made from. Download sends this one, not the filters as
+  // they stand: they may have changed since, and the button sits under the previewed rows.
+  const [previewedFilters, setPreviewedFilters] = useState<FiltersType>(filters);
+
   // Download state
   const [isDownloading, setIsDownloading] = useState(false);
 
@@ -42,6 +46,7 @@ const DataDownload: React.FC = () => {
    */
   const handlePreview = async () => {
     setShowPreview(true);
+    setPreviewedFilters(filters);
     await fetchPreview(filters);
   };
 
@@ -51,10 +56,10 @@ const DataDownload: React.FC = () => {
   const handleDownload = async () => {
     setIsDownloading(true);
 
-    // Send the user's own selections. The export endpoint re-applies permission
+    // Send the previewed selections. The export endpoint re-applies permission
     // scoping server-side from the authenticated user + these same query params
     // (identical to preview), so it always downloads exactly what was previewed.
-    const success = await downloadCSV(filters);
+    const success = await downloadCSV(previewedFilters);
     setIsDownloading(false);
 
     if (!success) {

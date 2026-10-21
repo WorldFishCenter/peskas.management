@@ -145,8 +145,14 @@ export const useFetchDownloadMetadata = (countryId?: string, surveyId?: string, 
     surveys: [],
     taxa: []
   });
-  const [isLoading, setIsLoading] = useState(false);
+  // True from the start: the first fetch runs right after mount, and until it lands the empty
+  // lists would read as "no surveys assigned".
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Only the latest request may write: switching country quickly leaves an older request in
+  // flight, and its answer must not replace the lists of the country now selected.
+  const latestRequestRef = useRef(0);
 
   // The species list is the bulk of this payload and only changes with country, so ask for it
   // when the country changes and hold it across survey changes — same shape as `metaSurveyRef`
@@ -155,6 +161,7 @@ export const useFetchDownloadMetadata = (countryId?: string, surveyId?: string, 
   const taxaCountryRef = useRef<string | null>(null);
 
   const fetchMetadata = useCallback(async () => {
+    const requestId = ++latestRequestRef.current;
     setIsLoading(true);
     setError(null);
 
@@ -169,6 +176,7 @@ export const useFetchDownloadMetadata = (countryId?: string, surveyId?: string, 
       const queryString = params.toString();
       const url = `${API_BASE_URL}/data-download/metadata${queryString ? `?${queryString}` : ''}`;
       const response = await axios.get(url);
+      if (requestId !== latestRequestRef.current) return;
 
       setMetadata((prev) => ({
         countries: response.data.countries || [],
@@ -180,10 +188,11 @@ export const useFetchDownloadMetadata = (countryId?: string, surveyId?: string, 
 
       if (wantsTaxa) taxaCountryRef.current = countryId || '';
     } catch (err: unknown) {
+      if (requestId !== latestRequestRef.current) return;
       console.error('Error fetching download metadata:', err);
       setError(extractErrorMessage(err, 'Failed to load filter metadata'));
     } finally {
-      setIsLoading(false);
+      if (requestId === latestRequestRef.current) setIsLoading(false);
     }
   }, [countryId, surveyId, withTaxa]);
 

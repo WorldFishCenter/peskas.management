@@ -53,19 +53,22 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
   // Fetch all metadata in one request (pre-filtered server-side by user permissions).
   // Pass the selected survey so districts cascade to that survey (Country → Survey → District).
   // The species list only for trips: monthly figures have no species filter.
-  const { metadata, isLoading: loadingMetadata } = useFetchDownloadMetadata(
-    isAdmin ? filters.country : undefined,
+  const { metadata, isLoading: loadingMetadata, error: metadataError } = useFetchDownloadMetadata(
+    filters.country,
     filters.survey_id?.[0],
     tripFilters
   );
   const { countries, districts, surveys, taxa } = metadata;
 
+  // `countries` holds only the user's own. Admins, and users whose forms span several countries,
+  // pick one first, so the form and district lists never mix countries. A user with one country
+  // has nothing to pick: their forms are scoped server-side.
+  const pickCountry = isAdmin || countries.length > 1;
+
   const selectedSurveyId = filters.survey_id?.[0] || '';
   const hasSurveySelected = selectedSurveyId !== '';
 
-  // Regular users are scoped to their assigned surveys (country is derived per-survey
-  // server-side); admins must pick a country first.
-  const hasAccess = isAdmin ? !!filters.country : surveys.length > 0;
+  const hasAccess = pickCountry ? !!filters.country : surveys.length > 0;
 
   // ~950 options, and every keystroke in any field re-renders this component. Built once per
   // metadata load instead: identical element references let React skip the whole subtree.
@@ -135,8 +138,8 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
         <DatasetSelect value={filters.dataset} onChange={(value) => handleChange('dataset', value)} />
       </div>
 
-      {/* Admin Only: Country Selector */}
-      {isAdmin && (
+      {/* Country Selector: admins, and users with forms in several countries */}
+      {pickCountry && (
         <div className="mb-3">
           <label className="form-label required">
             <LabelIcon icon={IconWorld} />
@@ -157,9 +160,66 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
         </div>
       )}
 
-      {/* Trip level only: status, scope and species */}
-      {tripFilters && (
+      {/* Survey + District cascade, once the country is known (Country → Survey → District) */}
+      {hasAccess && surveys.length > 0 && (
         <>
+          {/* Survey (trip level only; "All forms" is the distinct default) */}
+          {tripFilters && (
+            <div className="mb-3">
+              <label className="form-label">
+                <LabelIcon icon={IconClipboardList} />
+                {t('filters.surveys')}
+              </label>
+              <SurveySelect
+                surveys={surveys}
+                selectedSurveyId={selectedSurveyId}
+                onSelectAll={handleSelectAllSurveys}
+                onSelect={handleSurveySelect}
+              />
+            </div>
+          )}
+
+          {/* District (GAUL 2): after a specific survey for trips, straight away for monthly figures */}
+          {(tripFilters ? hasSurveySelected : hasAccess) && districts.length > 0 && (
+            <div className="mb-3">
+              <label className="form-label">
+                <LabelIcon icon={IconMapPin} />
+                {t('filters.gaulCodes')}
+              </label>
+              <select
+                className="form-select"
+                value={filters.gaul_2 || ''}
+                onChange={(e) => handleChange('gaul_2', e.target.value)}
+                disabled={loadingMetadata}
+              >
+                <option value="">{t('filters.gaulAll')}</option>
+                {districts.map(district => (
+                  <option key={district.code} value={district.code}>
+                    {district.name}
+                  </option>
+                ))}
+              </select>
+              <small className="form-hint">
+                {t('filters.gaulCodesHint')}{' '}
+                <a
+                  href={t('filters.gaulHelpLink')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link-secondary"
+                >
+                  <IconExternalLink className="icon icon-inline" size={14} />
+                  {t('learnMore', { ns: 'common' })}
+                </a>
+              </small>
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Trip level only: status, scope and species. The species list follows the country too. */}
+      {hasAccess && tripFilters && (
+        <>
+          <hr className="my-3" />
           {/* Status Selector */}
           <div className="mb-3">
             <label className="form-label required">
@@ -267,75 +327,24 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
         </>
       )}
 
-      {/* Survey + District cascade (only once the user has access) */}
-      {surveys.length > 0 && (
-        <>
-          {/* Survey (trip level only; "All forms" is the distinct default) */}
-          {tripFilters && (
-            <>
-              <hr className="my-3" />
-              <div className="mb-3">
-                <label className="form-label">
-                  <LabelIcon icon={IconClipboardList} />
-                  {t('filters.surveys')}
-                </label>
-                <SurveySelect
-                  surveys={surveys}
-                  selectedSurveyId={selectedSurveyId}
-                  onSelectAll={handleSelectAllSurveys}
-                  onSelect={handleSurveySelect}
-                />
-              </div>
-            </>
-          )}
-
-          {/* District (GAUL 2): after a specific survey for trips, straight away for monthly figures */}
-          {(tripFilters ? hasSurveySelected : hasAccess) && districts.length > 0 && (
-            <div className="mb-3">
-              <label className="form-label">
-                <LabelIcon icon={IconMapPin} />
-                {t('filters.gaulCodes')}
-              </label>
-              <select
-                className="form-select"
-                value={filters.gaul_2 || ''}
-                onChange={(e) => handleChange('gaul_2', e.target.value)}
-                disabled={loadingMetadata}
-              >
-                <option value="">{t('filters.gaulAll')}</option>
-                {districts.map(district => (
-                  <option key={district.code} value={district.code}>
-                    {district.name}
-                  </option>
-                ))}
-              </select>
-              <small className="form-hint">
-                {t('filters.gaulCodesHint')}{' '}
-                <a
-                  href={t('filters.gaulHelpLink')}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link-secondary"
-                >
-                  <IconExternalLink className="icon icon-inline" size={14} />
-                  {t('learnMore', { ns: 'common' })}
-                </a>
-              </small>
-            </div>
-          )}
-        </>
+      {/* The filter lists failed to load: say so, rather than "no surveys assigned" */}
+      {metadataError && (
+        <div className="alert alert-danger mb-3">
+          <IconInfoCircle className="icon me-2" />
+          {metadataError}
+        </div>
       )}
 
       {/* Regular user with no accessible surveys */}
-      {!isAdmin && !loadingMetadata && surveys.length === 0 && (
+      {!isAdmin && !loadingMetadata && !metadataError && surveys.length === 0 && (
         <div className="alert alert-warning mb-3">
           <IconInfoCircle className="icon me-2" />
           {t('filters.noSurveysAssigned')}
         </div>
       )}
 
-      {/* Admin without a country selected */}
-      {isAdmin && !filters.country && (
+      {/* Country to pick, none selected yet */}
+      {pickCountry && !filters.country && (
         <div className="alert alert-info mb-3">
           <IconInfoCircle className="icon me-2" />
           {t('filters.selectCountryFirst')}
