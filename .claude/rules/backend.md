@@ -48,8 +48,8 @@ module.exports = withMiddleware(handler, authenticateUser);          // admin: a
   Skipping it produces an endpoint that works in production and 404s locally.
 - **`await logAuditEvent(db, event)` BEFORE sending the response.** Vercel freezes the execution
   context after `res.json()`, so a fire-and-forget audit write is silently dropped.
-- **Validate `asset_id` before building a dynamic collection name** (`surveys_flags-{asset_id}`,
-  `enumerators_stats-{asset_id}`); use `getSurveyFlagsCollection` / `getEnumeratorStatsCollection`.
+- **Validate `asset_id` before building a dynamic collection name** (`surveys_flags-{asset_id}`);
+  use `getSurveyFlagsCollection`.
 - **Validate ObjectIds** (`validateObjectId`) before any query that takes an id.
 - **Never return password hashes or tokens**; project them out of the query.
 
@@ -63,7 +63,7 @@ module.exports = withMiddleware(handler, authenticateUser);          // admin: a
 | Permission filtering | `filter-permissions.js`: `getAccessibleSurveys(user, countryId)`, `getAccessibleCountries(user)`, `getAccessibleDistricts(user, countryId, surveyId, countries)` (pass `countries` to keep districts to them), `getAccessibleTaxa(countries, countryId)` (takes the output of `getAccessibleCountries`), `resolveDownloadRequests(user, query)` |
 | Downloads | `download.js`: `resolveDownload(user, query)` turns a query into a `download` (`{ dataset, requests, sharedFilters }`) that `fetchPreview`, `fetchDownloadRows`, `fetchDownloadCSV`, `servedScope` and `downloadAuditDetails` take whole; `sendDownloadError` for the catch block |
 | Audit | `audit-logger.js`: `logAuditEvent`, `ensureAuditIndexes` |
-| Helpers | `helpers.js`: `validateObjectId`, `sanitizeCSV`, `getSurveyFlagsCollection`, `getEnumeratorStatsCollection`, `escapeRegex`, `isValidDate`, `validatePassword` |
+| Helpers | `helpers.js`: `validateObjectId`, `sanitizeCSV`, `getSurveyFlagsCollection`, `escapeRegex`, `isValidDate`, `validatePassword` |
 | External APIs | `peskas-api.js` (Peskas API), `api-utils.js` (KoboToolbox), `email.js` (SES), `rate-limit.js` |
 
 Both `server/dev.js` and `api/` import from `lib/`; put shared logic there, not in one caller.

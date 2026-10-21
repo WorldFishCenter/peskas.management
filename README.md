@@ -53,14 +53,14 @@ React 18 + TypeScript + Vite frontend (Tabler UI, Highcharts), Node serverless f
 ### How it fits together
 
 ```
-KoboToolbox -> country pipelines -> MongoDB validation-* (surveys_flags-*, enumerators_stats-*) -> api/ -> React
+KoboToolbox -> country pipelines -> MongoDB validation-* (surveys_flags-*) -> api/ -> React
 country pipelines -> Peskas Fishery Data API -> lib/peskas-api.js -> Data Download and Data Academy
 Airtable -> scripts/sync_* (daily) -> MongoDB (countries, districts, taxa, surveys, users)
 status changes -> MongoDB, optionally KoboToolbox -> read back by the pipelines on their next run
 ```
 
 - MongoDB is the only store the pages read. The platform never calls KoboToolbox while a page loads.
-- Each survey has its own `surveys_flags-{asset_id}` and `enumerators_stats-{asset_id}` collections, written by the country pipelines. The pipelines live in their own repos; you cannot run or fix them here.
+- Each survey has its own `surveys_flags-{asset_id}` collection, written by the country pipelines; the enumerator statistics are computed from it. The pipelines also write `enumerators_stats-{asset_id}`, which nothing here reads since 2.10.0. The pipelines live in their own repos; you cannot run or fix them here.
 - Airtable is where users, surveys, districts, species and countries are managed. Access is set by `permissions.surveys` on each user: an admin with an empty list sees every survey, anyone else sees only the surveys listed.
 
 ### Setup

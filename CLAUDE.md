@@ -26,7 +26,7 @@ gitignored local material (`docs/ARCHITECTURE.md` for the endpoint and collectio
 ## Architecture
 
 ```
-R pipelines -> Mongo validation-* (surveys_flags-*, enumerators_stats-*) --\
+R pipelines -> Mongo validation-* (surveys_flags-*) -----------------------\
                                                                            +-> api/ -> React
 country pipelines -> peskas-api-* bucket -> peskas-api (lib/peskas-api.js) /
 Airtable -> scripts/sync_* -> Mongo (countries, districts, taxa, surveys, users)
@@ -40,9 +40,10 @@ Airtable -> scripts/sync_* -> Mongo (countries, districts, taxa, surveys, users)
   district list (`permissions.gaul_codes`) downloads only those districts.
 - The portal never calls KoboToolbox during page load. Status changes update Mongo, optionally push
   to KoboToolbox, and are reconciled on the pipeline's next run.
-- **Multi-survey**: each survey has its own `surveys_flags-{asset_id}` and
-  `enumerators_stats-{asset_id}` collections. Per-survey KoboToolbox config and alert-code meanings
-  live in the `surveys` collection, so alert codes differ between surveys.
+- **Multi-survey**: each survey has its own `surveys_flags-{asset_id}` collection; enumerator
+  stats are computed from it (`enumerators_stats-*` is still written but unread since 2.10.0).
+  Per-survey KoboToolbox config and alert-code meanings live in the `surveys` collection, so
+  alert codes differ between surveys.
 - **Permissions**: `permissions.surveys` on the user gates everything. An admin with an empty array
   has access to all surveys; a regular user sees only what is listed.
 - Production is `api/` (Vercel serverless); `server/dev.js` mounts the same handlers for local dev.
