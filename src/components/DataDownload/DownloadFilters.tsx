@@ -70,6 +70,13 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
 
   const hasAccess = pickCountry ? !!filters.country : surveys.length > 0;
 
+  // District (GAUL 2): after a specific survey for trips, straight away for monthly figures.
+  // Timor's monthly figures are per municipality: its districts, all but Atauro, match no row,
+  // so the whole country is downloaded.
+  const showDistricts =
+    districts.length > 0 &&
+    (tripFilters ? hasSurveySelected : hasAccess && !districts.some((d) => d.country_id === 'timor'));
+
   // ~950 options, and every keystroke in any field re-renders this component. Built once per
   // metadata load instead: identical element references let React skip the whole subtree.
   const taxonOptions = useMemo(
@@ -179,8 +186,7 @@ const DownloadFilters: React.FC<DownloadFiltersProps> = ({
             </div>
           )}
 
-          {/* District (GAUL 2): after a specific survey for trips, straight away for monthly figures */}
-          {(tripFilters ? hasSurveySelected : hasAccess) && districts.length > 0 && (
+          {showDistricts && (
             <div className="mb-3">
               <label className="form-label">
                 <LabelIcon icon={IconMapPin} />

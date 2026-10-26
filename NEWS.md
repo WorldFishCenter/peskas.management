@@ -1,3 +1,12 @@
+# Management Platform 2.11.1
+
+## Fixed
+
+- **Timor-Leste's monthly figures have no district filter.** Timor-Leste reports its monthly
+  figures per municipality, so only Atauro has a district of its own, and picking any other
+  district returned no rows. Monthly downloads for Timor-Leste now cover the whole country;
+  each row names its municipality. Trip-level downloads keep the district filter.
+
 # Management Platform 2.11.0
 
 Data Download offers monthly figures per district next to the trip-level data, and a user's
