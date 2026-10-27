@@ -82,7 +82,8 @@
       "10": "Revenue per unit effort exceeds maximum (2,500 MZN per hour per fisher)",
       "11": "Number of fishers is reported as 0 on a fishing trip",
       "12": "Trip duration is 0 or less, or 60 hours or more",
-      "13": "Form submission date is earlier than landing date recorded"
+      "13": "Form submission date is earlier than landing date recorded",
+      "14": "Price per kg is below minimum (10 MZN per kg)"
     },
     "aNKjDfXDKyW3JLtaCdxDp5": {
       "1": "Horse power is ≤ 0 or exceeds maximum (max hp = 150)",
@@ -98,7 +99,8 @@
       "5_3": "Length above 500 cm",
       "6_1": "CPUE exceeds maximum (max cpue = 20 kg / fisher / hour)",
       "6_2": "RPUE exceeds maximum (max rpue = 3,876 KSH / fisher / hour)",
-      "6_3": "Price per kg exceeds maximum (max price kg = 3,876 KSH / kg)"
+      "6_3": "Price per kg exceeds maximum (max price kg = 3,876 KSH / kg)",
+      "6_4": "Price per kg is below minimum (min price kg = 20 KSH / kg)"
     },
     "apobg7g9x9c5ZqHbcn69T3": {
       "1": "A catch was reported, but no taxon was specified",
@@ -113,7 +115,8 @@
       "10": "Revenue per unit effort exceeds maximum (2,500 MZN per hour per fisher)",
       "11": "Number of fishers is reported as 0 on a fishing trip",
       "12": "Trip duration is 0 or less, or 60 hours or more",
-      "13": "Form submission date is earlier than landing date recorded"
+      "13": "Form submission date is earlier than landing date recorded",
+      "14": "Price per kg is below minimum (10 MZN per kg)"
     },
     "ajEruvrFJCzmi4cmWs9PAc": {
       "1": "A catch was reported, but no taxon was specified",
@@ -128,7 +131,8 @@
       "10": "Revenue per unit effort exceeds maximum (81,420 TZS per hour per fisher)",
       "11": "Landing date is in the future relative to the submission date",
       "12": "Trip duration is zero or negative",
-      "13": "Fishers count is zero or negative"
+      "13": "Fishers count is zero or negative",
+      "14": "Price per kg is below minimum (400 TZS per kg)"
     },
     "acbfEuAzqAnCGm8Mqenr56": {
       "1": "A catch was reported, but no taxon was specified",
@@ -143,7 +147,8 @@
       "10": "Revenue per unit effort exceeds maximum (81,420 TZS per hour per fisher)",
       "11": "Landing date is in the future relative to the submission date",
       "12": "Trip duration is zero or negative",
-      "13": "Fishers count is zero or negative"
+      "13": "Fishers count is zero or negative",
+      "14": "Price per kg is below minimum (400 TZS per kg)"
     },
     "a6vXSMtDFgPCASg7ASfgUR": {
       "1": "A catch was reported, but no taxon was specified",
@@ -158,7 +163,8 @@
       "10": "Revenue per unit effort exceeds maximum (81,420 TZS per hour per fisher)",
       "11": "Landing date is in the future relative to the submission date",
       "12": "Trip duration is zero or negative",
-      "13": "Fishers count is zero or negative"
+      "13": "Fishers count is zero or negative",
+      "14": "Price per kg is below minimum (400 TZS per kg)"
     },
     "aCvp5SjbUG3SFTuT2GSZ9V": {
       "1": "A catch was reported, but no taxon was specified",

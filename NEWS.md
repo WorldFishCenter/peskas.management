@@ -1,3 +1,12 @@
+# Management Platform 2.11.2
+
+## Changed
+
+- **Price per kg below minimum.** Kenya KEFS has a new alert 6.4 (under 20 KSH per kg),
+  Zanzibar's three WorldFish forms and Mozambique's DINAPA and Lurio forms a new alert 14
+  (under 400 TZS and 10 MZN per kg, about 0.15 USD), in English, Portuguese and Swahili. The
+  pipelines only flagged a price too high; a revenue typed in thousands went through.
+
 # Management Platform 2.11.1
 
 ## Fixed

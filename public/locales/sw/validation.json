@@ -82,7 +82,8 @@
       "10": "Mapato kwa jitihada (RPUE) yanazidi kiwango cha juu (MZN 2,500 kwa saa kwa mvuvi)",
       "11": "Idadi ya wavuvi imeripotiwa kuwa 0 katika safari ya uvuvi",
       "12": "Muda wa safari ni 0 au chini, au saa 60 au zaidi",
-      "13": "Tarehe ya kutuma fomu ni ya mapema kuliko tarehe ya kutua iliyorekodiwa"
+      "13": "Tarehe ya kutuma fomu ni ya mapema kuliko tarehe ya kutua iliyorekodiwa",
+      "14": "Bei kwa kilo iko chini ya kiwango cha chini (MZN 10 kwa kilo)"
     },
     "aNKjDfXDKyW3JLtaCdxDp5": {
       "1": "Nguvu ya farasi ni ≤ 0 au inazidi kiwango cha juu (hp max = 150)",
@@ -98,7 +99,8 @@
       "5_3": "Urefu unazidi sentimita 500",
       "6_1": "CPUE inazidi kiwango cha juu (cpue max = 20 kg / mvuvi / saa)",
       "6_2": "RPUE inazidi kiwango cha juu (rpue max = 3,876 KSH / mvuvi / saa)",
-      "6_3": "Bei kwa kilo inazidi kiwango cha juu (bei max kg = 3,876 KSH / kg)"
+      "6_3": "Bei kwa kilo inazidi kiwango cha juu (bei max kg = 3,876 KSH / kg)",
+      "6_4": "Bei kwa kilo iko chini ya kiwango cha chini (bei min kg = 20 KSH / kg)"
     },
     "apobg7g9x9c5ZqHbcn69T3": {
       "1": "Uwasilishaji wa nyara umeripotiwa, lakini aina (taxon) haijabainishwa",
@@ -113,7 +115,8 @@
       "10": "Mapato kwa jitihada (RPUE) yanazidi kiwango cha juu (MZN 2,500 kwa saa kwa mvuvi)",
       "11": "Idadi ya wavuvi imeripotiwa kuwa 0 katika safari ya uvuvi",
       "12": "Muda wa safari ni 0 au chini, au saa 60 au zaidi",
-      "13": "Tarehe ya kutuma fomu ni ya mapema kuliko tarehe ya kutua iliyorekodiwa"
+      "13": "Tarehe ya kutuma fomu ni ya mapema kuliko tarehe ya kutua iliyorekodiwa",
+      "14": "Bei kwa kilo iko chini ya kiwango cha chini (MZN 10 kwa kilo)"
     },
     "ajEruvrFJCzmi4cmWs9PAc": {
       "1": "Uwasilishaji wa nyara umeripotiwa, lakini aina (taxon) haijabainishwa",
@@ -128,7 +131,8 @@
       "10": "Mapato kwa jitihada (RPUE) yanazidi kiwango cha juu (TZS 81,420 kwa saa kwa mvuvi)",
       "11": "Tarehe ya kutua ni baada ya tarehe ya kutuma fomu",
       "12": "Muda wa safari ni sifuri au hasi",
-      "13": "Idadi ya wavuvi ni sifuri au hasi"
+      "13": "Idadi ya wavuvi ni sifuri au hasi",
+      "14": "Bei kwa kilo iko chini ya kiwango cha chini (TZS 400 kwa kilo)"
     },
     "acbfEuAzqAnCGm8Mqenr56": {
       "1": "Uwasilishaji wa nyara umeripotiwa, lakini aina (taxon) haijabainishwa",
@@ -143,7 +147,8 @@
       "10": "Mapato kwa jitihada (RPUE) yanazidi kiwango cha juu (TZS 81,420 kwa saa kwa mvuvi)",
       "11": "Tarehe ya kutua ni baada ya tarehe ya kutuma fomu",
       "12": "Muda wa safari ni sifuri au hasi",
-      "13": "Idadi ya wavuvi ni sifuri au hasi"
+      "13": "Idadi ya wavuvi ni sifuri au hasi",
+      "14": "Bei kwa kilo iko chini ya kiwango cha chini (TZS 400 kwa kilo)"
     },
     "a6vXSMtDFgPCASg7ASfgUR": {
       "1": "Uwasilishaji wa nyara umeripotiwa, lakini aina (taxon) haijabainishwa",
@@ -158,7 +163,8 @@
       "10": "Mapato kwa jitihada (RPUE) yanazidi kiwango cha juu (TZS 81,420 kwa saa kwa mvuvi)",
       "11": "Tarehe ya kutua ni baada ya tarehe ya kutuma fomu",
       "12": "Muda wa safari ni sifuri au hasi",
-      "13": "Idadi ya wavuvi ni sifuri au hasi"
+      "13": "Idadi ya wavuvi ni sifuri au hasi",
+      "14": "Bei kwa kilo iko chini ya kiwango cha chini (TZS 400 kwa kilo)"
     },
     "aCvp5SjbUG3SFTuT2GSZ9V": {
       "1": "Uwasilishaji wa nyara umeripotiwa, lakini aina (taxon) haijabainishwa",

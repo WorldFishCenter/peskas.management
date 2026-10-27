@@ -82,7 +82,8 @@
       "10": "Receita por unidade de esforço excede o máximo (2.500 MZN por hora por pescador)",
       "11": "Número de pescadores reportado é 0 numa viagem de pesca",
       "12": "A duração da viagem é 0 ou menos, ou 60 horas ou mais",
-      "13": "A data de submissão do formulário é anterior à data de desembarque registada"
+      "13": "A data de submissão do formulário é anterior à data de desembarque registada",
+      "14": "Preço por kg abaixo do mínimo (10 MZN por kg)"
     },
     "aNKjDfXDKyW3JLtaCdxDp5": {
       "1": "Cavalos de potência são ≤ 0 ou excedem o máximo (hp máx = 150)",
@@ -98,7 +99,8 @@
       "5_3": "Comprimento acima de 500 cm",
       "6_1": "CPUE excede o máximo (cpue máx = 20 kg / pescador / hora)",
       "6_2": "RPUE excede o máximo (rpue máx = 3.876 KSH / pescador / hora)",
-      "6_3": "Preço por kg excede o máximo (preço máx kg = 3.876 KSH / kg)"
+      "6_3": "Preço por kg excede o máximo (preço máx kg = 3.876 KSH / kg)",
+      "6_4": "Preço por kg abaixo do mínimo (preço mín kg = 20 KSH / kg)"
     },
     "apobg7g9x9c5ZqHbcn69T3": {
       "1": "Foi reportada uma captura, mas nenhum táxon foi especificado",
@@ -113,7 +115,8 @@
       "10": "Receita por unidade de esforço excede o máximo (2.500 MZN por hora por pescador)",
       "11": "Número de pescadores reportado é 0 numa viagem de pesca",
       "12": "A duração da viagem é 0 ou menos, ou 60 horas ou mais",
-      "13": "A data de submissão do formulário é anterior à data de desembarque registada"
+      "13": "A data de submissão do formulário é anterior à data de desembarque registada",
+      "14": "Preço por kg abaixo do mínimo (10 MZN por kg)"
     },
     "ajEruvrFJCzmi4cmWs9PAc": {
       "1": "Foi reportada uma captura, mas nenhum táxon foi especificado",
@@ -128,7 +131,8 @@
       "10": "Receita por unidade de esforço excede o máximo (81.420 TZS por hora por pescador)",
       "11": "A data de desembarque é posterior à data de submissão do formulário",
       "12": "A duração da viagem é zero ou negativa",
-      "13": "O número de pescadores é zero ou negativo"
+      "13": "O número de pescadores é zero ou negativo",
+      "14": "Preço por kg abaixo do mínimo (400 TZS por kg)"
     },
     "acbfEuAzqAnCGm8Mqenr56": {
       "1": "Foi reportada uma captura, mas nenhum táxon foi especificado",
@@ -143,7 +147,8 @@
       "10": "Receita por unidade de esforço excede o máximo (81.420 TZS por hora por pescador)",
       "11": "A data de desembarque é posterior à data de submissão do formulário",
       "12": "A duração da viagem é zero ou negativa",
-      "13": "O número de pescadores é zero ou negativo"
+      "13": "O número de pescadores é zero ou negativo",
+      "14": "Preço por kg abaixo do mínimo (400 TZS por kg)"
     },
     "a6vXSMtDFgPCASg7ASfgUR": {
       "1": "Foi reportada uma captura, mas nenhum táxon foi especificado",
@@ -158,7 +163,8 @@
       "10": "Receita por unidade de esforço excede o máximo (81.420 TZS por hora por pescador)",
       "11": "A data de desembarque é posterior à data de submissão do formulário",
       "12": "A duração da viagem é zero ou negativa",
-      "13": "O número de pescadores é zero ou negativo"
+      "13": "O número de pescadores é zero ou negativo",
+      "14": "Preço por kg abaixo do mínimo (400 TZS por kg)"
     },
     "aCvp5SjbUG3SFTuT2GSZ9V": {
       "1": "Foi reportada uma captura, mas nenhum táxon foi especificado",
