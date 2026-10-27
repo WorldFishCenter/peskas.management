@@ -1,7 +1,7 @@
 {
   "name": "peskas-management-platform",
   "private": true,
-  "version": "2.11.2",
+  "version": "2.11.3",
   "type": "module",
   "scripts": {
     "dev:frontend": "vite",

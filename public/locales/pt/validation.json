@@ -100,7 +100,7 @@
       "6_1": "CPUE excede o máximo (cpue máx = 20 kg / pescador / hora)",
       "6_2": "RPUE excede o máximo (rpue máx = 3.876 KSH / pescador / hora)",
       "6_3": "Preço por kg excede o máximo (preço máx kg = 3.876 KSH / kg)",
-      "6_4": "Preço por kg abaixo do mínimo (preço mín kg = 20 KSH / kg)"
+      "6_4": "Preço por kg abaixo do mínimo (preço mín kg = 50 KSH / kg)"
     },
     "apobg7g9x9c5ZqHbcn69T3": {
       "1": "Foi reportada uma captura, mas nenhum táxon foi especificado",

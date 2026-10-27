@@ -100,7 +100,7 @@
       "6_1": "CPUE exceeds maximum (max cpue = 20 kg / fisher / hour)",
       "6_2": "RPUE exceeds maximum (max rpue = 3,876 KSH / fisher / hour)",
       "6_3": "Price per kg exceeds maximum (max price kg = 3,876 KSH / kg)",
-      "6_4": "Price per kg is below minimum (min price kg = 20 KSH / kg)"
+      "6_4": "Price per kg is below minimum (min price kg = 50 KSH / kg)"
     },
     "apobg7g9x9c5ZqHbcn69T3": {
       "1": "A catch was reported, but no taxon was specified",

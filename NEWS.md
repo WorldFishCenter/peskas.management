@@ -1,3 +1,10 @@
+# Management Platform 2.11.3
+
+## Changed
+
+- **Kenya's low-price alert is 50 KSH per kg.** Alert 6.4 reads "under 50 KSH per kg" in English,
+  Portuguese and Swahili, as in KEFS pipeline 5.7.1 and the KoBo form.
+
 # Management Platform 2.11.2
 
 ## Changed
