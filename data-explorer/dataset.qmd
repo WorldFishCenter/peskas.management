@@ -51,10 +51,10 @@ on, so that nothing here depends on telling one fish from another.
 <table class="table">
   <thead><tr><th>survey_id</th><th>trip_id</th><th>landing_date</th><th>gaul_2_name</th><th>gear</th><th>catch_taxon</th><th>catch_kg</th><th>n_catch</th><th>tot_catch_kg</th></tr></thead>
   <tbody>
-    <tr class="grp-a"><td>survey_1</td><td>trip_1</td><td>2024-01-05</td><td>Shimoni</td><td>hand line</td><td>species 1</td><td>12</td><td>3</td><td>20</td></tr>
-    <tr class="grp-a"><td>survey_1</td><td>trip_1</td><td>2024-01-05</td><td>Shimoni</td><td>hand line</td><td>species 2</td><td>5</td><td>3</td><td>20</td></tr>
+    <tr class="grp-a"><td>survey_1</td><td>trip_1</td><td>2024-01-05</td><td>Shimoni</td><td>hand line</td><td>species 1</td><td>12</td><td>1</td><td>20</td></tr>
+    <tr class="grp-a"><td>survey_1</td><td>trip_1</td><td>2024-01-05</td><td>Shimoni</td><td>hand line</td><td>species 2</td><td>5</td><td>2</td><td>20</td></tr>
     <tr class="grp-a"><td>survey_1</td><td>trip_1</td><td>2024-01-05</td><td>Shimoni</td><td>hand line</td><td>species 3</td><td>3</td><td>3</td><td>20</td></tr>
-    <tr class="grp-b"><td>survey_2</td><td>trip_2</td><td>2024-01-06</td><td>Vanga</td><td>gillnet</td><td>species 1</td><td>8</td><td>2</td><td>14</td></tr>
+    <tr class="grp-b"><td>survey_2</td><td>trip_2</td><td>2024-01-06</td><td>Vanga</td><td>gillnet</td><td>species 1</td><td>8</td><td>1</td><td>14</td></tr>
     <tr class="grp-b"><td>survey_2</td><td>trip_2</td><td>2024-01-06</td><td>Vanga</td><td>gillnet</td><td>species 2</td><td>6</td><td>2</td><td>14</td></tr>
   </tbody>
 </table>
@@ -82,7 +82,7 @@ example <- data.frame(
   gear         = c("hand line", "hand line", "hand line", "gillnet", "gillnet"),
   catch_taxon  = c("species 1", "species 2", "species 3", "species 1", "species 2"),
   catch_kg     = c(12, 5, 3, 8, 6),
-  n_catch      = c(3, 3, 3, 2, 2),
+  n_catch      = c(1, 2, 3, 1, 2),
   tot_catch_kg = c(20, 20, 20, 14, 14)
 )
 
@@ -100,7 +100,7 @@ Look at the very first line. It is one **catch**: *species 1, 12 kg*. The second
 *species 2, 5 kg*.
 
 ::: {.callout-important appearance="simple"}
-**Each row is one catch — one kind of fish from one trip.**
+**Each row is one catch — one kind of fish from one trip**, or one size of it when fish are counted by size.
 :::
 
 This is the first thing to hold on to. A row is **not** a whole trip, and it is **not** one fisher. It
@@ -139,8 +139,8 @@ two, so it fills two rows. Here is that first trip drawn as a picture:
 
 [One trip, three kinds of fish → three rows, all sharing `trip_id = trip_1`.]{.diagram-caption}
 
-The column **`n_catch`** writes that number down for you: it is **how many kinds of catch the trip
-recorded**. You don't have to take it on trust — you can count the rows for each trip yourself. Press
+The column **`n_catch`** numbers the catches of each trip, **1, 2, 3**, in the order they were
+recorded. In the example, each catch has one row, so you can count the rows for each trip yourself. Press
 **Run**:
 
 ```{webr}
@@ -149,8 +149,10 @@ recorded**. You don't have to take it on trust — you can count the rows for ea
 table(example$trip_id)
 ```
 
-The result shows `trip_1  3` and `trip_2  2`. Three rows for the first trip, two for the second. That
-matches the `n_catch` column exactly.
+The result shows `trip_1  3` and `trip_2  2`. Three rows for the first trip, two for the second: the
+same as the last `n_catch` of each trip. In your real data, a catch whose fish were counted by size fills
+one row per size, all with the same `n_catch`. There, the last `n_catch` tells you how many catches a trip
+had, not the number of rows.
 
 Counting how often something appears is already a useful skill, and you will use it again later.
 
@@ -167,7 +169,7 @@ Now look across the columns. Once you see it, you cannot un-see it: the columns 
   </div>
   <div class="about-catch">
     <strong>About each catch</strong> <span class="text-secondary">(changes on each row)</span><br>
-    <code>catch_taxon</code>, <code>catch_kg</code>, <code>length_cm</code>, <code>catch_price</code>
+    <code>catch_taxon</code>, <code>catch_kg</code>, <code>length_cm</code>, <code>n_fish</code>, <code>catch_price</code>
   </div>
 </div>
 ```
@@ -265,8 +267,8 @@ of the **values** look different, and it is worth knowing why before you go on.
 
 You can now read the shape of your data:
 
-- a **row** is one catch — one kind of fish from one trip;
-- rows belong together when they share a **`trip_id`**, and **`n_catch`** says how many a trip had;
+- a **row** is one catch — one kind of fish from one trip — or one size of it;
+- rows belong together when they share a **`trip_id`**, and **`n_catch`** numbers the catches within a trip;
 - every column is either **about the trip** (the same on every row) or **about each catch** (different on each row);
 - your real data has this same shape — just much bigger.
 
