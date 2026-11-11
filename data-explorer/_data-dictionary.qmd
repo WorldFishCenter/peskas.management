@@ -30,7 +30,7 @@ places its own warnings around it, so anything but the tables would fight with t
 | `survey_organization` | The organization that runs the survey: `WCS` or `KEFS` (Kenya), `ZAFIRI` (Zanzibar), `DINAPA` (Mozambique), `MAF` (Timor-Leste) |
 | `survey_id` | The survey this record came from |
 | `trip_id` | The fishing trip. Rows sharing a `trip_id` are from the same trip |
-| `n_catch` | How many kinds of catch that trip recorded |
+| `n_catch` | The catch's number within the trip: 1, 2, 3, in the order it was recorded |
 
 **About the trip** — the same on every row of that trip
 
@@ -46,12 +46,13 @@ places its own warnings around it, so anything but the tables would fight with t
 | `tot_catch_kg` | Total weight of the **whole trip**, in kg |
 | `tot_catch_price` | Total value of the whole trip |
 
-**About each catch** — one row each
+**About each catch** — one row each, or one per size class when the fish were counted by size
 
 | Column | Meaning |
 |--------|---------|
 | `catch_taxon` | The kind of fish, as a short code such as `SKJ`, which means skipjack tuna |
 | `scientific_name` | The fish's scientific, or Latin, name |
 | `length_cm` | The fish length, in centimetres |
-| `catch_kg` | The weight of **that one catch**, in kg |
+| `n_fish` | How many fish that length stands for |
+| `catch_kg` | The weight of **that row**, in kg |
 | `catch_price` | The value of that catch |

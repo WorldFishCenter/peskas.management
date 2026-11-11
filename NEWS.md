@@ -1,3 +1,10 @@
+# Management Platform 2.11.4
+
+## Changed
+
+- **The data lessons explain the number of fish behind each length**, and describe the catch number as a catch's place in its trip, not a count.
+- **Kenya's length alerts follow each species.** Alert 5.3 reads as too long for the species, or over 500 cm, and the new alert 5.4 as too short for the species, in English, Portuguese and Swahili, as in KEFS pipeline 5.9.0.
+
 # Management Platform 2.11.3
 
 ## Changed

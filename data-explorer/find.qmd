@@ -40,8 +40,8 @@ html`${
   recall_row == null
     ? '<div class="alert alert-light py-2">Pick an answer above.</div>'
     : recall_row === "One kind of fish from one trip"
-      ? '<div class="alert alert-success py-2"><strong>Yes.</strong> One row is one kind of fish from one trip. A trip that landed three kinds of fish fills three rows, and they all share the same <code>trip_id</code>.</div>'
-      : '<div class="alert alert-warning py-2"><strong>Not quite — and this one matters.</strong> One row is <strong>one kind of fish from one trip</strong>, not a whole trip and not one fisher. A trip that landed three kinds of fish fills three rows, sharing one <code>trip_id</code>.</div>'
+      ? '<div class="alert alert-success py-2"><strong>Yes.</strong> One row is one kind of fish from one trip, or one size of it when fish are counted by size. A trip that landed three kinds of fish fills at least three rows, and they all share the same <code>trip_id</code>.</div>'
+      : '<div class="alert alert-warning py-2"><strong>Not quite — and this one matters.</strong> One row is <strong>one kind of fish from one trip</strong>, not a whole trip and not one fisher. A trip that landed three kinds of fish fills at least three rows, sharing one <code>trip_id</code>.</div>'
 }`
 ```
 

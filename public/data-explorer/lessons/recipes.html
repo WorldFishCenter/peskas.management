@@ -333,7 +333,7 @@ places its own warnings around it, so anything but the tables would fight with t
 </tr>
 <tr class="even">
 <td><code>n_catch</code></td>
-<td>How many kinds of catch that trip recorded</td>
+<td>The catch’s number within the trip: 1, 2, 3, in the order it was recorded</td>
 </tr>
 </tbody>
 </table>
@@ -384,7 +384,7 @@ places its own warnings around it, so anything but the tables would fight with t
 </tr>
 </tbody>
 </table>
-<p><strong>About each catch</strong> — one row each</p>
+<p><strong>About each catch</strong> — one row each, or one per size class when the fish were counted by size</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 47%">
@@ -410,10 +410,14 @@ places its own warnings around it, so anything but the tables would fight with t
 <td>The fish length, in centimetres</td>
 </tr>
 <tr class="even">
-<td><code>catch_kg</code></td>
-<td>The weight of <strong>that one catch</strong>, in kg</td>
+<td><code>n_fish</code></td>
+<td>How many fish that length stands for</td>
 </tr>
 <tr class="odd">
+<td><code>catch_kg</code></td>
+<td>The weight of <strong>that row</strong>, in kg</td>
+</tr>
+<tr class="even">
 <td><code>catch_price</code></td>
 <td>The value of that catch</td>
 </tr>

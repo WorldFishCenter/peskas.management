@@ -66,7 +66,7 @@ You can ask for more than one answer at a time. **`n()`** counts the rows. Press
 ```{webr}
 #| autorun: false
 example |>
-  summarise(total_kg = sum(catch_kg), number_of_catches = n())
+  summarise(total_kg = sum(catch_kg), number_of_rows = n())
 ```
 
 ## A number for each group
@@ -152,7 +152,7 @@ example |>
 
 ::: {.callout-tip appearance="simple"}
 **What you should see:** one row for each kind of fish: **species 1**, **species 2** and **species 3**.
-Each row has its total weight, its average weight, and how many catches there were.
+Each row has its total weight, its average weight, and how many rows there were.
 :::
 
 ## Now your own data
@@ -228,7 +228,7 @@ landings |>
 
 ::: {.callout-tip appearance="simple"}
 **What you should see:** one row per fishing method used in that district, with its total weight and how
-many catch records there were. That is a real answer to a real question — from your own records.
+many rows there were. That is a real answer to a real question — from your own records.
 
 If the table comes back **empty**, the district name is spelled differently in your data. Check it with
 `distinct(landings, gaul_2_name)` and copy it again.
