@@ -16,7 +16,7 @@
     "status": "Data Status",
     "statusValidated": "Validated Data",
     "statusRaw": "Raw Data",
-    "statusHint": "Validated data has been reviewed and approved",
+    "statusHint": "Validated data passed every automatic check, or a reviewer approved it after a flag",
     "catchTaxon": "Species Filter",
     "catchTaxonPlaceholder": "Type a code or species name",
     "catchTaxonHint": "Start typing a code or a species name (e.g. <strong>tuna</strong>) and pick from the list. You can add more than one, or <strong>leave empty for all species</strong>",

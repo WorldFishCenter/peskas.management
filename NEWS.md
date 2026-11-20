@@ -1,3 +1,11 @@
+# Management Platform 2.11.5
+
+## Changed
+
+- **The Download page no longer says that validated data was reviewed.** It says what validated data is: submissions that passed every automatic check, or that a reviewer approved after a flag.
+- **How It Works describes the statuses as they work.** Until a reviewer decides, the system sets Approved or Not Approved; Approved means the submission counts in the validated data. The submission panel is described as it is: its alerts and the catches that raised them.
+- **Swahili:** the buttons are translated, "Catch information only" no longer reads "coast information", Kenya's alerts call the catch "mavuno" as the rest of the platform does, and the password pages use one word, "nenosiri".
+
 # Management Platform 2.11.4
 
 ## Changed

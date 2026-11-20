@@ -1,17 +1,17 @@
 {
   "buttons": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "reset": "Reset",
-    "update": "Update",
-    "create": "Create",
-    "close": "Close",
-    "confirm": "Confirm",
-    "submit": "Submit",
-    "tryAgain": "Try Again",
-    "openAgain": "Open Again"
+    "save": "Hifadhi",
+    "cancel": "Ghairi",
+    "delete": "Futa",
+    "edit": "Hariri",
+    "reset": "Weka upya",
+    "update": "Sasisha",
+    "create": "Unda",
+    "close": "Funga",
+    "confirm": "Thibitisha",
+    "submit": "Wasilisha",
+    "tryAgain": "Jaribu tena",
+    "openAgain": "Fungua tena"
   },
   "status": {
     "approved": "Imeidhinishwa",
