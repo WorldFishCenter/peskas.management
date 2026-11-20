@@ -81,7 +81,9 @@ async function handler(req, res) {
 
     const timestamp = new Date().toISOString().split('T')[0];
     const countryLabel = countries.length === 1 ? countries[0] : 'multi-country';
-    const filename = `peskas-${download.dataset}-${countryLabel}-${timestamp}.csv`;
+    // Validated and raw trips would otherwise save under the same name.
+    const statusLabel = download.sharedFilters.status ? `-${download.sharedFilters.status}` : '';
+    const filename = `peskas-${download.dataset}-${countryLabel}${statusLabel}-${timestamp}.csv`;
 
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);

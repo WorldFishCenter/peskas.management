@@ -38,8 +38,10 @@ Airtable -> scripts/sync_* -> Mongo (countries, districts, taxa, surveys, users)
   (`api/data-download/*`). Data download also reads `district-months` (monthly figures per
   district, `?dataset=district-months`); the Data Academy is trip level only. A user with a
   district list (`permissions.gaul_codes`) downloads only those districts.
-- The portal never calls KoboToolbox during page load. Status changes update Mongo, optionally push
-  to KoboToolbox, and are reconciled on the pipeline's next run.
+- The portal never calls KoboToolbox during page load. A status change is one call
+  (`api/submissions/[id]/validation-status.js`): Mongo first, refused with 409 if the status changed
+  since the reviewer opened it, then KoboToolbox with one short try (a failure only warns). The
+  pipelines read decisions from both.
 - **Multi-survey**: each survey has its own `surveys_flags-{asset_id}` collection; enumerator
   stats are computed from it (`enumerators_stats-*` is still written but unread since 2.10.0).
   Per-survey KoboToolbox config and alert-code meanings live in the `surveys` collection, so

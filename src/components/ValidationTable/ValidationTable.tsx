@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,6 +14,7 @@ import { useFetchSubmissions } from '../../api/api';
 import { useContextualAlertCodes } from '../../hooks/useContextualAlertCodes';
 import { updateValidationStatus } from '../../api/koboToolbox';
 import { Submission } from '../../types/validation';
+import { statusMessage, StatusMessage } from './StatusUpdateForm';
 import AlertBadge from './AlertBadge';
 import TableFilters from './TableFilters';
 import AlertGuideModal from './AlertGuideModal';
@@ -55,7 +56,10 @@ const formatDateWithDefault = (dateStr: string | null, defaultText: string, inva
 const ValidationTable: React.FC = () => {
   const { t } = useTranslation('validation');
   const [selectedRow, setSelectedRow] = useState<Submission | null>(null);
-  const [statusToUpdate, setStatusToUpdate] = useState<string>('validation_status_approved');
+  // Empty until the reviewer picks: a preselected status was one click from a decision nobody made.
+  const [statusToUpdate, setStatusToUpdate] = useState<string>('');
+  // The record open in the panel now: a save's reply must not land on a record opened since.
+  const openSubmissionRef = useRef<string | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -64,7 +68,7 @@ const ValidationTable: React.FC = () => {
   const [search, setSearch] = useState('');
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [isUpdating, setIsUpdating] = useState(false);
-  const [updateMessage, setUpdateMessage] = useState<string | null>(null);
+  const [updateMessage, setUpdateMessage] = useState<StatusMessage | null>(null);
   const [showAlertGuide, setShowAlertGuide] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [fromDate, setFromDate] = useState('');
@@ -232,7 +236,7 @@ const ValidationTable: React.FC = () => {
       },
       {
         accessorKey: 'validated_at',
-        header: () => t('columns.actions'),
+        header: () => t('columns.decidedOn'),
         cell: info => formatDateWithDefault(info.getValue() as string, t('table.neverValidated'), t('table.invalidDate')),
         enableSorting: true,
       },
@@ -279,28 +283,39 @@ const ValidationTable: React.FC = () => {
 
   const handleRowClick = (row: Row<Submission>) => {
     setSelectedRow(row.original);
+    openSubmissionRef.current = row.original.submission_id;
     setSidebarOpen(true);
+    setStatusToUpdate('');
     setUpdateMessage(null);
   };
 
   const handleUpdateStatus = async () => {
-    if (!selectedRow) return;
+    if (!selectedRow || !statusToUpdate) return;
 
+    const submissionId = selectedRow.submission_id;
     setIsUpdating(true);
-    try {
-      const result = await updateValidationStatus(selectedRow.submission_id, statusToUpdate, selectedRow.asset_id);
-      setUpdateMessage(result.message);
-      
-      if (result.success) {
-        // If the update was successful, refresh the data
-        refetch();
-      }
-    } catch (error) {
-      setUpdateMessage("An error occurred while updating the validation status");
-      console.error(error);
-    } finally {
-      setIsUpdating(false);
+    const result = await updateValidationStatus(submissionId, statusToUpdate, selectedRow.asset_id, {
+      status: selectedRow.validation_status ?? null,
+      validatedAt: selectedRow.validated_at ?? null
+    });
+    setIsUpdating(false);
+    if (openSubmissionRef.current !== submissionId) {
+      refetch();
+      return;
     }
+
+    if (result.outcome === 'saved' || result.outcome === 'conflict') {
+      const { current } = result;
+      setSelectedRow(row => row && {
+        ...row,
+        validation_status: current.validation_status ?? 'validation_status_on_hold',
+        validated_at: current.validated_at,
+        validated_by: current.validated_by
+      });
+      refetch();
+    }
+    if (result.outcome === 'saved') setStatusToUpdate('');
+    setUpdateMessage(statusMessage(result, t));
   };
 
   // Only the first load replaces the page. Every page turn, sort and filter is now a request
@@ -313,15 +328,6 @@ const ValidationTable: React.FC = () => {
           <div className="d-flex justify-content-center py-5">
             <div className="spinner-border text-primary"></div>
           </div>
-        </div>
-      </div>
-    );
-
-  if (error)
-    return (
-      <div className="page-body">
-        <div className="container-xl">
-          <div className="alert alert-danger">{error}</div>
         </div>
       </div>
     );
@@ -371,6 +377,16 @@ const ValidationTable: React.FC = () => {
               />
             </div>
           </div>
+
+          {/* An error keeps the filters and the form choice, so the reviewer can retry or change them */}
+          {error && (
+            <div className="alert alert-danger d-flex align-items-center justify-content-between" role="alert">
+              <div>{error}</div>
+              <button className="btn btn-outline-danger btn-sm" onClick={() => refetch()}>
+                {t('buttons.tryAgain', { ns: 'common' })}
+              </button>
+            </div>
+          )}
 
           {/* Table Card */}
           <div className={`card ${isLoading ? 'opacity-50' : ''}`} aria-busy={isLoading}>
@@ -560,11 +576,17 @@ const ValidationTable: React.FC = () => {
                     </div>
                   )}
                   <div className="datagrid-item">
-                    <div className="datagrid-title">{t('table.lastValidatedLabel')}</div>
+                    <div className="datagrid-title">{t('table.decidedOnLabel')}</div>
                     <div className="datagrid-content">
                       {formatDate(selectedRow?.validated_at || null)}
                     </div>
                   </div>
+                  {selectedRow?.validated_at && selectedRow.validated_by && (
+                    <div className="datagrid-item">
+                      <div className="datagrid-title">{t('table.decidedByLabel')}</div>
+                      <div className="datagrid-content">{selectedRow.validated_by}</div>
+                    </div>
+                  )}
                 </dl>
               </div>
 

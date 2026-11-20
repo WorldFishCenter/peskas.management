@@ -53,6 +53,7 @@
   "preview": {
     "title": "Visualização de Dados",
     "showing": "Mostrando {{shown}} de {{total}} linhas",
+    "firstRows": "Primeiras {{shown}} linhas do ficheiro",
     "downloadFull": "Baixar Conjunto Completo (CSV)",
     "downloading": "Baixando...",
     "filtersApplied": "Filtros Aplicados",

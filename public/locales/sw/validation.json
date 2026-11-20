@@ -8,7 +8,7 @@
     "date": "TAREHE",
     "status": "HALI",
     "alert": "TAHADHARI",
-    "actions": "VITENDO"
+    "decidedOn": "TAREHE YA UAMUZI"
   },
   "filters": {
     "search": "Tafuta uwasilishaji...",
@@ -46,7 +46,8 @@
     "flaggedCatchesLabel": "Mavuno Yenye Tahadhari:",
     "catchNumber": "Mavuno Na. {{number}}",
     "noAlertDescription": "Bado haijaelezwa katika mwongozo wa tahadhari",
-    "lastValidatedLabel": "Ilithibitishwa Mwisho:",
+    "decidedOnLabel": "Tarehe ya uamuzi:",
+    "decidedByLabel": "Imeamuliwa na:",
     "codeHeader": "Msimbo",
     "descriptionHeader": "Maelezo"
   },
@@ -59,7 +60,16 @@
     "updateStatus": "Sasisha Hali",
     "generatingLink": "Inatengeneza Kiungo...",
     "goToSubmission": "Nenda kwenye Uwasilishaji",
-    "editLinkOpened": "Kiungo cha kuhariri kimefunguliwa katika kichupo kipya."
+    "editLinkOpened": "Kiungo cha kuhariri kimefunguliwa katika kichupo kipya.",
+    "chooseStatus": "Chagua hali…",
+    "saved": "Imehifadhiwa: {{status}}.",
+    "savedKoboFailed": "Imehifadhiwa: {{status}}. KoboToolbox haikusasishwa; uamuzi unahesabiwa hata hivyo.",
+    "conflict": "Haikuhifadhiwa: mtu mwingine amebadilisha uwasilishaji huu baada ya wewe kuufungua. Sasa ni {{status}} ({{by}}). Uangalie kisha uamue tena.",
+    "forbidden": "Haikuhifadhiwa: akaunti yako haina ruhusa kwa fomu hii.",
+    "notFound": "Haikuhifadhiwa: uwasilishaji huu haupo tena kwenye jukwaa. Pakia ukurasa upya.",
+    "saveFailed": "Haikuhifadhiwa. Tafadhali jaribu tena.",
+    "editForbidden": "Akaunti yako haina ruhusa kwa fomu hii.",
+    "editNotFound": "KoboToolbox haikupata uwasilishaji huu."
   },
   "modal": {
     "alertCodesTitle": "Marejeo ya Msimbo wa Tahadhari",

@@ -79,7 +79,13 @@ const EnumeratorPerformance: React.FC = () => {
   // Compute min/max dates from processedData - reset when survey changes.
   // The rollup already carries plain `YYYY-MM-DD` days, so these are string comparisons.
   useEffect(() => {
-    if (processedData.length === 0) return;
+    if (processedData.length === 0) {
+      setMinDate('');
+      setMaxDate('');
+      setFromDate('');
+      setToDate('');
+      return;
+    }
     let min: string | null = null;
     let max: string | null = null;
     for (const enumerator of processedData) {
@@ -143,65 +149,48 @@ const EnumeratorPerformance: React.FC = () => {
     }
   };
 
-  // Loading state
+  // Loading, an error and no data keep the header, so the reviewer can still pick another form.
+  let notice: React.ReactNode = null;
   if (isLoading) {
-    return (
-      <div className="page-body">
-        <div className="container-xl">
-          <div className="d-flex justify-content-center py-5">
-            <div className="spinner-border text-primary"></div>
+    notice = (
+      <div className="d-flex justify-content-center py-5">
+        <div className="spinner-border text-primary"></div>
+      </div>
+    );
+  } else if (error) {
+    notice = (
+      <div className="alert alert-danger" role="alert">
+        <div className="d-flex">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-alert-circle" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+              <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+              <path d="M12 8v4"></path>
+              <path d="M12 16h.01"></path>
+            </svg>
           </div>
+          <div className="ms-2">{error}</div>
+        </div>
+        <div className="mt-3">
+          <button className="btn btn-outline-primary" onClick={() => refetch()}>
+            {t('buttons.tryAgain', { ns: 'common' })}
+          </button>
         </div>
       </div>
     );
-  }
-
-  // Error state
-  if (error) {
-    return (
-      <div className="page-body">
-        <div className="container-xl">
-          <div className="alert alert-danger" role="alert">
-            <div className="d-flex">
-              <div>
-                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-alert-circle" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
-                  <path d="M12 8v4"></path>
-                  <path d="M12 16h.01"></path>
-                </svg>
-              </div>
-              <div className="ms-2">{error}</div>
-            </div>
-            <div className="mt-3">
-              <button className="btn btn-outline-primary" onClick={() => refetch()}>
-                {t('buttons.tryAgain', { ns: 'common' })}
-              </button>
-            </div>
+  } else if (enumerators.length === 0) {
+    notice = (
+      <div className="alert alert-info" role="alert">
+        <div className="d-flex">
+          <div>
+            <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-info-circle" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+              <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
+              <path d="M12 8l.01 0"></path>
+              <path d="M11 12h1v4h1"></path>
+            </svg>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  // No data state
-  if (enumerators.length === 0) {
-    return (
-      <div className="page-body">
-        <div className="container-xl">
-          <div className="alert alert-info" role="alert">
-            <div className="d-flex">
-              <div>
-                <svg xmlns="http://www.w3.org/2000/svg" className="icon icon-tabler icon-tabler-info-circle" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path>
-                  <path d="M12 8l.01 0"></path>
-                  <path d="M11 12h1v4h1"></path>
-                </svg>
-              </div>
-              <div className="ms-2">{t('noData')}</div>
-            </div>
-          </div>
+          <div className="ms-2">{t('noData')}</div>
         </div>
       </div>
     );
@@ -240,41 +229,45 @@ const EnumeratorPerformance: React.FC = () => {
       {/* Page Body */}
       <div className="page-body">
         <div className="container-xl">
-          {refreshMessage && (
-            <div className={`alert ${refreshMessage.includes('Error') ? 'alert-danger' : 'alert-success'} mb-3`}>
-              {refreshMessage}
-            </div>
-          )}
+          {notice ?? (
+            <>
+              {refreshMessage && (
+                <div className={`alert ${refreshMessage.includes('Error') ? 'alert-danger' : 'alert-success'} mb-3`}>
+                  {refreshMessage}
+                </div>
+              )}
 
-          {/* Summary statistics cards */}
-          <SummaryCards
-            totalSubmissions={totalSubmissions}
-            enumerators={enumerators}
-            avgErrorRate={avgErrorRate}
-            bestEnumerator={bestEnumerator}
-          />
+              {/* Summary statistics cards */}
+              <SummaryCards
+                totalSubmissions={totalSubmissions}
+                enumerators={enumerators}
+                avgErrorRate={avgErrorRate}
+                bestEnumerator={bestEnumerator}
+              />
 
-          {/* Main content section with tabs */}
-          <ChartTabs
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            enumerators={enumerators}
-            onEnumeratorSelect={setSelectedEnumerator}
-            uniqueDates={uniqueDates}
-            describeAlert={describeAlert}
-          />
+              {/* Main content section with tabs */}
+              <ChartTabs
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                enumerators={enumerators}
+                onEnumeratorSelect={setSelectedEnumerator}
+                uniqueDates={uniqueDates}
+                describeAlert={describeAlert}
+              />
 
-          {/* Detailed enumerator analysis section */}
-          {selectedEnumeratorData && (
-            <EnumeratorDetail
-              selectedEnumeratorData={selectedEnumeratorData}
-              selectedEnumerator={selectedEnumerator}
-              setSelectedEnumerator={setSelectedEnumerator}
-              enumerators={enumerators}
-              detailActiveTab={detailActiveTab}
-              setDetailActiveTab={setDetailActiveTab}
-              describeAlert={describeAlert}
-            />
+              {/* Detailed enumerator analysis section */}
+              {selectedEnumeratorData && (
+                <EnumeratorDetail
+                  selectedEnumeratorData={selectedEnumeratorData}
+                  selectedEnumerator={selectedEnumerator}
+                  setSelectedEnumerator={setSelectedEnumerator}
+                  enumerators={enumerators}
+                  detailActiveTab={detailActiveTab}
+                  setDetailActiveTab={setDetailActiveTab}
+                  describeAlert={describeAlert}
+                />
+              )}
+            </>
           )}
 
           {/* Alert Guide Modal */}

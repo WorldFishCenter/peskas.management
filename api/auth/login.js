@@ -99,7 +99,7 @@ module.exports = async function handler(req, res) {
     if (!user.active) {
       await logAuditEvent(database, { username: user.username, user_id: user._id.toString(), category: 'auth', action: 'login_failure', status: 'failure', details: { reason: 'account_disabled' }, req });
       await recordFailure(identifier, LOGIN_LIMIT_TYPE, LOGIN_WINDOW_MS);
-      return res.status(401).json({ success: false, error: 'Account is disabled' });
+      return res.status(401).json({ success: false, code: 'ACCOUNT_DISABLED', error: 'Account is disabled' });
     }
 
     // Verify password

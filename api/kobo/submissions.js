@@ -13,7 +13,7 @@
 
 const { withMiddleware, authenticateUser } = require('../../lib/middleware');
 const { getDb } = require('../../lib/db');
-const { getSurveyFlagsCollection } = require('../../lib/helpers');
+const { getSurveyFlagsCollection, withRecordFlag } = require('../../lib/helpers');
 const { getAccessibleSurveys } = require('../../lib/filter-permissions');
 const { buildSubmissionsQuery } = require('../../lib/submissions-query');
 const { sendSuccess, sendServerError, sendMethodNotAllowed, setCorsHeaders } = require('../../lib/response');
@@ -81,7 +81,7 @@ async function handler(req, res) {
       // Multiple surveys available but no selection — require explicit choice
       return emptyPage(res, {
         message: 'Please select a survey to view submissions',
-        metadata: { accessible_surveys: allAccessibleSurveys.map(surveyOption) }
+        metadata: { accessible_surveys: await withRecordFlag(database, allAccessibleSurveys.map(surveyOption)) }
       });
     }
 

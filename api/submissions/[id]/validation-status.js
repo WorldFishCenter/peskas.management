@@ -1,7 +1,8 @@
 /**
- * PATCH /api/submissions/:id/validation_status
+ * PATCH /api/submissions/:id/validation-status
  *
- * Update validation status for a submission in MongoDB
+ * Record a reviewer's decision: MongoDB first, then KoboToolbox.
+ * Body: { validation_status, asset_id, expected_status?, expected_validated_at? }
  * Requires authentication
  */
 
@@ -9,19 +10,41 @@ const { withMiddleware, authenticateUser } = require('../../../lib/middleware');
 const { getDb } = require('../../../lib/db');
 const { getSurveyFlagsCollection, VALIDATION_STATUSES } = require('../../../lib/helpers');
 const { getAccessibleSurveys } = require('../../../lib/filter-permissions');
+const { koboSubmissionRequest, isValidSubmissionId } = require('../../../lib/api-utils');
 const { sendBadRequest, sendForbidden, sendNotFound, sendServerError, setCorsHeaders } = require('../../../lib/response');
 const { logAuditEvent } = require('../../../lib/audit-logger');
 
+// One short attempt: the function stops at 10 s, and the decision already counts once in MongoDB.
+const KOBO_TIMEOUT_MS = 4000;
+
+/**
+ * Copy the decision to KoboToolbox. Never throws.
+ *
+ * @returns {Promise<'updated'|'failed'|'skipped'>}
+ */
+async function pushToKobo(survey, id, validationStatus) {
+  const request = koboSubmissionRequest(survey, id, 'validation_status/', {
+    method: 'PATCH',
+    data: { 'validation_status.uid': validationStatus },
+    headers: { 'Content-Type': 'application/json' }
+  }, KOBO_TIMEOUT_MS);
+  if (!request) return 'skipped';
+  try {
+    await request;
+    return 'updated';
+  } catch (error) {
+    console.error('KoboToolbox validation status push failed:', error.response?.status || error.message);
+    return 'failed';
+  }
+}
+
 async function handler(req, res) {
-  // Set CORS headers
   setCorsHeaders(res, req);
 
-  // Handle OPTIONS request for CORS preflight
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
 
-  // Only allow PATCH method
   if (req.method !== 'PATCH') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -31,11 +54,14 @@ async function handler(req, res) {
     const id = req.query.id;
     const { validation_status, asset_id } = req.body;
 
+    if (!isValidSubmissionId(id)) {
+      return sendBadRequest(res, 'Invalid submission id');
+    }
+
     if (!asset_id) {
       return sendBadRequest(res, 'asset_id is required');
     }
 
-    // Shared with api/kobo/validation-status/[id].js so both write paths accept the same set.
     if (!VALIDATION_STATUSES.includes(validation_status)) {
       return sendBadRequest(res, 'Invalid validation_status value');
     }
@@ -43,45 +69,55 @@ async function handler(req, res) {
     database = await getDb();
 
     // The asset_id names the collection that gets written to, so it must be one of the
-    // surveys this user may touch — not merely a non-empty string. Without this check any
-    // authenticated user could write into any survey, and an unrecognised value would create
-    // a new `surveys_flags-*` collection on first upsert.
+    // surveys this user may touch.
     const accessibleSurveys = await getAccessibleSurveys(req.user);
-    if (!accessibleSurveys.some(s => s.asset_id === asset_id)) {
+    const survey = accessibleSurveys.find(s => s.asset_id === asset_id);
+    if (!survey) {
       return sendForbidden(res, 'You do not have access to the requested survey.');
     }
 
-    const collectionName = getSurveyFlagsCollection(asset_id);
+    const collection = database.collection(getSurveyFlagsCollection(asset_id));
 
-    // `submission_id` is written by the R pipeline as a NUMBER, but arrives here as a string
-    // from the URL path, and MongoDB does not coerce across BSON types. Matching on the raw
-    // string found nothing; combined with the old `upsert: true` that silently inserted a
-    // throwaway string-keyed document instead of updating the real row, so portal status
-    // changes never actually landed in Mongo. Match either representation.
-    const numericId = /^\d+$/.test(id) ? Number(id) : null;
-    const idFilter = numericId === null
-      ? { submission_id: id }
-      : { submission_id: { $in: [id, numericId] } };
+    // The R pipeline writes `submission_id` as a number in some surveys and a string in others.
+    const idFilter = { submission_id: { $in: [id, Number(id)] } };
 
-    // No upsert: a submission the R pipeline has not written yet is a genuine 404, not a new
-    // document keyed on nothing but a client-supplied submission_id.
-    const before = await database.collection(collectionName).findOneAndUpdate(
-      idFilter,
-      {
-        $set: {
-          validation_status,
-          validated_at: new Date(),
-          validated_by: req.user.username
-        }
-      },
+    // The decision the reviewer saw (status and when it was made): if someone decided since,
+    // refuse rather than overwrite. The table shows a missing or empty status as on hold.
+    let guard = {};
+    if ('expected_status' in req.body) {
+      const expected = req.body.expected_status ?? null;
+      const seenAt = req.body.expected_validated_at ?? null;
+      guard = {
+        validation_status: { $in: expected === 'validation_status_on_hold' ? [expected, null, ''] : [expected] },
+        validated_at: { $in: typeof seenAt === 'string' && !Number.isNaN(Date.parse(seenAt)) ? [new Date(seenAt), seenAt] : [seenAt] }
+      };
+    }
+
+    const validatedAt = new Date();
+    const before = await collection.findOneAndUpdate(
+      { ...idFilter, ...guard },
+      { $set: { validation_status, validated_at: validatedAt, validated_by: req.user.username } },
       { returnDocument: 'before' }
     );
 
     if (!before) {
-      return sendNotFound(res, `Submission ${id} not found in the selected survey`);
+      const current = await collection.findOne(idFilter, { projection: { validation_status: 1, validated_by: 1, validated_at: 1 } });
+      if (!current) {
+        return sendNotFound(res, `Submission ${id} not found in the selected survey`);
+      }
+      return res.status(409).json({
+        success: false,
+        code: 'STATUS_CHANGED',
+        error: 'This submission was changed by someone else after you opened it.',
+        current: {
+          validation_status: current.validation_status ?? null,
+          validated_by: current.validated_by ?? null,
+          validated_at: current.validated_at ?? null
+        }
+      });
     }
 
-    const fromStatus = before.validation_status || null;
+    const kobo = await pushToKobo(survey, id, validation_status);
 
     await logAuditEvent(database, {
       username: req.user.username,
@@ -89,17 +125,18 @@ async function handler(req, res) {
       category: 'validation',
       action: 'validation_status_changed',
       status: 'success',
-      details: { submission_id: id, survey_asset_id: asset_id, from_status: fromStatus, to_status: validation_status },
+      details: { submission_id: id, survey_asset_id: asset_id, from_status: before.validation_status || null, to_status: validation_status, kobo },
       req
     });
 
     return res.json({
       success: true,
-      message: `Validation status correctly updated for submission ${id}`
+      kobo,
+      current: { validation_status, validated_by: req.user.username, validated_at: validatedAt }
     });
   } catch (error) {
     if (database) {
-      logAuditEvent(database, {
+      await logAuditEvent(database, {
         username: req.user?.username || null,
         user_id: req.user?.id || null,
         category: 'validation',
@@ -114,5 +151,4 @@ async function handler(req, res) {
   }
 }
 
-// Export with authentication middleware
 module.exports = withMiddleware(handler, authenticateUser);

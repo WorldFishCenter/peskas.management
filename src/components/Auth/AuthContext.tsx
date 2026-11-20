@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { login as apiLogin } from '../../api/auth';
+import { login as apiLogin, LoginErrorKey } from '../../api/auth';
 
 export interface AuthUser {
   username: string;
@@ -13,7 +13,7 @@ export interface AuthUser {
 interface AuthContextType {
   isAuthenticated: boolean;
   user: AuthUser | null;
-  login: (username: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (username: string, password: string) => Promise<{ success: boolean; errorKey?: LoginErrorKey; retryAfter?: number }>;
   logout: () => void;
   loading: boolean;
 }
@@ -57,43 +57,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   }, []);
 
-  const login = async (username: string, password: string): Promise<{ success: boolean; error?: string }> => {
-    try {
-      setLoading(true);
-      // Call login API
-      const result = await apiLogin(username, password);
+  // Not the app-wide `loading`: that swaps the whole page for a spinner and would throw away the
+  // sign-in form, and with it any error message.
+  const login = async (username: string, password: string): Promise<{ success: boolean; errorKey?: LoginErrorKey; retryAfter?: number }> => {
+    const result = await apiLogin(username, password);
 
-      if (result.success && result.user && result.token) {
-        // Store JWT token separately
-        localStorage.setItem('authToken', result.token);
+    if (result.success && result.user && result.token) {
+      localStorage.setItem('authToken', result.token);
 
-        // Store user data
-        const userData: AuthUser = {
-          username: result.user.username,
-          role: result.user.role as 'admin' | 'user',
-          name: result.user.name,
-          country: result.user.country,
-          language: result.user.language || 'en'
-        };
-        setUser(userData);
-        setIsAuthenticated(true);
-        localStorage.setItem('user', JSON.stringify(userData));
+      const userData: AuthUser = {
+        username: result.user.username,
+        role: result.user.role as 'admin' | 'user',
+        name: result.user.name,
+        country: result.user.country,
+        language: result.user.language || 'en'
+      };
+      setUser(userData);
+      setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(userData));
 
-        // Sync language preference with i18n
-        if (userData.language && userData.language !== i18n.language) {
-          await i18n.changeLanguage(userData.language);
-          localStorage.setItem('i18n_language', userData.language);
-        }
-
-        return { success: true };
+      if (userData.language && userData.language !== i18n.language) {
+        await i18n.changeLanguage(userData.language);
+        localStorage.setItem('i18n_language', userData.language);
       }
-      return { success: false, error: result.error || 'Invalid username or password' };
-    } catch (error) {
-      console.error('Login error:', error);
-      return { success: false, error: 'An unexpected error occurred. Please try again.' };
-    } finally {
-      setLoading(false);
+
+      return { success: true };
     }
+    return { success: false, errorKey: result.errorKey ?? 'serverUnavailable', retryAfter: result.retryAfter };
   };
 
   const logout = () => {

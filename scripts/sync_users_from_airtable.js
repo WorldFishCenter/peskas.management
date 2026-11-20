@@ -80,12 +80,9 @@ async function main() {
     // Call shared sync implementation
     const results = await syncUsersFromAirtable({ verbose: true });
 
+    // This runs in a public repo's Actions log: count only, never the passwords.
     if (results.generatedPasswords.length > 0) {
-      console.log('\n=== Generated Passwords ===');
-      console.log('Save these passwords securely!');
-      results.generatedPasswords.forEach(({ username, password }) => {
-        console.log(`${username}: ${password}`);
-      });
+      console.log(`\n${results.generatedPasswords.length} new account(s): each sets a password with "Set or reset password".`);
     }
 
     process.exit(0);

@@ -1,3 +1,25 @@
+# Management Platform 2.12.0
+
+## Fixed
+
+- **Signing in says what went wrong.** A wrong password, an account locked after too many tries (with how long to wait), a disabled account or a platform that does not answer each show a message in English, Kiswahili and Portuguese. Before, the form just emptied.
+- **No decision by accident.** The status picker starts empty, so Update Status works only after choosing Approved or Not Approved. After saving, the panel shows the new status, when it was decided and by whom.
+- **Two reviewers on one submission.** A decision is refused, with the submission's current status, if someone else decided on it after it was opened. Before, the later click silently replaced the earlier decision.
+- **A slow or failing KoboToolbox no longer blocks a decision.** The decision is saved in the platform first, then copied to KoboToolbox; if KoboToolbox does not answer within a few seconds, the reviewer sees a warning and the decision still counts. A KoboToolbox problem no longer signs the reviewer out.
+- **The platform opens a form that has data.** It remembers the form each account last picked in this browser, and otherwise opens one with submissions instead of the first in the list.
+- **An ended session says so** on the sign-in page, and a short database hiccup no longer signs everyone out.
+- **A form with no data, or a failed load, no longer traps the reviewer.** Enumerator Performance keeps its form selector, and both it and Submissions show the error with a Try again button, keeping the filters.
+- **Fewer pages that wait ten seconds and fail.** The platform no longer reuses a database connection left idle between requests.
+- **Edit links and decisions stay within a user's own forms.**
+- **New accounts' first passwords no longer appear in the account sync's log**, and are drawn from a secure random source.
+
+## Changed
+
+- **The last column of Submissions is "Decided on"** (it was "Actions"), and the submission panel says who decided.
+- **The Enumerators card counts only enumerators with submissions in the chosen period.**
+- **A trip download's file name says validated or raw.**
+- **The trip preview says it shows the first 20 rows**, instead of "20 of 20 rows".
+
 # Management Platform 2.11.5
 
 ## Changed

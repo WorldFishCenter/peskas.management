@@ -1,118 +1,76 @@
 import axios from 'axios';
 import { getApiBaseUrl } from '../utils/apiConfig';
-import { extractErrorMessage } from '../utils/errors';
+import { errorStatus } from '../utils/errors';
 
 // Get the appropriate API base URL based on environment
 const API_BASE_URL = getApiBaseUrl();
 
+/** Thrown by {@link generateEditUrl}; `key` is a `validation:form.*` message. */
+export class EditUrlError extends Error {
+  key: string;
+
+  constructor(key: string) {
+    super(key);
+    this.key = key;
+  }
+}
+
 /**
- * Generate an edit URL for a KoboToolbox submission
- * @returns The edit URL if successful, or throws an error with a user-friendly message
+ * Get the KoboToolbox (Enketo) edit link for a submission.
+ * @throws EditUrlError
  */
 export const generateEditUrl = async (submissionId: string, assetId?: string): Promise<string> => {
   try {
-    const url = assetId
-      ? `${API_BASE_URL}/kobo/edit-url/${submissionId}?asset_id=${assetId}`
-      : `${API_BASE_URL}/kobo/edit-url/${submissionId}`;
-
-    const response = await axios.get(url);
-
-    if (response.status === 200 && response.data.url) {
-      return response.data.url;
-    }
-    throw new Error('The server did not return a valid edit URL. Please try again or contact support.');
+    const response = await axios.get(`${API_BASE_URL}/kobo/edit-url/${submissionId}`, { params: { asset_id: assetId } });
+    if (response.data?.url) return response.data.url;
   } catch (error) {
-    console.error("Failed to get edit URL:", error);
-    
-    // Extract user-friendly error message
-    if (axios.isAxiosError(error)) {
-      const status = error.response?.status;
-      const errorData = error.response?.data;
-      
-      // Handle different error scenarios
-      if (status === 503) {
-        // Service unavailable (network/DNS issues)
-        const message = errorData?.error || error.message;
-        if (message.includes('Cannot resolve domain') || message.includes('unreachable')) {
-          throw new Error('Cannot connect to the survey server. The server may be unreachable or require VPN access. Please contact your administrator.');
-        }
-        throw new Error(errorData?.error || 'The survey server is currently unavailable. Please try again later.');
-      }
-      
-      if (status === 404) {
-        throw new Error('Submission not found. The submission may have been deleted or the ID is incorrect.');
-      }
-      
-      if (status === 401 || status === 403) {
-        throw new Error('You do not have permission to access this submission. Please contact your administrator.');
-      }
-      
-      if (status === 500) {
-        const errorMessage = errorData?.error || errorData?.message || 'An internal server error occurred.';
-        throw new Error(errorMessage);
-      }
-      
-      // Generic error message
-      const errorMessage = errorData?.error || errorData?.message || error.message || 'Failed to generate edit URL. Please try again.';
-      throw new Error(errorMessage);
-    }
-    
-    // Non-Axios errors
-    throw new Error(error instanceof Error ? error.message : 'An unexpected error occurred. Please try again.');
+    console.error('Failed to get edit URL:', error);
+    const httpStatus = errorStatus(error);
+    if (httpStatus === 403) throw new EditUrlError('form.editForbidden');
+    if (httpStatus === 404) throw new EditUrlError('form.editNotFound');
   }
+  throw new EditUrlError('form.editUrlError');
 };
 
+/** A submission's decision fields, as the server holds them after a save or a refused save. */
+export interface DecisionState {
+  validation_status: string | null;
+  validated_by: string | null;
+  validated_at: string | null;
+}
+
+export type StatusUpdateResult =
+  | { outcome: 'saved'; kobo: 'updated' | 'failed' | 'skipped'; current: DecisionState }
+  | { outcome: 'conflict'; current: DecisionState }
+  | { outcome: 'forbidden' | 'notFound' | 'failed' };
+
 /**
- * Update the validation status for a submission, in both KoboToolbox and MongoDB.
- *
- * **KoboToolbox is written first, and MongoDB only if that succeeds.**
- *
- * The external R pipeline reconciles MongoDB *from* KoboToolbox on every run, which makes
- * KoboToolbox the effective source of truth for validation status. Writing MongoDB first meant
- * that when the KoboToolbox call failed the caller was told the update had failed while MongoDB
- * had in fact already been changed — the two systems disagreed, and the next pipeline run
- * silently reverted the change. Doing the authoritative write first means a failure leaves both
- * systems untouched and the error the user sees is accurate.
- *
- * The trade-off is that a KoboToolbox outage now blocks the update outright instead of appearing
- * to work locally. That is deliberate: the local-only change never survived anyway.
+ * Record a reviewer's decision. The server writes MongoDB first (what the pipelines read),
+ * then KoboToolbox; `seen` is the decision the reviewer saw, so one someone else made meanwhile
+ * is not overwritten.
  */
 export const updateValidationStatus = async (
   submissionId: string,
   status: string,
-  assetId?: string
-): Promise<{ success: boolean; message: string }> => {
+  assetId: string | undefined,
+  seen: { status: string | null; validatedAt: string | null }
+): Promise<StatusUpdateResult> => {
   try {
-    // Step 1: KoboToolbox — the authoritative write.
-    const koboResponse = await axios.patch(`${API_BASE_URL}/kobo/validation-status/${submissionId}`, {
+    const { data } = await axios.patch(`${API_BASE_URL}/submissions/${submissionId}/validation-status`, {
       validation_status: status,
-      asset_id: assetId
+      asset_id: assetId,
+      expected_status: seen.status,
+      expected_validated_at: seen.validatedAt
     });
-
-    if (!koboResponse.data.success) {
-      throw new Error(koboResponse.data.message || 'Failed to update KoboToolbox');
-    }
-
-    // Step 2: MongoDB — what the portal reads, so the table reflects the change without
-    // waiting for the next pipeline run. This is also where the audit event is recorded.
-    const mongoResponse = await axios.patch(`${API_BASE_URL}/submissions/${submissionId}/validation-status`, {
-      validation_status: status,
-      asset_id: assetId
-    });
-
-    if (!mongoResponse.data.success) {
-      throw new Error(mongoResponse.data.message || 'Failed to update MongoDB');
-    }
-
-    return { success: true, message: mongoResponse.data.message || 'Status updated successfully' };
+    return { outcome: 'saved', kobo: data.kobo, current: data.current };
   } catch (error) {
     console.error('Failed to update status:', error);
-    // Prefer the server's own message ("You do not have access to the requested survey.") over
-    // axios's generic "Request failed with status code 403".
-    const errorMessage = extractErrorMessage(
-      error,
-      error instanceof Error ? error.message : 'Unknown error occurred'
-    );
-    return { success: false, message: `Failed to update: ${errorMessage}` };
+    const httpStatus = errorStatus(error);
+    if (httpStatus === 409 && axios.isAxiosError(error) && error.response?.data?.current) {
+      return { outcome: 'conflict', current: error.response.data.current };
+    }
+    if (httpStatus === 403) return { outcome: 'forbidden' };
+    if (httpStatus === 404) return { outcome: 'notFound' };
+    return { outcome: 'failed' };
   }
-}; 
+};

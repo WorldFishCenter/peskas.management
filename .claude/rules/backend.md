@@ -107,6 +107,9 @@ trips with no district are left out for them. Admins and users with no list are 
 - **`vercel.json` matches the first glob that fits**: put `api/data-download/*.js` before
   `api/**/*.js`, or the specific config is ignored.
 - **Check query-string sort keys against an allowlist** (`SORTABLE_FIELDS`) before `sort()`.
+- **The browser signs a user out only on a 401 carrying `sessionEnded: true`**, which only
+  `authenticateUser` sends. Any other 401 (a wrong password, a refusal passed on from peskas-api
+  or KoboToolbox) is shown as an error; a database failure in `authenticateUser` answers 503.
 - **Cap password length (`MAX_PASSWORD_LENGTH`, 200) before `bcrypt.compare`**; unbounded bcrypt input
   is a cheap denial-of-service.
 
