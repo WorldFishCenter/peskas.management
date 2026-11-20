@@ -35,7 +35,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "fflate": "^0.8.2",
-    "highcharts": "^12.2.0",
+    "highcharts": "^12.6.2",
     "highcharts-react-official": "^3.2.1",
     "i18next": "^23.16.8",
     "i18next-browser-languagedetector": "^7.2.2",
