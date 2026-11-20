@@ -67,7 +67,7 @@ export interface SubmissionDateRange {
 // Hook to fetch one page of submissions
 export const useFetchSubmissions = (query: SubmissionQuery) => {
   const { page, limit, sort, order, status, alert, from, to, search } = query;
-  const { selectedSurveyId, setSelectedSurveyId } = useSurveyContext();
+  const { selectedSurveyId, setSelectedSurveyId, pickSurvey } = useSurveyContext();
   const [data, setData] = useState<Submission[]>([]);
   const [total, setTotal] = useState(0);
   // Derived from the whole collection by the API — the table can no longer work these out from
@@ -137,8 +137,8 @@ export const useFetchSubmissions = (query: SubmissionQuery) => {
           const surveys = response.data.metadata.accessible_surveys;
           setAccessibleSurveys(surveys);
 
-          if (surveys.length > 0 && !surveyToFetch) {
-            const firstSurvey = surveys[0].asset_id;
+          const firstSurvey = surveyToFetch ? undefined : pickSurvey(surveys)?.asset_id;
+          if (firstSurvey) {
             // Update ref immediately so the recursive call uses the right id.
             // setSelectedSurveyId is safe here — fetchData is stable and won't
             // be recreated, so this won't trigger an extra useEffect run.
@@ -206,7 +206,7 @@ export const useFetchSubmissions = (query: SubmissionQuery) => {
     }
   // setSelectedSurveyId from useState is always stable. The query fields are listed individually
   // so that changing a page, sort or filter recreates fetchData and the effect below refetches.
-  }, [setSelectedSurveyId, page, limit, sort, order, status, alert, from, to, search]);
+  }, [setSelectedSurveyId, pickSurvey, page, limit, sort, order, status, alert, from, to, search]);
 
   useEffect(() => {
     fetchData();
@@ -231,7 +231,7 @@ export const useFetchSubmissions = (query: SubmissionQuery) => {
 
 // Hook to fetch enumerator statistics from the new MongoDB collection
 export const useFetchEnumeratorStats = () => {
-  const { selectedSurveyId, setSelectedSurveyId } = useSurveyContext();
+  const { selectedSurveyId, setSelectedSurveyId, pickSurvey } = useSurveyContext();
   const [data, setData] = useState<EnumeratorDailyStat[]>([]);
   const [accessibleSurveys, setAccessibleSurveys] = useState<AccessibleSurvey[]>([]);
   const [loadedSurvey, setLoadedSurvey] = useState<AccessibleSurvey | null>(null);
@@ -271,8 +271,8 @@ export const useFetchEnumeratorStats = () => {
           const surveys = response.data.metadata.accessible_surveys;
           setAccessibleSurveys(surveys);
 
-          if (surveys.length > 0 && !surveyToFetch) {
-            const firstSurvey = surveys[0].asset_id;
+          const firstSurvey = surveyToFetch ? undefined : pickSurvey(surveys)?.asset_id;
+          if (firstSurvey) {
             selectedSurveyRef.current = firstSurvey;
             setSelectedSurveyId(firstSurvey);
             return await fetchData(firstSurvey);
@@ -307,7 +307,7 @@ export const useFetchEnumeratorStats = () => {
       if (!controller.signal.aborted) setIsLoading(false);
     }
   // setSelectedSurveyId from useState is always stable — no other deps needed.
-  }, [setSelectedSurveyId]);
+  }, [setSelectedSurveyId, pickSurvey]);
 
   useEffect(() => {
     fetchData();

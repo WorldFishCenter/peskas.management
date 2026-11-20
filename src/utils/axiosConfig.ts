@@ -1,6 +1,9 @@
 import axios from 'axios';
 import { getApiBaseUrl } from './apiConfig';
 
+/** sessionStorage key: the sign-in page says the session ended instead of showing nothing. */
+export const SESSION_ENDED_KEY = 'sessionEnded';
+
 // Publish the resolved API base URL so same-origin static pages — specifically the
 // Data Academy lesson HTML, which is NOT part of the React bundle and can't import
 // apiConfig — can call the API exactly like the app does, in dev and prod alike.
@@ -32,17 +35,16 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Check if it's a token expiry
-      const errorCode = error.response?.data?.code;
-
-      if (errorCode === 'TOKEN_EXPIRED') {
-        console.warn('JWT token expired. Please log in again.');
-      }
-
-      // Clear authentication data and redirect to login on any 401 error
+    // Only the session check (lib/middleware.js) ends a session: a 401 passed on from another
+    // service, or the sign-in page's answer to a wrong password, does not.
+    if (error.response?.status === 401 && error.response.data?.sessionEnded) {
       localStorage.removeItem('authToken');
       localStorage.removeItem('user');
+      try {
+        sessionStorage.setItem(SESSION_ENDED_KEY, '1');
+      } catch {
+        // Without sessionStorage the sign-in page just shows no note.
+      }
       window.location.href = '/';
     }
     return Promise.reject(error);

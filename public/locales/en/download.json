@@ -53,6 +53,7 @@
   "preview": {
     "title": "Data Preview",
     "showing": "Showing {{shown}} of {{total}} rows",
+    "firstRows": "First {{shown}} rows of the file",
     "downloadFull": "Download Full Dataset (CSV)",
     "downloading": "Downloading...",
     "filtersApplied": "Filters Applied",

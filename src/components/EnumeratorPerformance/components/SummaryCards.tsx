@@ -62,7 +62,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({
               </span>
               <div className="subheader">{t('summaryCards.enumeratorsCount')}</div>
             </div>
-            <div className="h1 mb-0">{enumerators.length}</div>
+            <div className="h1 mb-0">{enumerators.filter(e => (e.filteredTotal ?? 0) > 0).length}</div>
             <div className="text-muted small">{t('summaryCards.withActivityInPeriod')}</div>
           </div>
         </div>

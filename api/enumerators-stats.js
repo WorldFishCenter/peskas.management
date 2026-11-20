@@ -9,7 +9,7 @@
 
 const { withMiddleware, authenticateUser } = require('../lib/middleware');
 const { getDb } = require('../lib/db');
-const { getSurveyFlagsCollection, PLACEHOLDER_ENUMERATORS } = require('../lib/helpers');
+const { getSurveyFlagsCollection, withRecordFlag, PLACEHOLDER_ENUMERATORS } = require('../lib/helpers');
 const { getAccessibleSurveys } = require('../lib/filter-permissions');
 const { sendSuccess, sendServerError, sendMethodNotAllowed, setCorsHeaders } = require('../lib/response');
 
@@ -70,7 +70,7 @@ async function handler(req, res) {
         count: 0,
         results: [],
         message: 'Please select a survey to view statistics',
-        metadata: { accessible_surveys: allAccessibleSurveys.map(surveyRef) }
+        metadata: { accessible_surveys: await withRecordFlag(database, allAccessibleSurveys.map(surveyRef)) }
       });
     }
 

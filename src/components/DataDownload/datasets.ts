@@ -17,6 +17,8 @@ export interface DatasetInfo {
   noDataHint: string;
   /** How to read the preview, when the level needs it */
   previewNote?: string;
+  /** The preview's row count line: trips fetch only the first rows, so their total is unknown */
+  previewCount: string;
   /** Trips take status, scope, species and survey; monthly figures only country and district */
   tripFilters: boolean;
 }
@@ -28,6 +30,7 @@ export const DATASETS: Record<DownloadDataset, DatasetInfo> = {
     hint: 'filters.datasetTripsHint',
     dictionarySubtitle: 'metadata.subtitle',
     noDataHint: 'preview.noDataHint',
+    previewCount: 'preview.firstRows',
     tripFilters: true
   },
   'district-months': {
@@ -37,6 +40,7 @@ export const DATASETS: Record<DownloadDataset, DatasetInfo> = {
     dictionarySubtitle: 'metadata.subtitleMonthly',
     noDataHint: 'preview.noDataMonthlyHint',
     previewNote: 'preview.monthlyNote',
+    previewCount: 'preview.showing',
     tripFilters: false
   }
 };

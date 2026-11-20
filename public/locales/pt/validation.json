@@ -8,7 +8,7 @@
     "date": "DATA",
     "status": "ESTADO",
     "alert": "ALERTA",
-    "actions": "AÇÕES"
+    "decidedOn": "DECIDIDO EM"
   },
   "filters": {
     "search": "Pesquisar submissões...",
@@ -46,7 +46,8 @@
     "flaggedCatchesLabel": "Capturas Sinalizadas:",
     "catchNumber": "Captura {{number}}",
     "noAlertDescription": "Ainda sem descrição no guia de alertas",
-    "lastValidatedLabel": "Última Validação:",
+    "decidedOnLabel": "Decidido em:",
+    "decidedByLabel": "Decidido por:",
     "codeHeader": "Código",
     "descriptionHeader": "Descrição"
   },
@@ -59,7 +60,16 @@
     "updateStatus": "Atualizar Estado",
     "generatingLink": "A gerar ligação...",
     "goToSubmission": "Ir para Submissão",
-    "editLinkOpened": "Ligação de edição aberta num novo separador."
+    "editLinkOpened": "Ligação de edição aberta num novo separador.",
+    "chooseStatus": "Escolha um estado…",
+    "saved": "Guardado: {{status}}.",
+    "savedKoboFailed": "Guardado: {{status}}. Não foi possível atualizar o KoboToolbox; a decisão conta na mesma.",
+    "conflict": "Não guardado: outra pessoa alterou esta submissão depois de a abrir. Agora está {{status}} ({{by}}). Verifique e decida novamente.",
+    "forbidden": "Não guardado: a sua conta não tem acesso a este formulário.",
+    "notFound": "Não guardado: esta submissão já não está na plataforma. Recarregue a página.",
+    "saveFailed": "Não guardado. Tente novamente.",
+    "editForbidden": "A sua conta não tem acesso a este formulário.",
+    "editNotFound": "O KoboToolbox não encontrou esta submissão."
   },
   "modal": {
     "alertCodesTitle": "Referência de Códigos de Alerta",

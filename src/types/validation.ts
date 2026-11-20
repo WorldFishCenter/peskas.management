@@ -18,6 +18,8 @@ export interface Submission {
   validation_status: string;
   /** Null until the submission has been validated — the pipeline omits the field entirely. */
   validated_at: string | null;
+  /** Who decided: a reviewer's username, or the pipeline's own account. */
+  validated_by?: string | null;
   alert_flag?: string;
   /** Where each catch-level alert was raised. Absent when no catch was flagged. */
   alert_catches?: AlertCatch[];
@@ -54,6 +56,8 @@ export interface AccessibleSurvey {
   country_id: string;
   /** Alert code → description. Only the submissions endpoint sends these. */
   alert_codes?: Record<string, string>;
+  /** Whether the survey has any submission; sent with the list a user picks from. */
+  has_records?: boolean;
 }
 
 export type ValidationStatus =

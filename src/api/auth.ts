@@ -4,6 +4,14 @@ import { extractErrorMessage, errorStatus } from '../utils/errors';
 
 const API_BASE_URL = getApiBaseUrl();
 
+/** Why a sign-in failed: a key under `auth:errors`. */
+export type LoginErrorKey =
+  | 'invalidCredentials'
+  | 'accountDisabled'
+  | 'tooManyAttempts'
+  | 'networkError'
+  | 'serverUnavailable';
+
 interface LoginResponse {
   success: boolean;
   token?: string;
@@ -15,7 +23,9 @@ interface LoginResponse {
     language?: string;
   };
   expiresIn?: string;
-  error?: string;
+  errorKey?: LoginErrorKey;
+  /** Seconds until a locked account may try again. */
+  retryAfter?: number;
 }
 
 export const login = async (username: string, password: string): Promise<LoginResponse> => {
@@ -23,16 +33,17 @@ export const login = async (username: string, password: string): Promise<LoginRe
     const response = await axios.post(`${API_BASE_URL}/auth/login`, { username, password });
     return response.data;
   } catch (error) {
-    if (axios.isAxiosError(error)) {
-      if (error.response?.status === 401) {
-        return { success: false, error: 'Invalid username or password' };
-      }
-      if (error.code === 'ERR_NETWORK' || !error.response) {
-        return { success: false, error: 'Unable to connect to server. Please check your connection.' };
-      }
-      return { success: false, error: extractErrorMessage(error, 'Login failed. Please try again.') };
+    if (!axios.isAxiosError(error) || !error.response) {
+      return { success: false, errorKey: 'networkError' };
     }
-    return { success: false, error: 'An unexpected error occurred. Please try again.' };
+    const { status, data } = error.response;
+    if (status === 401) {
+      return { success: false, errorKey: data?.code === 'ACCOUNT_DISABLED' ? 'accountDisabled' : 'invalidCredentials' };
+    }
+    if (status === 429) {
+      return { success: false, errorKey: 'tooManyAttempts', retryAfter: Number(data?.retryAfter) || undefined };
+    }
+    return { success: false, errorKey: 'serverUnavailable' };
   }
 };
 

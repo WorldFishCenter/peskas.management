@@ -71,7 +71,6 @@ mountServerlessFunction('/api/auth/reset-password', path.join(__dirname, '../api
 // KoboToolbox endpoints
 mountServerlessFunction('/api/kobo/submissions', path.join(__dirname, '../api/kobo/submissions.js'));
 mountServerlessFunction('/api/kobo/edit-url/:id', path.join(__dirname, '../api/kobo/edit-url/[id].js'));
-mountServerlessFunction('/api/kobo/validation-status/:id', path.join(__dirname, '../api/kobo/validation-status/[id].js'));
 
 // Submissions endpoints
 // Route spelling must match the production filename (Vercel routes by file path), which is

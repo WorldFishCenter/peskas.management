@@ -53,6 +53,7 @@
   "preview": {
     "title": "Maangalizi ya Data",
     "showing": "Inaonyesha {{shown}} ya {{total}} safu",
+    "firstRows": "Safu {{shown}} za kwanza za faili",
     "downloadFull": "Pakua Seti Kamili (CSV)",
     "downloading": "Inapakua...",
     "filtersApplied": "Vichujio Vimetumika",

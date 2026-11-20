@@ -1,9 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { IconInfoCircle, IconAlertCircle, IconCheck, IconExternalLink } from '@tabler/icons-react';
-import { generateEditUrl } from '../../api/koboToolbox';
+import type { TFunction } from 'i18next';
+import { generateEditUrl, EditUrlError, StatusUpdateResult } from '../../api/koboToolbox';
+import { statusLabelKey } from '../../types/validation';
 import { useTranslation } from 'react-i18next';
 // The shared declaration, not a local near-copy: the two had already drifted on `validated_at`.
 import { Submission } from '../../types/validation';
+
+/** The result of Update Status, shown under the form. */
+export interface StatusMessage {
+  kind: 'success' | 'warning' | 'danger';
+  text: string;
+}
+
+const FAILURE_KEYS = { forbidden: 'form.forbidden', notFound: 'form.notFound', failed: 'form.saveFailed' } as const;
+
+/** What to tell the reviewer after Update Status. */
+export const statusMessage = (result: StatusUpdateResult, t: TFunction<'validation'>): StatusMessage => {
+  if (result.outcome !== 'saved' && result.outcome !== 'conflict') {
+    return { kind: 'danger', text: t(FAILURE_KEYS[result.outcome]) };
+  }
+  const status = t(statusLabelKey(result.current.validation_status ?? undefined), { ns: 'common' });
+  if (result.outcome === 'conflict') {
+    return { kind: 'danger', text: t('form.conflict', { status, by: result.current.validated_by ?? '—' }) };
+  }
+  return result.kobo === 'failed'
+    ? { kind: 'warning', text: t('form.savedKoboFailed', { status }) }
+    : { kind: 'success', text: t('form.saved', { status }) };
+};
 
 interface StatusUpdateFormProps {
   selectedSubmission: Submission;
@@ -11,7 +35,7 @@ interface StatusUpdateFormProps {
   setStatus: (status: string) => void;
   onUpdate: () => void;
   isUpdating: boolean;
-  updateMessage: string | null;
+  updateMessage: StatusMessage | null;
   hideSubmissionInfo?: boolean;
 }
 
@@ -75,8 +99,7 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
       console.error("Failed to get edit URL:", error);
       setEditUrl(null);
       // Set user-friendly error message
-      const message = error instanceof Error ? error.message : t('form.editUrlError');
-      setErrorMessage(message);
+      setErrorMessage(t(error instanceof EditUrlError ? error.key : 'form.editUrlError'));
     } finally {
       setIsLoadingUrl(false);
     }
@@ -117,6 +140,7 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
               value={status}
               onChange={(e) => setStatus(e.target.value)}
             >
+              <option value="" disabled>{t('form.chooseStatus')}</option>
               <option value="validation_status_approved">{t('status.approved', { ns: 'common' })}</option>
               <option value="validation_status_not_approved">{t('status.notApproved', { ns: 'common' })}</option>
             </select>
@@ -126,7 +150,7 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
           <button
             className="btn btn-primary"
             onClick={onUpdate}
-            disabled={isUpdating}
+            disabled={isUpdating || !status}
           >
             {isUpdating ? t('form.updating') : t('form.updateStatus')}
           </button>
@@ -182,8 +206,8 @@ const StatusUpdateForm: React.FC<StatusUpdateFormProps> = ({
       )}
 
       {updateMessage && (
-        <div className="alert alert-info mt-3">
-          {updateMessage}
+        <div className={`alert alert-${updateMessage.kind} mt-3`} role="status">
+          {updateMessage.text}
         </div>
       )}
     </div>

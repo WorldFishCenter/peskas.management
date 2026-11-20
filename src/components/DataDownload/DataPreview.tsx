@@ -162,7 +162,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({
           <div>
             <h3 className="card-title">{t('preview.title')}</h3>
             <p className="text-muted mb-0">
-              {t('preview.showing', { shown: data.length, total: totalCount.toLocaleString() })}
+              {t(level.previewCount, { shown: data.length, total: totalCount.toLocaleString() })}
             </p>
           </div>
           <div className="btn-list">
@@ -263,7 +263,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({
       {/* Footer with download button (repeated for convenience) */}
       <div className="card-footer d-flex justify-content-between align-items-center">
         <div className="text-muted">
-          {t('preview.showing', { shown: data.length, total: totalCount.toLocaleString() })}
+          {t(level.previewCount, { shown: data.length, total: totalCount.toLocaleString() })}
         </div>
         <button
           className="btn btn-success"

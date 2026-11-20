@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { SESSION_ENDED_KEY } from '../../utils/axiosConfig';
 import { IconAlertTriangle, IconLock, IconMail, IconLanguage, IconCheck, IconLogin } from '@tabler/icons-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from './AuthContext';
@@ -14,7 +15,23 @@ const Login: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const { login, loading } = useAuth();
+  const [loading, setLoading] = useState(false);
+  // Set by the axios interceptor when a request found the session over.
+  const [sessionEnded] = useState(() => {
+    try {
+      return sessionStorage.getItem(SESSION_ENDED_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
+  useEffect(() => {
+    try {
+      sessionStorage.removeItem(SESSION_ENDED_KEY);
+    } catch {
+      // Nothing stored.
+    }
+  }, []);
+  const { login } = useAuth();
   const { changeLanguage, availableLanguages } = useI18n();
 
   const [showResetModal, setShowResetModal] = useState(false);
@@ -43,12 +60,16 @@ const Login: React.FC = () => {
       return;
     }
 
-    // Attempt login
-    const result = await login(username.trim(), password);
-
-    // Handle result
-    if (!result.success) {
-      setError(result.error || 'Invalid username or password');
+    setLoading(true);
+    try {
+      const result = await login(username.trim(), password);
+      if (!result.success) {
+        setError(t(`errors.${result.errorKey}`, { minutes: Math.max(1, Math.ceil((result.retryAfter ?? 900) / 60)) }));
+      }
+    } catch {
+      setError(t('errors.unexpectedError'));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -147,6 +168,10 @@ const Login: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {sessionEnded && !error && (
+              <div className="alert alert-info mb-3" role="status">{t('errors.sessionEnded')}</div>
+            )}
 
             {error && (
               <div className="alert alert-danger alert-dismissible mb-3" role="alert">
