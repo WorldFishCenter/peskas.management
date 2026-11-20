@@ -108,6 +108,7 @@ mountServerlessFunction('/api/admin/audit-logs', path.join(__dirname, '../api/ad
 mountServerlessFunction('/api/data-download/metadata', path.join(__dirname, '../api/data-download/metadata.js'));
 mountServerlessFunction('/api/data-download/preview', path.join(__dirname, '../api/data-download/preview.js'));
 mountServerlessFunction('/api/data-download/export', path.join(__dirname, '../api/data-download/export.js'));
+mountServerlessFunction('/api/data-download/workbook', path.join(__dirname, '../api/data-download/workbook.js'));
 mountServerlessFunction('/api/data-download/explorer-data', path.join(__dirname, '../api/data-download/explorer-data.js'));
 mountServerlessFunction('/api/data-download/metadata-fields', path.join(__dirname, '../api/data-download/metadata-fields.js'));
 

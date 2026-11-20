@@ -36,7 +36,8 @@ Airtable -> scripts/sync_* -> Mongo (countries, districts, taxa, surveys, users)
   `MONGODB_VALIDATION_URI` / `MONGODB_VALIDATION_DB`). Data download and the Data Academy read
   landings from peskas-api through `lib/download.js` and `lib/peskas-api.js`
   (`api/data-download/*`). Data download also reads `district-months` (monthly figures per
-  district, `?dataset=district-months`); the Data Academy is trip level only. A user with a
+  district, `?dataset=district-months`) and makes the Excel report of a trips download
+  (`api/data-download/workbook.js`, `lib/workbook.js`); the Data Academy is trip level only. A user with a
   district list (`permissions.gaul_codes`) downloads only those districts.
 - The portal never calls KoboToolbox during page load. A status change is one call
   (`api/submissions/[id]/validation-status.js`): Mongo first, refused with 409 if the status changed
@@ -65,10 +66,13 @@ Airtable -> scripts/sync_* -> Mongo (countries, districts, taxa, surveys, users)
   Quarto/R): re-render after editing any `.qmd`.
 - `*.md` is gitignored with explicit exceptions (`CLAUDE.md`, `README.md`, `NEWS.md`,
   `.claude/rules/`, `.claude/commands/`). A new markdown file anywhere else is silently untracked.
+- The Excel report's template (`lib/workbook/`) is built by `scripts/workbook/build_template.py` from
+  peskas-api's `/metadata/landings` and names landings columns in its formulas: after a column change,
+  rebuild it, run `npm test` and `scripts/workbook/check_workbook.py`.
 - The `data-explorer/*.qmd` lessons hard-code landings column names, and `lib/peskas-api.js` /
   `lib/download.js` hard-code its filter and scope parameters (`catch_taxon`, `gaul_2`,
   `trip_info`/`catch_info`). The dataset names (`landings`, `district-months`) are in
-  `lib/peskas-api.js`, `lib/download.js`, `src/types/download.ts`,
+  `lib/peskas-api.js`, `lib/download.js`, `api/data-download/workbook.js`, `src/types/download.ts`,
   `src/components/DataDownload/datasets.ts` and the `admin` locale keys `auditLog.datasets.*`;
   `download:preview.monthlyNote` names district-months columns. A column, parameter or dataset
   change in peskas-api breaks them. A district list goes out as a comma-separated `gaul_2`,

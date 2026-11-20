@@ -6,7 +6,7 @@ import {
   flexRender,
   ColumnDef
 } from '@tanstack/react-table';
-import { IconDownload, IconAlertCircle, IconBook, IconInfoCircle } from '@tabler/icons-react';
+import { IconDownload, IconAlertCircle, IconBook, IconInfoCircle, IconFileSpreadsheet } from '@tabler/icons-react';
 import { AppliedFilters, DataRow } from '../../types/download';
 import { useFetchFieldMetadata } from '../../api/download';
 import FieldInfoIcon from './FieldInfoIcon';
@@ -38,6 +38,9 @@ interface DataPreviewProps {
   error: string | null;
   onDownload: () => void;
   isDownloading: boolean;
+  /** Trips only: the Excel report of the same selection */
+  onDownloadWorkbook?: () => void;
+  isMakingWorkbook?: boolean;
 }
 
 const DataPreview: React.FC<DataPreviewProps> = ({
@@ -47,9 +50,23 @@ const DataPreview: React.FC<DataPreviewProps> = ({
   isLoading,
   error,
   onDownload,
-  isDownloading
+  isDownloading,
+  onDownloadWorkbook,
+  isMakingWorkbook = false
 }) => {
   const { t } = useTranslation('download');
+
+  const workbookButton = onDownloadWorkbook && (
+    <button
+      className="btn btn-outline-success"
+      onClick={onDownloadWorkbook}
+      disabled={isMakingWorkbook}
+      title={t('preview.workbookHint')}
+    >
+      <IconFileSpreadsheet className="icon me-2" size={18} />
+      {isMakingWorkbook ? t('preview.makingWorkbook') : t('preview.downloadWorkbook')}
+    </button>
+  );
 
   // Metadata state management
   const [showMetadataModal, setShowMetadataModal] = useState(false);
@@ -182,6 +199,7 @@ const DataPreview: React.FC<DataPreviewProps> = ({
               <IconDownload className="icon me-2" size={18} />
               {isDownloading ? t('preview.downloading') : t('preview.downloadFull')}
             </button>
+            {workbookButton}
           </div>
         </div>
 
@@ -265,15 +283,21 @@ const DataPreview: React.FC<DataPreviewProps> = ({
         <div className="text-muted">
           {t(level.previewCount, { shown: data.length, total: totalCount.toLocaleString() })}
         </div>
-        <button
-          className="btn btn-success"
-          onClick={onDownload}
-          disabled={isDownloading}
-        >
-          <IconDownload className="icon me-2" size={18} />
-          {isDownloading ? t('preview.downloading') : t('preview.downloadFull')}
-        </button>
+        <div className="btn-list">
+          <button
+            className="btn btn-success"
+            onClick={onDownload}
+            disabled={isDownloading}
+          >
+            <IconDownload className="icon me-2" size={18} />
+            {isDownloading ? t('preview.downloading') : t('preview.downloadFull')}
+          </button>
+          {workbookButton}
+        </div>
       </div>
+      {onDownloadWorkbook && (
+        <div className="card-footer text-muted small">{t('preview.workbookHint')}</div>
+      )}
       </div>
 
       {/* Field Metadata Modal */}

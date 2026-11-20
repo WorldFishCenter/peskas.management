@@ -34,7 +34,16 @@ axios.interceptors.request.use(
 // Add response interceptor to handle authentication errors
 axios.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    // A download asks for a blob, so its JSON error arrives as one too: read it, as every other error is.
+    const body = error.response?.data;
+    if (body instanceof Blob && body.type.includes('json')) {
+      try {
+        error.response.data = JSON.parse(await body.text());
+      } catch {
+        // Not JSON after all: leave it as it came.
+      }
+    }
     // Only the session check (lib/middleware.js) ends a session: a 401 passed on from another
     // service, or the sign-in page's answer to a wrong password, does not.
     if (error.response?.status === 401 && error.response.data?.sessionEnded) {

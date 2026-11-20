@@ -10,7 +10,8 @@ export interface CountryMetadata {
 
 // Country metadata mapping, keyed by the lowercase country slug used across the
 // platform (`countries.code`, `districts.country_id`). `surveys.country_id` is the
-// Airtable display name ("Zanzibar"), which normalizes onto these keys.
+// Airtable display name ("Zanzibar"), which normalizes onto these keys. Names and
+// currencies are mirrored by `COUNTRIES` in `lib/country-codes.js` (the Excel report).
 export const COUNTRY_METADATA: Record<string, CountryMetadata> = {
   'zanzibar': {
     code: 'zanzibar',

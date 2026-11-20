@@ -4,8 +4,9 @@ import { useAuth } from '../Auth/AuthContext';
 import { IconDownload } from '@tabler/icons-react';
 import DownloadFilters from './DownloadFilters';
 import DataPreview from './DataPreview';
-import { useFetchDownloadPreview, downloadCSV } from '../../api/download';
+import { useFetchDownloadPreview, downloadCSV, downloadWorkbook } from '../../api/download';
 import { DownloadFilters as FiltersType } from '../../types/download';
+import { datasetInfo } from './datasets';
 
 const DataDownload: React.FC = () => {
   const { t } = useTranslation('download');
@@ -27,7 +28,7 @@ const DataDownload: React.FC = () => {
   const [previewedFilters, setPreviewedFilters] = useState<FiltersType>(filters);
 
   // Download state
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [busy, setBusy] = useState<'csv' | 'xlsx' | null>(null);
 
   // Preview data hook
   const { data, totalCount, appliedFilters, isLoading, error, fetchPreview } = useFetchDownloadPreview();
@@ -51,19 +52,17 @@ const DataDownload: React.FC = () => {
   };
 
   /**
-   * Handle CSV download button click
+   * Download the previewed selection, as CSV or as the Excel report. The endpoints re-apply
+   * permission scoping server-side from the authenticated user and these same query params
+   * (identical to preview), so they always download exactly what was previewed.
    */
-  const handleDownload = async () => {
-    setIsDownloading(true);
+  const runDownload = async (download: typeof downloadCSV, kind: 'csv' | 'xlsx') => {
+    setBusy(kind);
+    const message = await download(previewedFilters);
+    setBusy(null);
 
-    // Send the previewed selections. The export endpoint re-applies permission
-    // scoping server-side from the authenticated user + these same query params
-    // (identical to preview), so it always downloads exactly what was previewed.
-    const success = await downloadCSV(previewedFilters);
-    setIsDownloading(false);
-
-    if (!success) {
-      alert(t('errors.downloadFailed'));
+    if (message !== null) {
+      alert(message ? `${t('errors.downloadFailed')} ${message}` : t('errors.downloadFailed'));
     }
   };
 
@@ -149,8 +148,12 @@ const DataDownload: React.FC = () => {
                   appliedFilters={appliedFilters}
                   isLoading={isLoading}
                   error={error}
-                  onDownload={handleDownload}
-                  isDownloading={isDownloading}
+                  onDownload={() => runDownload(downloadCSV, 'csv')}
+                  isDownloading={busy === 'csv'}
+                  onDownloadWorkbook={datasetInfo(previewedFilters.dataset).excelReport
+                    ? () => runDownload(downloadWorkbook, 'xlsx')
+                    : undefined}
+                  isMakingWorkbook={busy === 'xlsx'}
                 />
               </div>
             </div>

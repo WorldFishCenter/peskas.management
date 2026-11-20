@@ -69,13 +69,15 @@ function renderDetails(entry: AuditLogEntry, t: Translate): React.ReactNode {
       const catchTaxon = str(d['catch_taxon']);
       const district = str(d['district']);
       const surveyId = str(d['survey_asset_id']);
-      const hasAny = dataset || country || dataStatus || scope || catchTaxon || district || surveyId;
+      const format = str(d['format']);
+      const hasAny = dataset || country || dataStatus || scope || catchTaxon || district || surveyId || format;
       if (!hasAny) return <span className="text-secondary">—</span>;
       return (
         <div className="d-flex flex-wrap gap-1">
           {country    && <span className="badge bg-blue-lt">{country}</span>}
           {dataset    && <span className="badge bg-secondary-lt">{t(`auditLog.datasets.${dataset}`, { defaultValue: dataset })}</span>}
           {dataStatus && <span className="badge bg-secondary-lt">{dataStatus}</span>}
+          {format     && <span className="badge bg-green-lt">{format}</span>}
           {scope      && <span className="badge bg-secondary-lt">{scope}</span>}
           {catchTaxon && <span className="badge bg-secondary-lt">{catchTaxon}</span>}
           {district   && <span className="badge bg-secondary-lt">district: {district}</span>}

@@ -21,7 +21,8 @@
   "functions": {
     "api/data-download/*.js": {
       "maxDuration": 30,
-      "memory": 1024
+      "memory": 1024,
+      "includeFiles": "lib/workbook/**"
     },
     "api/**/*.js": {
       "maxDuration": 10,
