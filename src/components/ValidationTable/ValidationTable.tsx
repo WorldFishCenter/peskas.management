@@ -332,15 +332,6 @@ const ValidationTable: React.FC = () => {
       </div>
     );
 
-  if (error)
-    return (
-      <div className="page-body">
-        <div className="container-xl">
-          <div className="alert alert-danger">{error}</div>
-        </div>
-      </div>
-    );
-
   return (
     <>
       {/* Page Header */}
@@ -386,6 +377,16 @@ const ValidationTable: React.FC = () => {
               />
             </div>
           </div>
+
+          {/* An error keeps the filters and the form choice, so the reviewer can retry or change them */}
+          {error && (
+            <div className="alert alert-danger d-flex align-items-center justify-content-between" role="alert">
+              <div>{error}</div>
+              <button className="btn btn-outline-danger btn-sm" onClick={() => refetch()}>
+                {t('buttons.tryAgain', { ns: 'common' })}
+              </button>
+            </div>
+          )}
 
           {/* Table Card */}
           <div className={`card ${isLoading ? 'opacity-50' : ''}`} aria-busy={isLoading}>

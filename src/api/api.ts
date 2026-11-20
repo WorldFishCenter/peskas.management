@@ -197,7 +197,6 @@ export const useFetchSubmissions = (query: SubmissionQuery) => {
       setError(extractErrorMessage(err, 'Failed to load submissions'));
       setData([]);
       setTotal(0);
-      setAccessibleSurveys([]);
       setLoadedSurvey(null);
       // Whatever we held is no longer known to match a loaded survey — ask again next time.
       metaSurveyRef.current = null;
@@ -301,7 +300,6 @@ export const useFetchEnumeratorStats = () => {
       if (controller.signal.aborted) return;
       setError(extractErrorMessage(err, 'Failed to load enumerator statistics'));
       setData([]);
-      setAccessibleSurveys([]);
       setLoadedSurvey(null);
     } finally {
       if (!controller.signal.aborted) setIsLoading(false);

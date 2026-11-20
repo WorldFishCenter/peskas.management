@@ -8,6 +8,8 @@
 - **A slow or failing KoboToolbox no longer blocks a decision.** The decision is saved in the platform first, then copied to KoboToolbox; if KoboToolbox does not answer within a few seconds, the reviewer sees a warning and the decision still counts. A KoboToolbox problem no longer signs the reviewer out.
 - **The platform opens a form that has data.** It remembers the form each account last picked in this browser, and otherwise opens one with submissions instead of the first in the list.
 - **An ended session says so** on the sign-in page, and a short database hiccup no longer signs everyone out.
+- **A form with no data, or a failed load, no longer traps the reviewer.** Enumerator Performance keeps its form selector, and both it and Submissions show the error with a Try again button, keeping the filters.
+- **Fewer pages that wait ten seconds and fail.** The platform no longer reuses a database connection left idle between requests.
 - **Edit links and decisions stay within a user's own forms.**
 - **New accounts' first passwords no longer appear in the account sync's log**, and are drawn from a secure random source.
 
