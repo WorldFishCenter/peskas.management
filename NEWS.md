@@ -1,3 +1,13 @@
+# Management Platform 2.13.0
+
+## Added
+
+- **An Excel report of any trip download.** Next to the CSV button, "Excel report" gives the selected trips already in an analysis workbook, with every figure worked out one trip at a time and nothing to paste.
+
+## Changed
+
+- **A download that matches nothing says so** instead of saving a file with only column names, and a refused download now says why.
+
 # Management Platform 2.12.0
 
 ## Fixed

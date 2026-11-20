@@ -15,7 +15,7 @@ import {
   Taxon
 } from '../types/download';
 
-// Data Download hooks: filter metadata, preview, CSV export and field descriptions.
+// Data Download hooks: filter metadata, preview, CSV and Excel report export, field descriptions.
 
 const API_BASE_URL = getApiBaseUrl();
 
@@ -79,52 +79,41 @@ export const useFetchDownloadPreview = () => {
 };
 
 /**
- * Function to trigger CSV download
+ * Download a file the server makes from the selected filters, and save it under the name the
+ * server gives (Content-Disposition, exposed by lib/response.js).
  *
- * Downloads the full dataset as CSV based on selected filters.
- * Triggers browser download with appropriate filename.
- *
- * @param filters - Download filters to apply
- * @returns Promise<boolean> - true if download succeeded, false otherwise
+ * @returns null if the download succeeded, otherwise the server's message ('' when it gave none)
  */
-export const downloadCSV = async (filters: DownloadFilters): Promise<boolean> => {
+const saveDownload = async (endpoint: string, filters: DownloadFilters, fallbackName: string): Promise<string | null> => {
   try {
-    const response = await axios.get(
-      `${API_BASE_URL}/data-download/export?${buildDownloadQuery(filters)}`,
-      {
-        responseType: 'blob' // Important for file download
-      }
-    );
-
-    // Create blob and trigger download
-    const blob = new Blob([response.data], { type: 'text/csv; charset=utf-8' });
-    const url = window.URL.createObjectURL(blob);
+    const response = await axios.get(`${API_BASE_URL}/data-download/${endpoint}?${buildDownloadQuery(filters)}`, {
+      responseType: 'blob'
+    });
+    const url = window.URL.createObjectURL(response.data as Blob);
     const link = document.createElement('a');
     link.href = url;
-
-    // Extract filename from Content-Disposition header (exposed by lib/response.js) or use default
-    const contentDisposition = response.headers['content-disposition'];
-    let filename = `peskas-${filters.dataset}-${new Date().toISOString().split('T')[0]}.csv`;
-
-    if (contentDisposition) {
-      const filenameMatch = contentDisposition.match(/filename="?(.+)"?/i);
-      if (filenameMatch && filenameMatch[1]) {
-        filename = filenameMatch[1].replace(/"/g, '');
-      }
-    }
-
-    link.download = filename;
+    const match = /filename="?([^"]+)"?/i.exec(response.headers['content-disposition'] || '');
+    link.download = match ? match[1] : fallbackName;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     window.URL.revokeObjectURL(url);
-
-    return true;
+    return null;
   } catch (err) {
-    console.error('Error downloading CSV:', err);
-    return false;
+    console.error(`Error downloading ${endpoint}:`, err);
+    return extractErrorMessage(err, '');
   }
 };
+
+const today = () => new Date().toISOString().split('T')[0];
+
+/** The full dataset as CSV. */
+export const downloadCSV = (filters: DownloadFilters): Promise<string | null> =>
+  saveDownload('export', filters, `peskas-${filters.dataset}-${today()}.csv`);
+
+/** The Excel report: the analysis workbook filled with the trips of this selection. */
+export const downloadWorkbook = (filters: DownloadFilters): Promise<string | null> =>
+  saveDownload('workbook', filters, `peskas-report-${today()}.xlsx`);
 
 /**
  * Unified hook to fetch all download metadata in one request

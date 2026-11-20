@@ -67,6 +67,8 @@ docs/
 scripts/*
 !scripts/sync_*
 !scripts/ensure_survey_indexes.cjs
+!scripts/workbook/
+scripts/workbook/__pycache__/
 # Claude Code (personal)
 .claude/settings.local.json
 CLAUDE.local.md

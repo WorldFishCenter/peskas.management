@@ -44,13 +44,12 @@ const { withMiddleware, authenticateUser } = require('../../lib/middleware');
 const {
   resolveDownload,
   fetchDownloadCSV,
-  servedScope,
-  downloadAuditDetails,
+  downloadFileName,
+  logDownload,
   sendDownloadError
 } = require('../../lib/download');
 const { sanitizeCSV } = require('../../lib/helpers');
-const { setCorsHeaders } = require('../../lib/response');
-const { logAuditEvent } = require('../../lib/audit-logger');
+const { setCorsHeaders, sendAttachment } = require('../../lib/response');
 const { getDb } = require('../../lib/db');
 
 /**
@@ -76,30 +75,8 @@ async function handler(req, res) {
     const download = await resolveDownload(req.user, req.query);
     const sanitizedCSV = sanitizeCSV(await fetchDownloadCSV(download));
 
-    // Distinct scope actually served (for filename)
-    const { countries } = servedScope(download);
-
-    const timestamp = new Date().toISOString().split('T')[0];
-    const countryLabel = countries.length === 1 ? countries[0] : 'multi-country';
-    // Validated and raw trips would otherwise save under the same name.
-    const statusLabel = download.sharedFilters.status ? `-${download.sharedFilters.status}` : '';
-    const filename = `peskas-${download.dataset}-${countryLabel}${statusLabel}-${timestamp}.csv`;
-
-    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    res.setHeader('Cache-Control', 'no-cache');
-
-    await logAuditEvent(database, {
-      username: req.user.username,
-      user_id: req.user.id,
-      category: 'download',
-      action: 'data_export',
-      status: 'success',
-      details: downloadAuditDetails(download),
-      req
-    });
-
-    return res.send(sanitizedCSV);
+    await logDownload(database, req, download);
+    return sendAttachment(res, sanitizedCSV, 'text/csv; charset=utf-8', downloadFileName(download, download.dataset, 'csv'));
 
   } catch (error) {
     console.error('Export error:', error);

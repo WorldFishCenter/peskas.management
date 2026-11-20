@@ -1,0 +1,250 @@
+{
+  "lastRow": 1048576,
+  "dataSheet": "xl/worksheets/sheet2.xml",
+  "columns": [
+    {
+      "name": "survey_organization",
+      "type": "string",
+      "col": "A"
+    },
+    {
+      "name": "survey_id",
+      "type": "string",
+      "col": "B"
+    },
+    {
+      "name": "trip_id",
+      "type": "string",
+      "col": "C"
+    },
+    {
+      "name": "landing_date",
+      "type": "date",
+      "col": "D"
+    },
+    {
+      "name": "gaul_1_code",
+      "type": "string",
+      "col": "E"
+    },
+    {
+      "name": "gaul_1_name",
+      "type": "string",
+      "col": "F"
+    },
+    {
+      "name": "gaul_2_code",
+      "type": "string",
+      "col": "G"
+    },
+    {
+      "name": "gaul_2_name",
+      "type": "string",
+      "col": "H"
+    },
+    {
+      "name": "landing_site",
+      "type": "string",
+      "col": "I"
+    },
+    {
+      "name": "n_fishers",
+      "type": "number",
+      "col": "J"
+    },
+    {
+      "name": "trip_duration_hrs",
+      "type": "number",
+      "col": "K"
+    },
+    {
+      "name": "gear",
+      "type": "string",
+      "col": "L"
+    },
+    {
+      "name": "vessel_type",
+      "type": "string",
+      "col": "M"
+    },
+    {
+      "name": "catch_habitat",
+      "type": "string",
+      "col": "N"
+    },
+    {
+      "name": "catch_outcome",
+      "type": "number",
+      "col": "O"
+    },
+    {
+      "name": "n_catch",
+      "type": "number",
+      "col": "P"
+    },
+    {
+      "name": "catch_taxon",
+      "type": "string",
+      "col": "Q"
+    },
+    {
+      "name": "scientific_name",
+      "type": "string",
+      "col": "R"
+    },
+    {
+      "name": "length_cm",
+      "type": "number",
+      "col": "S"
+    },
+    {
+      "name": "n_fish",
+      "type": "number",
+      "col": "T"
+    },
+    {
+      "name": "catch_kg",
+      "type": "number",
+      "col": "U"
+    },
+    {
+      "name": "catch_price",
+      "type": "number",
+      "col": "V"
+    },
+    {
+      "name": "tot_catch_kg",
+      "type": "number",
+      "col": "W"
+    },
+    {
+      "name": "tot_catch_price",
+      "type": "number",
+      "col": "X"
+    }
+  ],
+  "helpers": [
+    {
+      "name": "row",
+      "col": "Y"
+    },
+    {
+      "name": "include",
+      "col": "Z"
+    },
+    {
+      "name": "new_trip",
+      "col": "AA"
+    },
+    {
+      "name": "seen",
+      "col": "AB"
+    },
+    {
+      "name": "trip_first",
+      "col": "AC"
+    },
+    {
+      "name": "new_catch",
+      "col": "AD"
+    },
+    {
+      "name": "month_key",
+      "col": "AE"
+    },
+    {
+      "name": "fisher_hours",
+      "col": "AF"
+    },
+    {
+      "name": "cpue_trip",
+      "col": "AG"
+    },
+    {
+      "name": "price_kg_trip",
+      "col": "AH"
+    },
+    {
+      "name": "length_x_fish",
+      "col": "AI"
+    },
+    {
+      "name": "fish_measured",
+      "col": "AJ"
+    },
+    {
+      "name": "date_inc",
+      "col": "AK"
+    }
+  ],
+  "slots": {
+    "country": {
+      "sheet": "xl/worksheets/sheet1.xml",
+      "ref": "C6"
+    },
+    "organisation": {
+      "sheet": "xl/worksheets/sheet1.xml",
+      "ref": "C7"
+    },
+    "districts_label": {
+      "sheet": "xl/worksheets/sheet1.xml",
+      "ref": "B8"
+    },
+    "districts": {
+      "sheet": "xl/worksheets/sheet1.xml",
+      "ref": "C8"
+    },
+    "status": {
+      "sheet": "xl/worksheets/sheet1.xml",
+      "ref": "C9"
+    },
+    "downloaded_on": {
+      "sheet": "xl/worksheets/sheet1.xml",
+      "ref": "C10"
+    },
+    "currency": {
+      "sheet": "xl/worksheets/sheet1.xml",
+      "ref": "C11"
+    },
+    "trips_total": {
+      "sheet": "xl/worksheets/sheet3.xml",
+      "ref": "C15"
+    },
+    "columns_note": {
+      "sheet": "xl/worksheets/sheet3.xml",
+      "ref": "B37"
+    }
+  },
+  "gears": {
+    "sheet": "xl/worksheets/sheet6.xml",
+    "refs": [
+      "B6",
+      "B7",
+      "B8",
+      "B9",
+      "B10",
+      "B11",
+      "B12",
+      "B13",
+      "B14",
+      "B15"
+    ]
+  },
+  "species": {
+    "sheet": "xl/worksheets/sheet7.xml",
+    "refs": [
+      "B6",
+      "B7",
+      "B8",
+      "B9",
+      "B10",
+      "B11",
+      "B12",
+      "B13",
+      "B14",
+      "B15",
+      "B16",
+      "B17"
+    ]
+  }
+}

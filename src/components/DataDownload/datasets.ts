@@ -21,6 +21,8 @@ export interface DatasetInfo {
   previewCount: string;
   /** Trips take status, scope, species and survey; monthly figures only country and district */
   tripFilters: boolean;
+  /** The Excel report works trip figures out from trip rows, so only trips have one */
+  excelReport: boolean;
 }
 
 export const DATASETS: Record<DownloadDataset, DatasetInfo> = {
@@ -31,7 +33,8 @@ export const DATASETS: Record<DownloadDataset, DatasetInfo> = {
     dictionarySubtitle: 'metadata.subtitle',
     noDataHint: 'preview.noDataHint',
     previewCount: 'preview.firstRows',
-    tripFilters: true
+    tripFilters: true,
+    excelReport: true
   },
   'district-months': {
     icon: IconCalendarMonth,
@@ -41,7 +44,8 @@ export const DATASETS: Record<DownloadDataset, DatasetInfo> = {
     noDataHint: 'preview.noDataMonthlyHint',
     previewNote: 'preview.monthlyNote',
     previewCount: 'preview.showing',
-    tripFilters: false
+    tripFilters: false,
+    excelReport: false
   }
 };
 
