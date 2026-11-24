@@ -43,6 +43,10 @@ Airtable -> scripts/sync_* -> Mongo (countries, districts, taxa, surveys, users)
   (`api/submissions/[id]/validation-status.js`): Mongo first, refused with 409 if the status changed
   since the reviewer opened it, then KoboToolbox with one short try (a failure only warns). The
   pipelines read decisions from both.
+- "View full submission" reads one record and the form version it was sent with from KoboToolbox,
+  read-only, with the survey's stored token (`api/kobo/submission/[id].js`, `lib/kobo-submission.js`).
+  Where each alert points in each form is `src/utils/submissionHighlights.ts`, copied by hand from
+  the pipelines' checks.
 - **Multi-survey**: each survey has its own `surveys_flags-{asset_id}` collection; enumerator
   stats are computed from it (`enumerators_stats-*` is still written but unread since 2.10.0).
   Per-survey KoboToolbox config and alert-code meanings live in the `surveys` collection, so
@@ -77,4 +81,8 @@ Airtable -> scripts/sync_* -> Mongo (countries, districts, taxa, surveys, users)
   `download:preview.monthlyNote` names district-months columns. A column, parameter or dataset
   change in peskas-api breaks them. A district list goes out as a comma-separated `gaul_2`,
   which needs peskas-api >= 1.8.0: an older API matches no row and the download is empty.
+- **A pipeline alert added or changed must also go into `src/utils/submissionHighlights.ts`**
+  (which questions it checks, and which repeat `alert_catches.catch_number` counts). Its test fails
+  when a form with alert texts in the locales has no map or misses one of the codes; a renamed
+  question fails silently.
 - The R pipelines are external to this repo; you cannot run or fix them here.

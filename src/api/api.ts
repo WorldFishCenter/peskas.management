@@ -1,13 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { getApiBaseUrl } from '../utils/apiConfig';
-import { extractErrorMessage } from '../utils/errors';
+import { extractErrorMessage, errorStatus } from '../utils/errors';
 import { useSurveyContext } from '../contexts/SurveyContext';
 
 // Get the appropriate API base URL based on environment
 const API_BASE_URL = getApiBaseUrl();
 
-import { Submission, EnumeratorDailyStat, AccessibleSurvey } from '../types/validation';
+import { Submission, EnumeratorDailyStat, AccessibleSurvey, SubmissionView } from '../types/validation';
 
 /**
  * Expand a stored submission row into the shape the table and its filters expect.
@@ -322,4 +322,40 @@ export const useFetchEnumeratorStats = () => {
     error,
     refetch: fetchData
   };
+};
+
+const SUBMISSION_VIEW_ERRORS: Record<number, string> = {
+  403: 'submissionView.forbidden',
+  404: 'submissionView.notFound',
+  422: 'submissionView.noKobo',
+  502: 'submissionView.koboRefused',
+  504: 'submissionView.koboSlow'
+};
+
+/**
+ * One submission's answers, read from KoboToolbox by the server. `errorKey` is a
+ * `validation:submissionView.*` message.
+ */
+export const useSubmissionView = (submissionId: string, assetId: string | undefined) => {
+  const [view, setView] = useState<SubmissionView | null>(null);
+  const [errorKey, setErrorKey] = useState<string | null>(null);
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setView(null);
+    setErrorKey(null);
+    axios
+      .get(`${API_BASE_URL}/kobo/submission/${submissionId}`, { params: { asset_id: assetId }, signal: controller.signal })
+      .then(({ data }) => setView(data))
+      .catch(error => {
+        if (controller.signal.aborted) return;
+        console.error('Failed to load submission:', error);
+        setErrorKey(SUBMISSION_VIEW_ERRORS[errorStatus(error) ?? 0] ?? 'submissionView.failed');
+      });
+    return () => controller.abort();
+  }, [submissionId, assetId, attempt]);
+
+  const retry = useCallback(() => setAttempt(a => a + 1), []);
+  return { view, errorKey, retry };
 };

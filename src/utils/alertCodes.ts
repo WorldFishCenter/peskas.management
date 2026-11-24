@@ -1,4 +1,5 @@
 import type { i18n as I18n } from 'i18next';
+import type { AlertCatch } from '../types/validation';
 
 /**
  * Describe one alert code in the reader's language.
@@ -36,3 +37,6 @@ export const displayAlertCode = (code: string): string => code.replace(/_/g, '.'
 export const splitAlertCodes = (alertFlag: string): string[] => [
   ...new Set(alertFlag.split(',').map(code => code.trim()).filter(Boolean))
 ];
+
+/** What a flagged catch held, after its number: "Octopus vulgaris, 5.8 kg". */
+export const catchDetail = (c: AlertCatch): string => [c.species, c.value].filter(Boolean).join(', ');

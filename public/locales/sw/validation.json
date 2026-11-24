@@ -52,24 +52,35 @@
     "descriptionHeader": "Maelezo"
   },
   "form": {
-    "popupBlocked": "Dirisha ibukizi limezuiwa. Tafadhali ruhusu popups kwa tovuti hii.",
-    "editUrlError": "Imeshindwa kuunda kiungo cha kuhariri. Tafadhali jaribu tena.",
     "selectedSubmission": "Uwasilishaji ulioteuliwa: ",
     "assignStatus": "Weka Hali",
     "updating": "Inasasisha...",
     "updateStatus": "Sasisha Hali",
-    "generatingLink": "Inatengeneza Kiungo...",
-    "goToSubmission": "Nenda kwenye Uwasilishaji",
-    "editLinkOpened": "Kiungo cha kuhariri kimefunguliwa katika kichupo kipya.",
     "chooseStatus": "Chagua hali…",
     "saved": "Imehifadhiwa: {{status}}.",
     "savedKoboFailed": "Imehifadhiwa: {{status}}. KoboToolbox haikusasishwa; uamuzi unahesabiwa hata hivyo.",
     "conflict": "Haikuhifadhiwa: mtu mwingine amebadilisha uwasilishaji huu baada ya wewe kuufungua. Sasa ni {{status}} ({{by}}). Uangalie kisha uamue tena.",
     "forbidden": "Haikuhifadhiwa: akaunti yako haina ruhusa kwa fomu hii.",
     "notFound": "Haikuhifadhiwa: uwasilishaji huu haupo tena kwenye jukwaa. Pakia ukurasa upya.",
-    "saveFailed": "Haikuhifadhiwa. Tafadhali jaribu tena.",
-    "editForbidden": "Akaunti yako haina ruhusa kwa fomu hii.",
-    "editNotFound": "KoboToolbox haikupata uwasilishaji huu."
+    "saveFailed": "Haikuhifadhiwa. Tafadhali jaribu tena."
+  },
+  "submissionView": {
+    "button": "Tazama uwasilishaji wote",
+    "title": "Uwasilishaji {{id}}",
+    "loading": "Inasoma uwasilishaji kutoka KoboToolbox…",
+    "alerts": "Tahadhari kwenye uwasilishaji huu",
+    "noAlerts": "Uwasilishaji huu hauna tahadhari.",
+    "noMap": "Mahali pa kila tahadhari kwenye fomu hii bado hapajulikani; tahadhari zimeorodheshwa hapo juu.",
+    "readOnly": "Kusoma tu: majibu kama yalivyo kwenye KoboToolbox. Picha hazionyeshwi.",
+    "forbidden": "Akaunti yako haina ruhusa kwa fomu hii.",
+    "notFound": "KoboToolbox haikupata uwasilishaji huu. Huenda umefutwa.",
+    "noKobo": "Fomu hii haijaunganishwa na KoboToolbox, kwa hiyo majibu yake hayawezi kuonyeshwa hapa.",
+    "koboRefused": "KoboToolbox imekataa jukwaa kusoma fomu hii. Mjulishe msimamizi wa jukwaa.",
+    "koboSlow": "KoboToolbox haijibu kwa sasa. Jaribu tena baada ya muda mfupi.",
+    "failed": "Uwasilishaji haukuweza kupakiwa. Jaribu tena baada ya muda mfupi.",
+    "notALine": "Fomu hii haina mavuno ya namba hii.",
+    "marksHint": "Hapa chini, majibu ambayo kila tahadhari inakagua yana mstari mwekundu na msimbo wa tahadhari; elekeza kipanya kwenye msimbo kusoma tahadhari tena.",
+    "notAnswered": "Halijajibiwa"
   },
   "modal": {
     "alertCodesTitle": "Marejeo ya Msimbo wa Tahadhari",

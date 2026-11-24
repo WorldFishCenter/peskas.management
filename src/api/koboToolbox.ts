@@ -5,33 +5,6 @@ import { errorStatus } from '../utils/errors';
 // Get the appropriate API base URL based on environment
 const API_BASE_URL = getApiBaseUrl();
 
-/** Thrown by {@link generateEditUrl}; `key` is a `validation:form.*` message. */
-export class EditUrlError extends Error {
-  key: string;
-
-  constructor(key: string) {
-    super(key);
-    this.key = key;
-  }
-}
-
-/**
- * Get the KoboToolbox (Enketo) edit link for a submission.
- * @throws EditUrlError
- */
-export const generateEditUrl = async (submissionId: string, assetId?: string): Promise<string> => {
-  try {
-    const response = await axios.get(`${API_BASE_URL}/kobo/edit-url/${submissionId}`, { params: { asset_id: assetId } });
-    if (response.data?.url) return response.data.url;
-  } catch (error) {
-    console.error('Failed to get edit URL:', error);
-    const httpStatus = errorStatus(error);
-    if (httpStatus === 403) throw new EditUrlError('form.editForbidden');
-    if (httpStatus === 404) throw new EditUrlError('form.editNotFound');
-  }
-  throw new EditUrlError('form.editUrlError');
-};
-
 /** A submission's decision fields, as the server holds them after a save or a refused save. */
 export interface DecisionState {
   validation_status: string | null;

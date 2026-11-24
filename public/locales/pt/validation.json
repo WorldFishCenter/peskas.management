@@ -52,24 +52,35 @@
     "descriptionHeader": "Descrição"
   },
   "form": {
-    "popupBlocked": "O pop-up foi bloqueado. Permita pop-ups para este site.",
-    "editUrlError": "Falha ao gerar o URL de edição. Tente novamente.",
     "selectedSubmission": "Submissão selecionada: ",
     "assignStatus": "Atribuir Estado",
     "updating": "A atualizar...",
     "updateStatus": "Atualizar Estado",
-    "generatingLink": "A gerar ligação...",
-    "goToSubmission": "Ir para Submissão",
-    "editLinkOpened": "Ligação de edição aberta num novo separador.",
     "chooseStatus": "Escolha um estado…",
     "saved": "Guardado: {{status}}.",
     "savedKoboFailed": "Guardado: {{status}}. Não foi possível atualizar o KoboToolbox; a decisão conta na mesma.",
     "conflict": "Não guardado: outra pessoa alterou esta submissão depois de a abrir. Agora está {{status}} ({{by}}). Verifique e decida novamente.",
     "forbidden": "Não guardado: a sua conta não tem acesso a este formulário.",
     "notFound": "Não guardado: esta submissão já não está na plataforma. Recarregue a página.",
-    "saveFailed": "Não guardado. Tente novamente.",
-    "editForbidden": "A sua conta não tem acesso a este formulário.",
-    "editNotFound": "O KoboToolbox não encontrou esta submissão."
+    "saveFailed": "Não guardado. Tente novamente."
+  },
+  "submissionView": {
+    "button": "Ver submissão completa",
+    "title": "Submissão {{id}}",
+    "loading": "A ler a submissão do KoboToolbox…",
+    "alerts": "Alertas nesta submissão",
+    "noAlerts": "Esta submissão não tem alertas.",
+    "noMap": "Ainda não se sabe onde fica cada alerta neste formulário; os alertas estão listados acima.",
+    "readOnly": "Só leitura: as respostas tal como estão no KoboToolbox. As fotografias não são mostradas.",
+    "forbidden": "A sua conta não tem acesso a este formulário.",
+    "notFound": "O KoboToolbox não encontrou esta submissão. Pode ter sido apagada.",
+    "noKobo": "Este formulário não está ligado ao KoboToolbox, por isso as respostas não podem ser mostradas aqui.",
+    "koboRefused": "O KoboToolbox recusou o acesso da plataforma a este formulário. Avise o administrador da plataforma.",
+    "koboSlow": "O KoboToolbox não está a responder neste momento. Tente novamente daqui a pouco.",
+    "failed": "Não foi possível carregar a submissão. Tente novamente daqui a pouco.",
+    "notALine": "Este formulário não tem esta captura.",
+    "marksHint": "Abaixo, as respostas que cada alerta verifica têm uma barra vermelha e o código do alerta; aponte para um código para voltar a ler o alerta.",
+    "notAnswered": "Sem resposta"
   },
   "modal": {
     "alertCodesTitle": "Referência de Códigos de Alerta",

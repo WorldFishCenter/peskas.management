@@ -1,3 +1,13 @@
+# Management Platform 2.14.0
+
+## Added
+
+- **See a whole submission without a KoboToolbox account.** "View full submission" shows every answer, with the ones each alert checked marked in red. Read only; photos are not shown.
+
+## Changed
+
+- **"Go to Submission" is gone for now.** It needed a KoboToolbox login and could not save changes.
+
 # Management Platform 2.13.0
 
 ## Added

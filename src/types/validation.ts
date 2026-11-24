@@ -81,3 +81,18 @@ export const statusLabelKey = (status: string | undefined): string[] =>
   status
     ? [`status.${status.replace('validation_status_', '')}`, 'status.default']
     : ['status.default'];
+/** A label or answer in each of the form's languages, in the order of `SubmissionView.languages`. */
+export type Translated = (string | null)[];
+
+/** One part of a KoboToolbox submission, in form order, from `/kobo/submission/:id`. */
+export type SubmissionItem =
+  /** `value` is empty for a question left blank. */
+  | { type: 'field'; name: string; label: Translated; value: Translated }
+  | { type: 'group'; name: string; label: Translated; items: SubmissionItem[] }
+  | { type: 'repeat'; name: string; label: Translated; entries: SubmissionItem[][] };
+
+export interface SubmissionView {
+  /** The form's language names, e.g. "Swahili (sw)"; `[null]` for a form in one language. */
+  languages: (string | null)[];
+  items: SubmissionItem[];
+}

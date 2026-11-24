@@ -52,24 +52,35 @@
     "descriptionHeader": "Description"
   },
   "form": {
-    "popupBlocked": "Popup was blocked. Please allow popups for this site.",
-    "editUrlError": "Failed to generate edit URL. Please try again.",
     "selectedSubmission": "Selected submission: ",
     "assignStatus": "Assign Status",
     "updating": "Updating...",
     "updateStatus": "Update Status",
-    "generatingLink": "Generating Link...",
-    "goToSubmission": "Go to Submission",
-    "editLinkOpened": "Edit link opened in new tab.",
     "chooseStatus": "Choose a status…",
     "saved": "Saved: {{status}}.",
     "savedKoboFailed": "Saved: {{status}}. KoboToolbox could not be updated; the decision counts all the same.",
     "conflict": "Not saved: someone else changed this submission after you opened it. It is now {{status}} ({{by}}). Check it and decide again.",
     "forbidden": "Not saved: your account has no access to this form.",
     "notFound": "Not saved: this submission is no longer in the platform. Reload the page.",
-    "saveFailed": "Not saved. Please try again.",
-    "editForbidden": "Your account has no access to this form.",
-    "editNotFound": "KoboToolbox could not find this submission."
+    "saveFailed": "Not saved. Please try again."
+  },
+  "submissionView": {
+    "button": "View full submission",
+    "title": "Submission {{id}}",
+    "loading": "Reading the submission from KoboToolbox…",
+    "alerts": "Alerts on this submission",
+    "noAlerts": "No alerts on this submission.",
+    "noMap": "Where each alert sits in this form is not known yet; the alerts are listed above.",
+    "readOnly": "Read only: the answers as KoboToolbox holds them. Photos are not shown.",
+    "forbidden": "Your account has no access to this form.",
+    "notFound": "KoboToolbox could not find this submission. It may have been deleted.",
+    "noKobo": "This form is not connected to KoboToolbox, so its answers cannot be shown here.",
+    "koboRefused": "KoboToolbox refused the platform access to this form. Tell the platform administrator.",
+    "koboSlow": "KoboToolbox is not answering right now. Try again in a moment.",
+    "failed": "The submission could not be loaded. Try again in a moment.",
+    "notALine": "This form has no such catch line.",
+    "marksHint": "Below, the answers each alert checks have a red bar and the alert code; point at a code to read the alert again.",
+    "notAnswered": "Not answered"
   },
   "modal": {
     "alertCodesTitle": "Alert Codes Reference",
