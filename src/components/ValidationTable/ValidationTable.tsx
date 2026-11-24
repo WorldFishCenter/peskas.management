@@ -16,8 +16,10 @@ import { updateValidationStatus } from '../../api/koboToolbox';
 import { Submission } from '../../types/validation';
 import { statusMessage, StatusMessage } from './StatusUpdateForm';
 import AlertBadge from './AlertBadge';
+import { catchDetail } from '../../utils/alertCodes';
 import TableFilters from './TableFilters';
 import AlertGuideModal from './AlertGuideModal';
+import SubmissionView from './SubmissionView';
 import StatusBadge from './StatusBadge';
 import { getCountryFlag, getCountryName } from '../../utils/countryMetadata';
 
@@ -568,8 +570,7 @@ const ValidationTable: React.FC = () => {
                               <AlertBadge alertFlag={c.code} describeAlert={describeAlert} />
                             </span>
                             {t('table.catchNumber', { number: c.catch_number })}
-                            {c.species && `: ${c.species}`}
-                            {c.value && `, ${c.value}`}
+                            {catchDetail(c) && `: ${catchDetail(c)}`}
                           </div>
                         ))}
                       </div>
@@ -588,6 +589,7 @@ const ValidationTable: React.FC = () => {
                     </div>
                   )}
                 </dl>
+                <SubmissionView submission={selectedRow} describeAlert={describeAlert} />
               </div>
 
               {/* Visual separator */}

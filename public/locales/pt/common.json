@@ -10,8 +10,7 @@
     "close": "Close",
     "confirm": "Confirm",
     "submit": "Submit",
-    "tryAgain": "Try Again",
-    "openAgain": "Open Again"
+    "tryAgain": "Try Again"
   },
   "status": {
     "approved": "Aprovado",
