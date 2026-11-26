@@ -24,6 +24,10 @@
       "memory": 1024,
       "includeFiles": "lib/workbook/**"
     },
+    "api/admin/sync-users.js": {
+      "maxDuration": 60,
+      "memory": 1024
+    },
     "api/**/*.js": {
       "maxDuration": 10,
       "memory": 1024
